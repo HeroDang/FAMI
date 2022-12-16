@@ -12,3 +12,6 @@ const managerSchema = mongoose.Schema(
     timestamps: true,
   }
 )
+const Manager = mongoose.model('managers', drugSchema)
+
+export default Manager

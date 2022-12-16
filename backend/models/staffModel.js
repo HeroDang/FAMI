@@ -11,4 +11,7 @@ const staffSchema = mongoose.Schema(
       timestamps: true,
     }
   )
+  const Staff = mongoose.model('Room', staffSchema)
+
+export default Staff
   
