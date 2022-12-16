@@ -36,3 +36,7 @@ const drugSchema = mongoose.Schema(
       timestamps: true,
     }
   )
+  
+const Drug = mongoose.model('Drug', drugSchema)
+
+export default Drug
