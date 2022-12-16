@@ -40,6 +40,6 @@ const personSchema = mongoose.Schema(
     timestamps: true,
   }
 )
-const Person = mongoose.model('persons', personSchema)
+const Person = mongoose.model('Person', personSchema)
 
 export default Person

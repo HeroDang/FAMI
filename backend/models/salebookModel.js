@@ -1,20 +1,20 @@
 import mongoose from 'mongoose'
 
 const salebookSchema = mongoose.Schema(
-    {
-      ID: {
-        type: String,
-      },
-      time:{
-        type: String,
-      }
-     
-      
+  {
+    ID: {
+      type: String,
     },
-    {
-      timestamps: true,
+    time: {
+      type: String,
     }
-  )
-  const SaleBook = mongoose.model('SaleBook', salebookSchema)
+
+
+  },
+  {
+    timestamps: true,
+  }
+)
+const SaleBook = mongoose.model('SaleBook', salebookSchema)
 
 export default SaleBook
