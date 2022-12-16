@@ -1,9 +1,9 @@
 import express from 'express'
 const router = express.Router()
-import {getAccounts} from '../controllers/accountController.js'
+import {getAccount} from '../controllers/accountController.js'
 
 
-router.route('/').get(getAccounts)
+router.route('/').get(getAccount)
 
 
 export default router

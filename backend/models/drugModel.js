@@ -8,7 +8,8 @@ const drugSchema = mongoose.Schema(
       },
       name: {
         type: String,
-        
+        required: true, 
+        // unique: true,
       },
       type: {
         type: String,
@@ -38,5 +39,6 @@ const drugSchema = mongoose.Schema(
   )
   
 const Drug = mongoose.model('Drug', drugSchema)
+//drugs
 
 export default Drug
