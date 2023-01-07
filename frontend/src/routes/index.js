@@ -4,6 +4,7 @@ import { HeaderOnly } from '@/components/Layout';
 import Home from '@/pages/Home';
 import Following from '@/pages/Following';
 import Profile from '@/pages/Profile';
+import ManagerAccount from '@/pages/ManagerAccount';
 
 const publicRoutes = [
     {
@@ -13,6 +14,10 @@ const publicRoutes = [
     {
         path: '/following',
         component: Following,
+    },
+    {
+        path: '/managerAccount',
+        component: ManagerAccount,
     },
     {
         path: '/profile',
