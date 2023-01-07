@@ -31,8 +31,9 @@ const cx = classNames.bind(styles);
 const DataTableCrudDemo = () => {
     let emptyProduct = {
         id: null,
-        name: '',
-        image: null,
+        //name: '',
+        username: '',
+       // image: null,
         description: '',
         category: null,
         price: 0,
@@ -226,14 +227,14 @@ const DataTableCrudDemo = () => {
     const leftToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <Button label="New" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
-                <Button
+                {/* <Button label="New" icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} /> */}
+                {/* <Button
                     label="Delete"
                     icon="pi pi-trash"
                     className="p-button-danger"
                     onClick={confirmDeleteSelected}
                     disabled={!selectedProducts || !selectedProducts.length}
-                />
+                /> */}
             </React.Fragment>
         );
     };
@@ -241,7 +242,7 @@ const DataTableCrudDemo = () => {
     const rightToolbarTemplate = () => {
         return (
             <React.Fragment>
-                <FileUpload
+                {/* <FileUpload
                     mode="basic"
                     name="demo[]"
                     auto
@@ -250,8 +251,13 @@ const DataTableCrudDemo = () => {
                     chooseLabel="Import"
                     className="mr-2 inline-block"
                     onUpload={importCSV}
-                />
-                <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+                /> */}
+                <span className="p-input-icon-left">
+                <i className="pi pi-search" />
+                <InputText type="search" style={{minWidth: '18rem'}} left="30px" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
+            </span>
+                 <Button label="Create" style={{color: "#4962E9", background: "#BFE6F4"}} icon="pi pi-plus" className="p-button-success mr-2" onClick={openNew} />
+                {/* <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} /> */}
             </React.Fragment>
         );
     };
@@ -304,11 +310,11 @@ const DataTableCrudDemo = () => {
 
     const header = (
         <div className="table-header">
-            <h5 className="mx-0 my-1">Manage Products</h5>
-            <span className="p-input-icon-left">
+            {/* <h5 className="mx-0 my-1">Manage Products</h5> */}
+            {/* <span className="p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
-            </span>
+            </span> */}
         </div>
     );
     const productDialogFooter = (
@@ -349,22 +355,23 @@ const DataTableCrudDemo = () => {
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
                     globalFilter={globalFilter}
-                    header={header}
+                    //header={header}
                     responsiveLayout="scroll"
                 >
-                    <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
-                    <Column field="code" header="Code" sortable style={{ minWidth: '12rem' }}></Column>
-                    <Column field="name" header="Name" sortable style={{ minWidth: '16rem' }}></Column>
-                    <Column field="image" header="Image" body={imageBodyTemplate}></Column>
-                    <Column
+                    {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column> */}
+                    <Column field="id" header="ID" sortable style={{ minWidth: '12rem', color: '#153AFF' }}></Column>
+                    <Column field="username" header="Username" sortable style={{ minWidth: '16rem', color: '#153AFF' }}></Column>
+                    {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
+                    {/* <Column
                         field="price"
                         header="Price"
                         body={priceBodyTemplate}
                         sortable
                         style={{ minWidth: '8rem' }}
-                    ></Column>
-                    <Column field="category" header="Category" sortable style={{ minWidth: '10rem' }}></Column>
-                    <Column
+                    ></Column> */}
+                    <Column field="password"  header="Password" sortable style={{ minWidth: '10rem', color: '#153AFF' }}></Column>
+                    <Column field="role" header="Role" sortable style={{ minWidth: '10rem', color: '#153AFF' }}></Column>
+                    {/* <Column
                         field="rating"
                         header="Reviews"
                         body={ratingBodyTemplate}
@@ -377,8 +384,8 @@ const DataTableCrudDemo = () => {
                         body={statusBodyTemplate}
                         sortable
                         style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+                    ></Column> */}
+                    <Column header="Action" body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem', color: '#153AFF' }}></Column>
                 </DataTable>
             </div>
 
