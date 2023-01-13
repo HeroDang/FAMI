@@ -351,6 +351,10 @@ const DataTableCrudDemo = () => {
                     dataKey="id"
                     paginator
                     rows={10}
+                    color= "#3652E6"
+                
+                    style={{ background: "#3652E6"}}
+                    
                     rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -392,7 +396,8 @@ const DataTableCrudDemo = () => {
             <Dialog
                 visible={productDialog}
                 style={{ width: '450px' }}
-                header="Product Details"
+                //header="Product Details"
+                header="Create account"
                 modal
                 className="p-fluid"
                 footer={productDialogFooter}
