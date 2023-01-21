@@ -18,7 +18,7 @@ const personSchema = mongoose.Schema(
       type: String,
 
     },
-    accountID: {
+    accountid: {
       type: String,
 
     },
@@ -40,6 +40,6 @@ const personSchema = mongoose.Schema(
     timestamps: true,
   }
 )
-const Person = mongoose.model('Person', personSchema)
+const Person = mongoose.model('persons', personSchema)
 
 export default Person

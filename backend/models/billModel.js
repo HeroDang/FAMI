@@ -6,7 +6,7 @@ const billSchema = mongoose.Schema(
       type: String,
 
     },
-    drugID: {
+    drugid: {
       type: String,
 
     },
@@ -34,6 +34,6 @@ const billSchema = mongoose.Schema(
   }
 )
 
-const Bill = mongoose.model('Bill', billSchema)
+const Bill = mongoose.model('bills', billSchema)
 
 export default Bill

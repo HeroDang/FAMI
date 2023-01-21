@@ -340,14 +340,30 @@ const DataTableCrudDemo = () => {
     );
     const productDialogFooter = (
         <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
+            <Button className={cx('btn-cancel')} 
+            label="Cancel" 
+            icon="pi pi-times" 
+            style={{color:'#153AFF',background: '#ffffff',}}
+             onClick={hideDialog} />
+            <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
+            style={{color:'#ffffff',background: '#153AFF'}}
+            onClick={saveProduct} />
         </React.Fragment>
     );
     const deleteProductDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteProduct} />
+            <Button  
+            className={cx('btn-cancel')} 
+            label="Cancel" 
+            style={{color:'#153AFF',background: '#ffffff',}}
+            icon="pi pi-times"  
+            onClick={hideDeleteProductDialog} />
+            <Button 
+            className={cx('btn-yes')} 
+            label="Yes"
+            icon="pi pi-check" 
+            style={{color:'#ffffff',background: '#153AFF'}}
+            onClick={deleteProduct} />
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
@@ -434,9 +450,9 @@ const DataTableCrudDemo = () => {
                 </DataTable>
             </div>
 
-            <Dialog
+            <Dialog 
                 visible={productDialog}
-                style={{ width: '450px' }}
+                style={{ width: '450px', color: '#0D5BF1'}}
                 //header="Product Details"
                 header="Create account"
                 modal
@@ -444,7 +460,7 @@ const DataTableCrudDemo = () => {
                 footer={productDialogFooter}
                 onHide={hideDialog}
             >
-                {product.image && (
+                {/* {product.image && (
                     <img
                         src={`images/product/${product.image}`}
                         onError={(e) =>
@@ -453,8 +469,43 @@ const DataTableCrudDemo = () => {
                         alt={product.image}
                         className="product-image block m-auto pb-3"
                     />
-                )}
-                <div className="field">
+                )} */}
+                <div className="formgrid grid">
+                    <div className="field col">
+                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
+                        <InputNumber
+                           // id="price"
+                            value={product.price}
+                            onValueChange={(e) => onInputNumberChange(e, 'price')}
+                            // mode="currency"
+                            // currency="USD"
+                            // locale="en-US"
+                        />
+                    </div>
+                    <div className="field col">
+                        <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
+                        <InputNumber
+                            id="quantity"
+                            value={product.quantity}
+                            onValueChange={(e) => onInputNumberChange(e, 'quantity')}
+                            integeronly
+                        />
+                    </div>
+                </div >
+                <div className="formgrid grid">
+                    <div className="field col">
+                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
+                        <InputNumber
+                            //id="price"
+                            value={product.price}
+                            onValueChange={(e) => onInputNumberChange(e, 'price')}
+                            //mode="currency"
+                            //currency="USD"
+                           // locale="en-US"
+                        />
+                    </div>
+                </div>
+                {/* <div className="field">
                     <label htmlFor="name">Name</label>
                     <InputText
                         id="name"
@@ -465,8 +516,8 @@ const DataTableCrudDemo = () => {
                         className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
                     />
                     {submitted && !product.name && <small className="p-error">Name is required.</small>}
-                </div>
-                <div className="field">
+                </div> */}
+                {/* <div className="field">
                     <label htmlFor="description">Description</label>
                     <InputTextarea
                         id="description"
@@ -476,90 +527,81 @@ const DataTableCrudDemo = () => {
                         rows={3}
                         cols={20}
                     />
-                </div>
-
+                </div> */}
                 <div className="field">
-                    <label className="mb-3">Category</label>
-                    <div className="formgrid grid">
-                        <div className="field-radiobutton col-6">
+                    <label className="mb-3"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Role</b></label>
+                    {/* classNăe="feild cold" */}
+                    <div className={cx('grid-container')}>
+                        <div class={cx('grid-item')}>
                             <RadioButton
-                                inputId="category1"
+                                inputId="category1"S
                                 name="category"
-                                value="Accessories"
+                                value="Manager"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Accessories'}
+                                checked={product.category === 'Manager'}
                             />
-                            <label htmlFor="category1">Accessories</label>
+                            <label htmlFor="category1" style={{color:'#0D5BF1'}}>Manager</label>
+                            
                         </div>
-                        <div className="field-radiobutton col-6">
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category2"
                                 name="category"
-                                value="Clothing"
+                                value="Staff"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Clothing'}
+                                checked={product.category === 'Staff'}
                             />
-                            <label htmlFor="category2">Clothing</label>
+                            <label htmlFor="category2"style={{color:'#0D5BF1'}}>Staff</label>
                         </div>
-                        <div className="field-radiobutton col-6">
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category3"
                                 name="category"
-                                value="Electronics"
+                                value="Specialist doctor"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Electronics'}
+                                checked={product.category === 'Specialist doctor'}
                             />
-                            <label htmlFor="category3">Electronics</label>
+                            <label htmlFor="category3"style={{color:'#0D5BF1'}}>Specialist doctor</label>
                         </div>
-                        <div className="field-radiobutton col-6">
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category4"
                                 name="category"
-                                value="Fitness"
+                                value="General doctor"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Fitness'}
+                                checked={product.category === 'General doctor'}
                             />
-                            <label htmlFor="category4">Fitness</label>
+                            <label htmlFor="category4"style={{color:'#0D5BF1'}}>General doctor</label>
+                        </div>
+                       {/* className="field-radiobutton col-6" */}
+                        <div class={cx('grid-item')}>
+                            <RadioButton
+                                inputId="category5"
+                                name="category"
+                                value="Pharmacist"
+                                onChange={onCategoryChange}
+                                checked={product.category === 'Pharmacist'}
+                            />
+                            <label htmlFor="category5"style={{color:'#0D5BF1'}}>Pharmacist</label>
                         </div>
                     </div>
                 </div>
 
-                <div className="formgrid grid">
-                    <div className="field col">
-                        <label htmlFor="price">Price</label>
-                        <InputNumber
-                            id="price"
-                            value={product.price}
-                            onValueChange={(e) => onInputNumberChange(e, 'price')}
-                            mode="currency"
-                            currency="USD"
-                            locale="en-US"
-                        />
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="quantity">Quantity</label>
-                        <InputNumber
-                            id="quantity"
-                            value={product.quantity}
-                            onValueChange={(e) => onInputNumberChange(e, 'quantity')}
-                            integeronly
-                        />
-                    </div>
-                </div>
+                
             </Dialog>
 
             <Dialog
                 visible={deleteProductDialog}
-                style={{ width: '450px' }}
+               style={{ width: '450px', color: '#153AFF' }}
                 header="Confirm"
                 modal
                 footer={deleteProductDialogFooter}
                 onHide={hideDeleteProductDialog}
             >
-                <div className="confirmation-content">
-                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                <div >
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
                     {product && (
-                        <span>
+                        <span /*style="font-size:10px"*/>
                             Are you sure you want to delete <b>{product.name}</b>?
                         </span>
                     )}
@@ -571,7 +613,7 @@ const DataTableCrudDemo = () => {
                 style={{ width: '450px' }}
                 header="Confirm"
                 modal
-                footer={deleteProductsDialogFooter}
+                // footer={deleteProductsDialogFooter}
                 onHide={hideDeleteProductsDialog}
             >
                 <div className="confirmation-content">

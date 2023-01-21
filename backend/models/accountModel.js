@@ -15,12 +15,16 @@ const accountSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    role: {
+      type: String,
+      required: true,
+    }
   },
   {
     timestamps: true,
   }
 )
 
-const Account = mongoose.model('Account', accountSchema)
+const Account = mongoose.model('accounts', accountSchema)
 
 export default Account

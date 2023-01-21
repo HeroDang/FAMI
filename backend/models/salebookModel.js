@@ -15,6 +15,6 @@ const salebookSchema = mongoose.Schema(
     timestamps: true,
   }
 )
-const SaleBook = mongoose.model('SaleBook', salebookSchema)
+const SaleBook = mongoose.model('salebooks', salebookSchema)
 
 export default SaleBook

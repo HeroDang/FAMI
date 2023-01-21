@@ -38,7 +38,7 @@ const drugSchema = mongoose.Schema(
   }
 )
 
-const Drug = mongoose.model('Drug', drugSchema)
+const Drug = mongoose.model('drugs', drugSchema)
 //drugs
 
 export default Drug

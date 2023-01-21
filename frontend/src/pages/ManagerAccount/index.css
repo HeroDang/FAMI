@@ -162,3 +162,26 @@ span.flag {
 img.flag {
     width: 30px;
 }
+/* //radiobutton: màu viền, màu check */
+
+.p-radiobutton .p-radiobutton-box.p-highlight {
+    border-color: #153AFF !important;
+    background: #153AFF !important;
+}
+.p-radiobutton .p-radiobutton-box.p-highlight:hover {
+    border-color: #153AFF !important ;
+    background: #153AFF !important;
+}
+.p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover {
+    border-color:  #153AFF !important;
+}
+/* text box: màu viền, shadow */
+.p-inputtext:enabled:hover {
+    border-color: #153AFF;
+}
+.p-inputtext:enabled:focus {
+    outline: 0 none;
+    outline-offset: 0;
+    box-shadow: 0 0 0 0.2rem #c7d2fe;
+    border-color: #153AFF;
+}

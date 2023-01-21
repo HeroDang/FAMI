@@ -2,13 +2,13 @@ import mongoose from 'mongoose'
 
 const meformSchema = mongoose.Schema(
   {
-    Form: {
+    form: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'Form',
     },
 
-    roomID: {
+    roomid: {
       type: Array,
     },
     numorder: {
@@ -21,7 +21,7 @@ const meformSchema = mongoose.Schema(
   }
 )
 
-const MeForm = mongoose.model('Meform', meformSchema)
+const MeForm = mongoose.model('meforms', meformSchema)
 
 export default MeForm
 

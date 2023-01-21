@@ -33,6 +33,6 @@ const patientSchema = mongoose.Schema(
   }
 )
 
-const Patient = mongoose.model('Patient', patientSchema)
+const Patient = mongoose.model('patients', patientSchema)
 
 export default Patient

@@ -28,7 +28,7 @@ const specformSchema = mongoose.Schema(
   }
 )
 
-const SpecForm = mongoose.model('speforms', specformSchema)
+const SpecForm = mongoose.model('specforms', specformSchema)
 
 export default SpecForm
 

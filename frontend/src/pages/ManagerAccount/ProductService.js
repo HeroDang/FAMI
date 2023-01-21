@@ -11,11 +11,11 @@ export class ProductService {
             .then((d) => d.data);
     }
 
-    getProductsWithOrdersSmall() {
-        return fetch('data/products-orders-small.json')
-            .then((res) => res.json())
-            .then((d) => d.data);
-    }
+    // getProductsWithOrdersSmall() {
+    //     return fetch('data/products-orders-small.json')
+    //         .then((res) => res.json())
+    //         .then((d) => d.data);
+    // }
 
     getAccounts() {
         return fetch('data/accounts.json')
