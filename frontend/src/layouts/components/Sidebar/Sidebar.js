@@ -47,6 +47,12 @@ function Sidebar() {
                     icon={<LiveIcon />}
                     activeIcon={<LiveActiveIcon />}
                 />
+                <MenuItem
+                    title="Manager Checklist"
+                    to={config.routes.medicalChecklist}
+                    icon={<LiveIcon />}
+                    activeIcon={<LiveActiveIcon />}
+                />
             </Menu>
             {/* <SuggestedAccounts label="Suggested accounts" data={SuggestedUsers} />
             <SuggestedAccounts label="Following accounts" /> */}

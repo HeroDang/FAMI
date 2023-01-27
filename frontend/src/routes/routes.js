@@ -7,6 +7,7 @@ import Home from '@/pages/Home';
 import Following from '@/pages/Following';
 import Profile from '@/pages/Profile';
 import ManagerAccount from '@/pages/ManagerAccount';
+import MedicalChecklist from '@/pages/MedicalChecklist';
 
 const publicRoutes = [
     {
@@ -24,6 +25,10 @@ const publicRoutes = [
     {
         path: config.routes.profile,
         component: Profile,
+    },
+    {
+        path: config.routes.medicalChecklist,
+        component: MedicalChecklist,
     },
 ];
 
