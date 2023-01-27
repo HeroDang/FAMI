@@ -24,6 +24,7 @@ import '@/pages/ManagerAccount/DataTableDemo.css';
 import MyBtn from '@/components/Button';
 import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
+import * as meformService from '@/services/meformService';
 import styles from './MedicalChecklist.module.scss';
 
 const cx = classNames.bind(styles);
@@ -42,6 +43,9 @@ function MedicalChecklist() {
     };
 
     const [products, setProducts] = useState(null);
+
+    const [meforms, setMeforms] = useState(null);
+
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -54,7 +58,18 @@ function MedicalChecklist() {
     const productService = new ProductService();
 
     useEffect(() => {
-        productService.getProducts().then((data) => setProducts(data));
+        productService.getProducts().then((data) => {
+            setProducts(data);
+        });
+        meformService.getMEFormList().then((data) => {
+            let newData = {};
+            data.map((item) => {
+                newData.formId = item.formId.toLocaleString();
+                newData.patientId = item.patientId.toLocaleString();
+                newData.date = item.date.toLocaleString();
+            });
+            setMeforms(data);
+        });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const openNew = () => {
@@ -240,7 +255,7 @@ function MedicalChecklist() {
                     {/* Datatable */}
                     <DataTable
                         ref={dt}
-                        value={products}
+                        value={meforms}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
                         dataKey="id"
@@ -262,33 +277,33 @@ function MedicalChecklist() {
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="code"
-                            header="Code"
+                            field="formId"
+                            header="ID FROM"
                             sortable
                             style={{ minWidth: '12rem' }}
                         ></Column>
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="name"
-                            header="Name"
+                            field="patientId"
+                            header="PATIENT ID"
                             sortable
                             style={{ minWidth: '16rem' }}
                         ></Column>
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="price"
-                            header="Price"
-                            body={priceBodyTemplate}
+                            field="patientId"
+                            header="PATIENT ID"
+                            // body={priceBodyTemplate}
                             sortable
                             style={{ minWidth: '8rem' }}
                         ></Column>
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="category"
-                            header="Category"
+                            field="date"
+                            header="DATE"
                             sortable
                             style={{ minWidth: '10rem' }}
                         ></Column>
