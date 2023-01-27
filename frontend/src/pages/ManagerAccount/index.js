@@ -26,6 +26,7 @@ import './DataTableDemo.css';
 import MyBtn from '@/components/Button';
 import { TrashIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
+import * as accountService from '@/services/accountService' //1
 import styles from './ManagerAccount.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -40,13 +41,16 @@ const DataTableCrudDemo = () => {
         // image: null,
         description: '',
         category: null,
-        price: 0,
+        price: null,
         quantity: 0,
         rating: 0,
-        inventoryStatus: 'INSTOCK',
+        //inventoryStatus: 'INSTOCK',
     };
 
     const [products, setProducts] = useState(null);
+
+    const [accounts, setAccounts] = useState(null);
+
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -60,6 +64,10 @@ const DataTableCrudDemo = () => {
 
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
+        accountService.getAccountList().then((data)  => {
+            setAccounts(data);
+            console.log(data);
+        });
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const formatCurrency = (value) => {
@@ -382,7 +390,7 @@ const DataTableCrudDemo = () => {
 
                 <DataTable
                     ref={dt}
-                    value={products}
+                    value={accounts}
                     selection={selectedProducts}
                     onSelectionChange={(e) => setSelectedProducts(e.value)}
                     dataKey="id"
@@ -400,10 +408,14 @@ const DataTableCrudDemo = () => {
                     responsiveLayout="scroll"
                 >
                     {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column> */}
-                    <Column field="id" header="ID" sortable style={{ minWidth: '12rem', color: '#153AFF' }}></Column>
+                    <Column 
+                    field="ID" 
+                    header="ID" 
+                    sortable style={{ minWidth: '12rem', color: '#153AFF' }}>
+                    </Column>
                     <Column
-                        field="username"
-                        header="Username"
+                        field="fullname"
+                        header="Fullname"
                         sortable
                         style={{ minWidth: '16rem', color: '#153AFF' }}
                     ></Column>
@@ -416,8 +428,8 @@ const DataTableCrudDemo = () => {
                         style={{ minWidth: '8rem' }}
                     ></Column> */}
                     <Column
-                        field="password"
-                        header="Password"
+                        field="username"
+                        header="Username"
                         sortable
                         style={{ minWidth: '10rem', color: '#153AFF' }}
                     ></Column>
@@ -452,14 +464,17 @@ const DataTableCrudDemo = () => {
 
             <Dialog 
                 visible={productDialog}
-                style={{ width: '450px', color: '#0D5BF1'}}
                 //header="Product Details"
-                header="Create account"
+               header="Create account"
+             // style="color: blue;"
                 modal
                 className="p-fluid"
                 footer={productDialogFooter}
                 onHide={hideDialog}
             >
+                <head>
+                <title>Page Title</title>
+                </head>
                 {/* {product.image && (
                     <img
                         src={`images/product/${product.image}`}
@@ -483,7 +498,7 @@ const DataTableCrudDemo = () => {
                         />
                     </div>
                     <div className="field col">
-                        <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
+                        <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Fullname</b></label>
                         <InputNumber
                             id="quantity"
                             value={product.quantity}
@@ -492,6 +507,20 @@ const DataTableCrudDemo = () => {
                         />
                     </div>
                 </div >
+                
+                <div className="formgrid grid">
+                    <div className="field col">
+                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
+                        <InputNumber
+                            //id="price"
+                            value={product.price}
+                            onValueChange={(e) => onInputNumberChange(e, 'price')}
+                            //mode="currency"
+                            //currency="USD"
+                           // locale="en-US"
+                        />
+                    </div>
+                </div>
                 <div className="formgrid grid">
                     <div className="field col">
                         <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
@@ -587,7 +616,7 @@ const DataTableCrudDemo = () => {
                     </div>
                 </div>
 
-                
+            
             </Dialog>
 
             <Dialog
