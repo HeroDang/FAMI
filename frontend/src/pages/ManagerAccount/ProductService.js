@@ -16,6 +16,11 @@ export class ProductService {
     //         .then((res) => res.json())
     //         .then((d) => d.data);
     // }
+    getAccountsSmall() {
+        return fetch('data/accounts-small.json')
+            .then((res) => res.json())
+            .then((d) => d.data);
+    }
 
     getAccounts() {
         return fetch('data/accounts.json')
