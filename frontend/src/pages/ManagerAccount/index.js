@@ -20,7 +20,8 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { SearchIcon, TrashSmallIcon, PencilSmallIcon } from '@/components/Icons';
 import './index.css';
 import './DataTableDemo.css';
 import MyBtn from '@/components/Button';
@@ -29,11 +30,11 @@ import { ProductService } from './ProductService';
 import * as accountService from '@/services/accountService' //1
 import styles from './ManagerAccount.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
-const DataTableCrudDemo = () => {
+
+function ManagerAccount() {
     let emptyProduct = {
         id: null,
         //name: '',
@@ -46,10 +47,22 @@ const DataTableCrudDemo = () => {
         rating: 0,
         //inventoryStatus: 'INSTOCK',
     };
+    let emptyAccount = {
+        ID: null,
+        username: null,
+        password: null,
+        fullname: null,
+        job: null,
+        //inventoryStatus: 'INSTOCK',
+    };
 
     const [products, setProducts] = useState(null);
 
     const [accounts, setAccounts] = useState(null);
+
+    const [account, setAccount] = useState(emptyAccount);
+
+    const [changeData,setChangeData] =  useState(false);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -68,82 +81,180 @@ const DataTableCrudDemo = () => {
             setAccounts(data);
             console.log(data);
         });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const formatCurrency = (value) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    const confirmDeleteSelected = () => {
+        setDeleteProductsDialog(true);
     };
 
     const openNew = () => {
         setProduct(emptyProduct);
+        setAccount(emptyAccount);
         setSubmitted(false);
         setProductDialog(true);
     };
-
-    const hideDialog = () => {
-        setSubmitted(false);
-        setProductDialog(false);
-    };
-
-    const hideDeleteProductDialog = () => {
-        setDeleteProductDialog(false);
-    };
-
-    const hideDeleteProductsDialog = () => {
-        setDeleteProductsDialog(false);
-    };
-
-    const saveProduct = () => {
+    const saveAccount = () => {
         setSubmitted(true);
+        
 
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
+            let _accounts = [...accounts];
+            let _account = { ...account };
+            if (account._id) {
+                // const index = findIndexById(product.id);
+                accountService.updateAccount(_account,_account._id).then((data)=>{
+                    console.log(data)
+                    setProductDialog(false);
+                    setAccount(emptyAccount);
+                    setChangeData(!changeData);
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Product Updated',
+                        life: 3000,
+                    });
+                    
+                })
 
-                _products[index] = _product;
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Updated',
-                    life: 3000,
-                });
+                // _products[index] = _product;
+               
             } else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
+               accountService.createAccount(_account).then((data)=> {
+                
+                console.log(data)
+                setProductDialog(false);
+                setAccount(emptyAccount);
+                setChangeData(!changeData);
                 toast.current.show({
                     severity: 'success',
                     summary: 'Successful',
                     detail: 'Product Created',
                     life: 3000,
                 });
-            }
+            
+            })
+                
 
-            setProducts(_products);
-            setProductDialog(false);
-            setProduct(emptyProduct);
+            // setProducts(_products);
+           
         }
     };
 
-    const editProduct = (product) => {
-        setProduct({ ...product });
+    const onInputChange = (e, name) => {
+        console.log(e.target.value);
+        const val = (e.target && e.target.value) || '';
+        let _account = { ...account };
+        _account[`${name}`] = val;
+
+        setAccount(_account);
+        
+    };
+
+    const onCategoryChange = (e) => {
+        let _product = { ...product };
+        _product['category'] = e.value;
+        setProduct(_product);
+    };
+    const hideDialog = () => {
+        setSubmitted(false);
+        setProductDialog(false);
+    };
+
+    const productDialogFooter = (
+        <React.Fragment>
+            <Button className={cx('btn-cancel')} 
+            label="Cancel" 
+            icon="pi pi-times" 
+            style={{color:'#153AFF',background: '#ffffff',}}
+             onClick={hideDialog} />
+            <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
+            style={{color:'#ffffff',background: '#153AFF'}}
+            onClick={saveAccount} />
+        </React.Fragment>
+    );
+
+    const confirmDeleteProduct = (account) => {
+        // setProduct(product);
+        setAccount(account);
+         setDeleteProductDialog(true);
+        // e.stopPropagation();
+     };
+     
+    const deleteProduct = () => {
+        // let _products = products.filter((val) => val.id !== product.id);
+        // setProducts(_products);
+        let _account={...account}
+        accountService.deleteAccount(_account._id).then((data)=>{
+            setChangeData(!changeData);
+            setDeleteProductDialog(false);
+           // setProduct(emptyProduct);
+           setAccount(emptyAccount);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+            
+        });
+        
+        
+    };
+
+     const hideDeleteProductsDialog = () => {
+        setDeleteProductsDialog(false);
+    };
+    const hideDeleteProductDialog = () => {
+        setDeleteProductDialog(false);
+    };
+    const deleteSelectedProducts = () => {
+        let _products = products.filter((val) => !selectedProducts.includes(val));
+        setProducts(_products);
+        setDeleteProductsDialog(false);
+        setSelectedProducts(null);
+        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+    };
+
+    const deleteProductDialogFooter = (
+        <React.Fragment>
+            <Button  
+            className={cx('btn-cancel')} 
+            label="Cancel" 
+            style={{color:'#153AFF',background: '#ffffff',}}
+            icon="pi pi-times"  
+            onClick={hideDeleteProductDialog} />
+            <Button 
+            className={cx('btn-yes')} 
+            label="Yes"
+            icon="pi pi-check" 
+            style={{color:'#ffffff',background: '#153AFF'}}
+            onClick={deleteProduct} />
+        </React.Fragment>
+    );
+    const deleteProductsDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
+        </React.Fragment>
+    );
+
+
+
+
+    const DataTableCrudDemo = () => {
+
+    const formatCurrency = (value) => {
+        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    };
+
+
+   
+
+    
+   
+    
+    const editProduct = (account) => {
+        setAccount({ ...account });
         setProductDialog(true);
     };
 
-    const confirmDeleteProduct = (product) => {
-        setProduct(product);
-        setDeleteProductDialog(true);
-    };
+    
 
-    const deleteProduct = () => {
-        let _products = products.filter((val) => val.id !== product.id);
-        setProducts(_products);
-        setDeleteProductDialog(false);
-        setProduct(emptyProduct);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-    };
+   
 
     const findIndexById = (id) => {
         let index = -1;
@@ -202,31 +313,10 @@ const DataTableCrudDemo = () => {
         dt.current.exportCSV();
     };
 
-    const confirmDeleteSelected = () => {
-        setDeleteProductsDialog(true);
-    };
 
-    const deleteSelectedProducts = () => {
-        let _products = products.filter((val) => !selectedProducts.includes(val));
-        setProducts(_products);
-        setDeleteProductsDialog(false);
-        setSelectedProducts(null);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-    };
+    
 
-    const onCategoryChange = (e) => {
-        let _product = { ...product };
-        _product['category'] = e.value;
-        setProduct(_product);
-    };
-
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _product = { ...product };
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    };
+    
 
     const onInputNumberChange = (e, name) => {
         const val = e.value || 0;
@@ -319,20 +409,26 @@ const DataTableCrudDemo = () => {
         return (
             <React.Fragment>
                 {/* thu vien */}
-                <Button
+                {/* <Button
                     icon="pi pi-pencil"
                     className="p-button-rounded p-button-success mr-2"
                     onClick={() => editProduct(rowData)}
-                />
+                /> */}
+                <button className={cx('btn-delete')} onClick={() => editProduct(rowData)}>
+                        <span className={cx('icon','iconn')}>
+                            <PencilSmallIcon />
+                        </span>
+                 </button>
                 {/* <Button
                     icon="pi pi-trash"
                     className="p-button-rounded p-button-warning"
                     onClick={() => confirmDeleteProduct(rowData)}
                 /> */}
-                <MyBtn
-                    leftIcon={<FontAwesomeIcon className={cx('icon')} icon={faTrash} />}
-                    onClick={() => confirmDeleteProduct(rowData)}
-                ></MyBtn>
+                <button className={cx('btn-delete')} onClick={() => confirmDeleteProduct(rowData)}>
+                        <span className={cx('icon')}>
+                            <TrashSmallIcon />
+                        </span>
+                    </button>
             </React.Fragment>
         );
     };
@@ -346,60 +442,21 @@ const DataTableCrudDemo = () => {
             </span> */}
         </div>
     );
-    const productDialogFooter = (
-        <React.Fragment>
-            <Button className={cx('btn-cancel')} 
-            label="Cancel" 
-            icon="pi pi-times" 
-            style={{color:'#153AFF',background: '#ffffff',}}
-             onClick={hideDialog} />
-            <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
-            style={{color:'#ffffff',background: '#153AFF'}}
-            onClick={saveProduct} />
-        </React.Fragment>
-    );
-    const deleteProductDialogFooter = (
-        <React.Fragment>
-            <Button  
-            className={cx('btn-cancel')} 
-            label="Cancel" 
-            style={{color:'#153AFF',background: '#ffffff',}}
-            icon="pi pi-times"  
-            onClick={hideDeleteProductDialog} />
-            <Button 
-            className={cx('btn-yes')} 
-            label="Yes"
-            icon="pi pi-check" 
-            style={{color:'#ffffff',background: '#153AFF'}}
-            onClick={deleteProduct} />
-        </React.Fragment>
-    );
-    const deleteProductsDialogFooter = (
-        <React.Fragment>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
-        </React.Fragment>
-    );
+  
+    
+    
 
     return (
-        <div className="datatable-crud-demo">
-            <Toast ref={toast} />
-
+        <div className="">
             <div className="card">
-                <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
-
                 <DataTable
                     ref={dt}
                     value={accounts}
                     selection={selectedProducts}
                     onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="id"
+                    dataKey="_id"
                     paginator
                     rows={10}
-                    color= "#3652E6"
-                
-                    style={{ background: "#3652E6"}}
-                    
                     rowsPerPageOptions={[5, 10, 25]}
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
@@ -407,17 +464,28 @@ const DataTableCrudDemo = () => {
                     //header={header}
                     responsiveLayout="scroll"
                 >
-                    {/* <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column> */}
+                   <Column
+                            headerClassName={cx('column-thead')}
+                            bodyClassName={cx('column')}
+                            selectionMode="multiple"
+                            headerStyle={{ width: '3rem' }}
+                            exportable={false}
+                        ></Column>
+
                     <Column 
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
                     field="ID" 
                     header="ID" 
-                    sortable style={{ minWidth: '12rem', color: '#153AFF' }}>
+                    sortable style={{ minWidth: '12rem' }}>
                     </Column>
                     <Column
-                        field="fullname"
-                        header="Fullname"
-                        sortable
-                        style={{ minWidth: '16rem', color: '#153AFF' }}
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="fullname"
+                    header="Fullname"
+                    sortable
+                    style={{ minWidth: '16rem' }}
                     ></Column>
                     {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
                     {/* <Column
@@ -428,16 +496,20 @@ const DataTableCrudDemo = () => {
                         style={{ minWidth: '8rem' }}
                     ></Column> */}
                     <Column
-                        field="username"
-                        header="Username"
-                        sortable
-                        style={{ minWidth: '10rem', color: '#153AFF' }}
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="username"
+                    header="Username"
+                    sortable
+                    style={{ minWidth: '10rem' }}
                     ></Column>
                     <Column
-                        field="role"
-                        header="Role"
-                        sortable
-                        style={{ minWidth: '10rem', color: '#153AFF' }}
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="role"
+                    header="Role"
+                    sortable
+                    style={{ minWidth: '10rem' }}
                     ></Column>
                     {/* <Column
                         field="rating"
@@ -455,14 +527,60 @@ const DataTableCrudDemo = () => {
                     ></Column> */}
                     <Column
                         header="Action"
+                        headerClassName={cx('column-thead')}
+                        bodyClassName={cx('column')}
                         body={actionBodyTemplate}
                         exportable={false}
-                        style={{ minWidth: '8rem', color: '#153AFF' }}
+                        style={{ minWidth: '8rem' }}
                     ></Column>
                 </DataTable>
             </div>
 
-            <Dialog 
+            
+        </div>
+        
+    );
+};
+    return (
+        
+        <div className={cx('body')}>
+                <div className={cx('toolbar')}>
+                    <div className={cx('search')}>
+                        <span className={cx('search-icon')}>
+                            <SearchIcon />
+                        </span>
+                        <InputText
+                            className={cx('search-input')}
+                            type="search"
+                            onInput={(e) => setGlobalFilter(e.target.value)}
+                            placeholder="Search..."
+                        />
+                    </div>
+                    <div className={cx('btn-group')}>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            primary
+                            large
+                            leftIcon={<FontAwesomeIcon icon={faPlus} />}
+                            onClick={openNew}
+                        >
+                            New
+                        </MyBtn>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            primary
+                            large
+                            leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
+                            onClick={confirmDeleteSelected}
+                            disable={!selectedProducts || !selectedProducts.length}
+                        >
+                            Delete
+                        </MyBtn>
+                    </div>
+                </div>
+                
+                <DataTableCrudDemo />
+                <Dialog 
                 visible={productDialog}
                 //header="Product Details"
                header="Create account"
@@ -487,51 +605,64 @@ const DataTableCrudDemo = () => {
                 )} */}
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
-                        <InputNumber
-                           // id="price"
-                            value={product.price}
-                            onValueChange={(e) => onInputNumberChange(e, 'price')}
+                        <label htmlFor="ID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
+                        <InputText
+                           id="ID"
+                            value={account.ID}
+                            onChange={(e) => onInputChange(e, 'ID')}
+                            autoFocus
+                            required
+                            className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                             // mode="currency"
                             // currency="USD"
                             // locale="en-US"
                         />
+                        {submitted && !account.ID && <small className="p-error">Name is required.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Fullname</b></label>
-                        <InputNumber
-                            id="quantity"
-                            value={product.quantity}
-                            onValueChange={(e) => onInputNumberChange(e, 'quantity')}
-                            integeronly
+                        <label htmlFor="fullname"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Fullname</b></label>
+                        <InputText
+                            id="fullname"
+                            value={account.fullname}
+                            onChange={(e) => onInputChange(e, 'fullname')}
+                            autoFocus
+                            required
+                            className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                         />
+                        {submitted && !account.fullname && <small className="p-error">Name is required.</small>}
                     </div>
                 </div >
                 
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
-                        <InputNumber
-                            //id="price"
-                            value={product.price}
-                            onValueChange={(e) => onInputNumberChange(e, 'price')}
+                        <label htmlFor="username"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
+                        <InputText
+                            id="username"
+                            value={account.username}
+                            onChange={(e) => onInputChange(e, 'username')}
+                            autoFocus
+                            required
+                            className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                             //mode="currency"
                             //currency="USD"
                            // locale="en-US"
                         />
+                        {submitted && !account.username && <small className="p-error">Name is required.</small>}
                     </div>
                 </div>
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="price"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
-                        <InputNumber
-                            //id="price"
-                            value={product.price}
-                            onValueChange={(e) => onInputNumberChange(e, 'price')}
-                            //mode="currency"
-                            //currency="USD"
-                           // locale="en-US"
-                        />
+                        <label htmlFor="password"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
+                        <InputText
+                                    id="password"
+                                    value={account.password}
+                                    onChange={(e) => onInputChange(e, 'password')}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                        {submitted && !account.password && <small className="p-error">Name is required.</small>}
                     </div>
                 </div>
                 {/* <div className="field">
@@ -567,9 +698,9 @@ const DataTableCrudDemo = () => {
                                 name="category"
                                 value="Manager"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Manager'}
+                                checked={account.job === 'Manager'}
                             />
-                            <label htmlFor="category1" style={{color:'#0D5BF1'}}>Manager</label>
+                            <label htmlFor="Manager" style={{color:'#0D5BF1'}}>Manager</label>
                             
                         </div>
                         <div class={cx('grid-item')}>
@@ -578,9 +709,9 @@ const DataTableCrudDemo = () => {
                                 name="category"
                                 value="Staff"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Staff'}
+                                checked={account.job === 'Staff'}
                             />
-                            <label htmlFor="category2"style={{color:'#0D5BF1'}}>Staff</label>
+                            <label htmlFor="Staff"style={{color:'#0D5BF1'}}>Staff</label>
                         </div>
                         <div class={cx('grid-item')}>
                             <RadioButton
@@ -588,9 +719,9 @@ const DataTableCrudDemo = () => {
                                 name="category"
                                 value="Specialist doctor"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Specialist doctor'}
+                                checked={account.job === 'Specialist doctor'}
                             />
-                            <label htmlFor="category3"style={{color:'#0D5BF1'}}>Specialist doctor</label>
+                            <label htmlFor="Specialist doctor"style={{color:'#0D5BF1'}}>Specialist doctor</label>
                         </div>
                         <div class={cx('grid-item')}>
                             <RadioButton
@@ -600,7 +731,7 @@ const DataTableCrudDemo = () => {
                                 onChange={onCategoryChange}
                                 checked={product.category === 'General doctor'}
                             />
-                            <label htmlFor="category4"style={{color:'#0D5BF1'}}>General doctor</label>
+                            <label htmlFor="General doctor"style={{color:'#0D5BF1'}}>General doctor</label>
                         </div>
                        {/* className="field-radiobutton col-6" */}
                         <div class={cx('grid-item')}>
@@ -609,17 +740,14 @@ const DataTableCrudDemo = () => {
                                 name="category"
                                 value="Pharmacist"
                                 onChange={onCategoryChange}
-                                checked={product.category === 'Pharmacist'}
+                                checked={account.job === 'Pharmacist'}
                             />
-                            <label htmlFor="category5"style={{color:'#0D5BF1'}}>Pharmacist</label>
+                            <label htmlFor="Pharmacist"style={{color:'#0D5BF1'}}>Pharmacist</label>
                         </div>
                     </div>
                 </div>
-
-            
-            </Dialog>
-
-            <Dialog
+                </Dialog>
+                <Dialog
                 visible={deleteProductDialog}
                style={{ width: '450px', color: '#153AFF' }}
                 header="Confirm"
@@ -650,16 +778,10 @@ const DataTableCrudDemo = () => {
                     {product && <span>Are you sure you want to delete the selected products?</span>}
                 </div>
             </Dialog>
-        </div>
-    );
-};
-
-function ManagerAccount() {
-    return (
-        <div>
-            <h2 className={cx('title-vhung', 'hung')}>ManagerAccount Page</h2>
-            <DataTableCrudDemo />
-        </div>
+            </div>
+            
+            
+            
     );
 }
 

@@ -26,8 +26,6 @@ import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
 import * as meformService from '@/services/meformService';
 import styles from './MedicalChecklist.module.scss';
-import ConvertDateToString from '@/utils/convertDateToString';
-import { set } from 'mongoose';
 
 const cx = classNames.bind(styles);
 
