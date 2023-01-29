@@ -10,6 +10,56 @@ class AccountController {
             })
             .catch(next);
     }
+
+    createAccount(req, res, next){
+
+        const {
+         ID,
+         username ,
+         password,
+         fullname,
+         
+        } = req.body;
+
+        const account = new Account({
+        ID: ID,
+        username: username,
+        password: password,
+        fullname: fullname,
+        job: "Manager"
+        });
+        account
+            .save()
+            .then(() => {res.status(201).json(account)})
+            .catch(next);
+    }
+
+    updateAccount(req, res, next){
+
+        const {
+         ID,
+         username ,
+         password,
+         fullname,
+         
+        } = req.body;
+
+        const account = {
+        ID: parseInt(ID), 
+        username: username,
+        password: password,
+        fullname: fullname,
+        job: "Manager"
+        };
+        Account.updateOne({_id: req.params.id},account)
+            .then(() => {res.status(201).json(account)})
+            .catch(next);
+    }
+    deleteAccount(req, res, next){
+        Account.delete({_id: req.params.id})
+            .then(() => {res.status(201).json({message:"DELETE"})})
+            .catch(next);
+    }
     // index(req, res, next) {
     //     Person.find({})
     //         .then((persons) =>
