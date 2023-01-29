@@ -93,6 +93,13 @@ class MEFormController {
             .catch(next);
     }
 
+    //[POST] meform/delete/selected
+    deleteSelectedForm(req, res, next) {
+        MEForm.delete({ _id: { $in: req.body } })
+            .then(() => res.status(201).json({ message: "DELETED" }))
+            .catch(next);
+    }
+
     // // [GET] /home
     // index(req, res, next) {
     //     Person.find({})
