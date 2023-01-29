@@ -6,8 +6,23 @@ const httpRequest = axios.create({
 });
 
 export const get = async (path, option = {}) => {
-    const reponse = await httpRequest.get(path, option);
-    return reponse.data;
+    const response = await httpRequest.get(path, option);
+    return response.data;
+};
+
+export const post = async (path, data = {}, option = {}) => {
+    const response = await httpRequest.post(path, data, option);
+    return response.data;
+};
+
+export const put = async (path, data = {}, option = {}) => {
+    const response = await httpRequest.put(path, data, option);
+    return response.data;
+};
+
+export const deleted = async (path, option = {}) => {
+    const response = await httpRequest.delete(path, option);
+    return response.data;
 };
 
 export default httpRequest;

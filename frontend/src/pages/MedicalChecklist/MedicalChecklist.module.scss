@@ -104,4 +104,21 @@
 .dialog {
     // background-color: var(--primary);
     height: 1000px;
+    label {
+        color: var(--primary);
+        font-size: 1.6rem;
+        font-weight: 600;
+    }
+}
+
+.detail-dialog-header {
+    background-color: var(--background-color) !important;
+    color: var(--primary) !important;
+    font-size: 1.4rem;
+}
+
+.label-input {
+    color: var(--primary);
+    font-size: 1.6rem;
+    font-weight: 600;
 }

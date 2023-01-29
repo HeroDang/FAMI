@@ -26,6 +26,8 @@ import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
 import * as meformService from '@/services/meformService';
 import styles from './MedicalChecklist.module.scss';
+import ConvertDateToString from '@/utils/convertDateToString';
+import { set } from 'mongoose';
 
 const cx = classNames.bind(styles);
 
@@ -42,9 +44,19 @@ function MedicalChecklist() {
         inventoryStatus: 'INSTOCK',
     };
 
+    let emptyMEForm = {
+        formId: 0,
+        numOrder: 0,
+        personId: 0,
+        patientId: 0,
+        reason: 'Benh',
+    };
+
     const [products, setProducts] = useState(null);
 
     const [meforms, setMeforms] = useState(null);
+    const [meform, setMeform] = useState(emptyMEForm);
+    const [changeData, setChangeData] = useState(false);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -62,17 +74,20 @@ function MedicalChecklist() {
             setProducts(data);
         });
         meformService.getMEFormList().then((data) => {
-            let newData = {};
-            data.map((item) => {
-                newData.formId = item.formId.toLocaleString();
-                newData.patientId = item.patientId.toLocaleString();
-                newData.date = item.date.toLocaleString();
+            let newMEForms = data.map((item) => {
+                let newItem = { ...item };
+                newItem.formId = item.formId.toLocaleString();
+                newItem.patientId = item.patientId.toLocaleString();
+                newItem.date = new Date(item.date).toLocaleDateString('us-US');
+                return newItem;
             });
-            setMeforms(data);
+            setMeforms(newMEForms);
         });
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const openNew = () => {
+        setMeform(emptyMEForm);
+
         setProduct(emptyProduct);
         setSubmitted(false);
         setProductDialog(true);
@@ -93,44 +108,50 @@ function MedicalChecklist() {
         setProductDialog(false);
     };
 
-    const saveProduct = () => {
+    const saveMEForm = () => {
         setSubmitted(true);
 
-        if (product.name.trim()) {
-            let _products = [...products];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
+        let _meforms = [...meforms];
+        let _meform = { ...meform };
+        if (meform._id) {
+            meformService.updateMEForm(_meform, _meform._id).then((data) => {
+                console.log('data', data);
 
-                _products[index] = _product;
                 toast.current.show({
                     severity: 'success',
                     summary: 'Successful',
-                    detail: 'Product Updated',
+                    detail: 'Form Created',
                     life: 3000,
                 });
-            } else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
+
+                setProductDialog(false);
+                setMeform(emptyMEForm);
+                setChangeData(!changeData);
+            });
+        } else {
+            meformService.createMEForm(_meform).then((data) => {
+                console.log('data', data);
+
                 toast.current.show({
                     severity: 'success',
                     summary: 'Successful',
                     detail: 'Product Created',
                     life: 3000,
                 });
-            }
 
-            setProducts(_products);
-            setProductDialog(false);
-            setProduct(emptyProduct);
+                setProductDialog(false);
+                setMeform(emptyMEForm);
+                setChangeData(!changeData);
+                // setProduct(emptyProduct);
+            });
         }
+        // setProducts(_products);
     };
 
     const productDialogFooter = (
         <React.Fragment>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveProduct} />
+            <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveMEForm} />
         </React.Fragment>
     );
 
@@ -157,10 +178,10 @@ function MedicalChecklist() {
 
     const onInputChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
-        let _product = { ...product };
-        _product[`${name}`] = val;
+        let _meform = { ...meform };
+        _meform[`${name}`] = val;
 
-        setProduct(_product);
+        setMeform(_meform);
     };
 
     const onInputNumberChange = (e, name) => {
@@ -173,6 +194,7 @@ function MedicalChecklist() {
 
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
+        setChangeData(!changeData);
     };
 
     const hideDeleteProductsDialog = () => {
@@ -180,16 +202,26 @@ function MedicalChecklist() {
     };
 
     const deleteProduct = () => {
-        let _products = products.filter((val) => val.id !== product.id);
-        setProducts(_products);
-        setDeleteProductDialog(false);
-        setProduct(emptyProduct);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+        // let _products = products.filter((val) => val.id !== product.id);
+        // setProducts(_products);
+
+        let _meform = { ...meform };
+        meformService.deleteMEForm(_meform._id).then((data) => {
+            console.log('data', data);
+            setChangeData(!changeData);
+            setDeleteProductDialog(false);
+            // setProduct(emptyProduct);
+            setMeform(emptyMEForm);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Form Deleted', life: 3000 });
+        });
     };
 
     const deleteSelectedProducts = () => {
-        let _products = products.filter((val) => !selectedProducts.includes(val));
-        setProducts(_products);
+        // let _products = products.filter((val) => !selectedProducts.includes(val));
+        // setProducts(_products);
+
+        console.log(selectedProducts);
+
         setDeleteProductsDialog(false);
         setSelectedProducts(null);
         toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
@@ -213,14 +245,17 @@ function MedicalChecklist() {
             return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         };
 
-        const editProduct = (product) => {
-            setProduct({ ...product });
+        const editProduct = (meform) => {
+            setMeform({ ...meform });
+            // setProduct({ ...product });
             setProductDialog(true);
         };
 
-        const confirmDeleteProduct = (product) => {
-            setProduct(product);
+        const confirmDeleteProduct = (e, meform) => {
+            setMeform(meform);
+            // setProduct(product);
             setDeleteProductDialog(true);
+            e.stopPropagation();
         };
 
         const priceBodyTemplate = (rowData) => {
@@ -240,7 +275,7 @@ function MedicalChecklist() {
                         className="p-button-rounded p-button-warning"
                         onClick={() => confirmDeleteProduct(rowData)}
                     />
-                    <button className={cx('btn-delete')} onClick={() => confirmDeleteProduct(rowData)}>
+                    <button className={cx('btn-delete')} onClick={(e) => confirmDeleteProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <TrashSmallIcon />
                         </span>
@@ -258,12 +293,12 @@ function MedicalChecklist() {
                         value={meforms}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value)}
-                        dataKey="id"
+                        dataKey="_id"
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
                         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} forms"
                         globalFilter={globalFilter}
                         responsiveLayout="scroll"
                     >
@@ -278,7 +313,7 @@ function MedicalChecklist() {
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
                             field="formId"
-                            header="ID FROM"
+                            header="ID"
                             sortable
                             style={{ minWidth: '12rem' }}
                         ></Column>
@@ -286,15 +321,24 @@ function MedicalChecklist() {
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
                             field="patientId"
-                            header="PATIENT ID"
+                            header="ID Patient"
                             sortable
                             style={{ minWidth: '16rem' }}
                         ></Column>
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="patientId"
-                            header="PATIENT ID"
+                            field="patientName"
+                            header="Patient's Name"
+                            // body={priceBodyTemplate}
+                            sortable
+                            style={{ minWidth: '8rem' }}
+                        ></Column>
+                        <Column
+                            headerClassName={cx('column-thead')}
+                            bodyClassName={cx('column')}
+                            field="patientPhone"
+                            header="Phone"
                             // body={priceBodyTemplate}
                             sortable
                             style={{ minWidth: '8rem' }}
@@ -303,7 +347,7 @@ function MedicalChecklist() {
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
                             field="date"
-                            header="DATE"
+                            header="Date"
                             sortable
                             style={{ minWidth: '10rem' }}
                         ></Column>
@@ -366,49 +410,90 @@ function MedicalChecklist() {
             <Dialog
                 visible={productDialog}
                 style={{ width: '80%' }}
-                header="Product Details"
+                header="Form Detail"
+                headerClassName={cx('detail-dialog-header')}
                 modal
                 className="p-fluid"
                 footer={productDialogFooter}
                 onHide={hideDialog}
             >
                 <div className={cx('dialog')}>
-                    {product.image && (
-                        <img
-                            src={`images/product/${product.image}`}
-                            onError={(e) =>
-                                (e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png')
-                            }
-                            alt={product.image}
-                            className="product-image block m-auto pb-3"
-                        />
-                    )}
-                    <div className="field">
-                        <label htmlFor="name">Name</label>
-                        <InputText
-                            id="name"
-                            value={product.name}
-                            onChange={(e) => onInputChange(e, 'name')}
-                            required
-                            autoFocus
-                            // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                            className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                        />
-                        {submitted && !product.name && <small className="p-error">Name is required.</small>}
+                    <div>
+                        <h1>Information of patient</h1>
+                        <div className="formgrid grid">
+                            <div className="field col">
+                                <label htmlFor="formId" className={cx('label-input')}>
+                                    formId
+                                </label>
+                                <InputText
+                                    id="formId"
+                                    value={meform.formId}
+                                    onChange={(e) => onInputChange(e, 'formId')}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {submitted && !meform.formId && <small className="p-error">Name is required.</small>}
+                            </div>
+                            <div className="field col">
+                                <label htmlFor="numOrder">numOrder</label>
+                                <InputText
+                                    id="numOrder"
+                                    value={meform.numOrder}
+                                    onChange={(e) => onInputChange(e, 'numOrder')}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>}
+                            </div>
+                        </div>
+                        <div className="formgrid grid">
+                            <div className="field col">
+                                <label htmlFor="personId" className={cx('label-input')}>
+                                    personId
+                                </label>
+                                <InputText
+                                    id="personId"
+                                    value={meform.personId}
+                                    onChange={(e) => onInputChange(e, 'personId')}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {submitted && !meform.personId && <small className="p-error">Name is required.</small>}
+                            </div>
+                            <div className="field col">
+                                <label htmlFor="patientId">patientId</label>
+                                <InputText
+                                    id="patientId"
+                                    value={meform.patientId}
+                                    onChange={(e) => onInputChange(e, 'patientId')}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {submitted && !meform.patientId && <small className="p-error">Name is required.</small>}
+                            </div>
+                        </div>
                     </div>
                     <div className="field">
-                        <label htmlFor="description">Description</label>
+                        <label htmlFor="reason">reason</label>
                         <InputTextarea
-                            id="description"
-                            value={product.description}
-                            onChange={(e) => onInputChange(e, 'description')}
+                            id="reason"
+                            value={meform.reason}
+                            onChange={(e) => onInputChange(e, 'reason')}
                             required
                             rows={3}
                             cols={20}
                         />
                     </div>
 
-                    <div className="field">
+                    {/* <div className="field">
                         <label className="mb-3">Category</label>
                         <div className="formgrid grid">
                             <div className="field-radiobutton col-6">
@@ -475,7 +560,7 @@ function MedicalChecklist() {
                                 integeronly="true"
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </Dialog>
             {/* delete */}

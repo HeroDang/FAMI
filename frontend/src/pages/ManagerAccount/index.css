@@ -165,23 +165,29 @@ img.flag {
 /* //radiobutton: màu viền, màu check */
 
 .p-radiobutton .p-radiobutton-box.p-highlight {
-    border-color: #153AFF !important;
-    background: #153AFF !important;
+    border-color: #153aff !important;
+    background: #153aff !important;
 }
 .p-radiobutton .p-radiobutton-box.p-highlight:hover {
-    border-color: #153AFF !important ;
-    background: #153AFF !important;
+    border-color: #153aff !important ;
+    background: #153aff !important;
 }
 .p-radiobutton .p-radiobutton-box:not(.p-disabled):not(.p-highlight):hover {
-    border-color:  #153AFF !important;
+    border-color: #153aff !important;
 }
 /* text box: màu viền, shadow */
 .p-inputtext:enabled:hover {
-    border-color: #153AFF;
+    border-color: #153aff;
 }
 .p-inputtext:enabled:focus {
     outline: 0 none;
     outline-offset: 0;
     box-shadow: 0 0 0 0.2rem #c7d2fe;
-    border-color: #153AFF;
+    border-color: #153aff;
+}
+
+/* Dialog Header title */
+.p-dialog .p-dialog-header .p-dialog-title {
+    font-weight: 700;
+    font-size: 2.4rem !important;
 }
