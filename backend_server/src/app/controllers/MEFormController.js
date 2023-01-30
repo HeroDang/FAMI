@@ -1,6 +1,7 @@
 const MEForm = require("../models/MEForm");
 const Patient = require("../models/Patient");
 const Person = require("../models/Person");
+const Counter = require("../models/Counter");
 const {
     multipleMongooseToObject,
     mongooseToObject,
@@ -75,7 +76,6 @@ class MEFormController {
         const { formId, numOrder, personId, patientId, reason } = req.body;
 
         const mEform = {
-            formId: parseInt(formId),
             numOrder: parseInt(numOrder),
             personId: parseInt(personId),
             patientId: parseInt(patientId),
@@ -112,6 +112,13 @@ class MEFormController {
     deleteSelectedForm(req, res, next) {
         MEForm.delete({ _id: { $in: req.body } })
             .then(() => res.status(201).json({ message: "DELETED" }))
+            .catch(next);
+    }
+
+    //[GET] meform/counter/form
+    counterForm(req,res,next){
+        Counter.findOne({ id: "formId" })
+            .then((data) => res.json(data))
             .catch(next);
     }
 
