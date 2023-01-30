@@ -49,3 +49,13 @@ export const deleteSelectedMEForm = async (idList = []) => {
         console.log(error);
     }
 };
+
+export const getCounterMEForm = async () => {
+    try {
+        const res = await httpRequest.get('meform/counter/form');
+        // console.log('res', res);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};

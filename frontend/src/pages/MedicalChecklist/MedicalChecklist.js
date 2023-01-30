@@ -48,6 +48,18 @@ function MedicalChecklist() {
         personId: 0,
         patientId: 0,
         reason: 'Benh',
+        _patient: {
+            id: 0,
+            name: '',
+            address: '',
+            phone: '',
+            career: '',
+            age: 0,
+        },
+        _person: {
+            name: '',
+        }
+
     };
 
     const [products, setProducts] = useState(null);
@@ -55,6 +67,7 @@ function MedicalChecklist() {
     const [meforms, setMeforms] = useState(null);
     const [meform, setMeform] = useState(emptyMEForm);
     const [changeData, setChangeData] = useState(false);
+    const [counterMEForm, setCounterMEForm] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -81,6 +94,9 @@ function MedicalChecklist() {
             });
             setMeforms(newMEForms);
         });
+        meformService.getCounterMEForm().then((data) => {
+            setCounterMEForm(data.seq);
+        })
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const openNew = () => {
@@ -127,21 +143,22 @@ function MedicalChecklist() {
                 setChangeData(!changeData);
             });
         } else {
-            meformService.createMEForm(_meform).then((data) => {
-                console.log('data', data);
+            console.log(_meform);
+            // meformService.createMEForm(_meform).then((data) => {
+            //     console.log('data', data);
 
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000,
-                });
+            //     toast.current.show({
+            //         severity: 'success',
+            //         summary: 'Successful',
+            //         detail: 'Product Created',
+            //         life: 3000,
+            //     });
 
-                setProductDialog(false);
-                setMeform(emptyMEForm);
-                setChangeData(!changeData);
-                // setProduct(emptyProduct);
-            });
+            //     setProductDialog(false);
+            //     setMeform(emptyMEForm);
+            //     setChangeData(!changeData);
+            //     // setProduct(emptyProduct);
+            // });
         }
         // setProducts(_products);
     };
@@ -174,13 +191,27 @@ function MedicalChecklist() {
         return id;
     };
 
-    const onInputChange = (e, name) => {
+    const onInputChange = (e, name, type = "form") => {
         const val = (e.target && e.target.value) || '';
         let _meform = { ...meform };
-        _meform[`${name}`] = val;
+
+        switch(type){
+        case "form" :{
+            console.log(val);
+            _meform[`${name}`] = val;
+            break;}
+            case "patient":
+                _meform._patient[`${name}`] = val;
+                break;
+            case "person":
+                _meform._person[`${name}`] = val;
+                break;
+            default: break;
+        }
 
         setMeform(_meform);
     };
+
 
     const onInputNumberChange = (e, name) => {
         const val = e.value || 0;
@@ -427,24 +458,116 @@ function MedicalChecklist() {
                 <div className={cx('dialog')}>
                     <div>
                         <h1>Information of patient</h1>
+
+                        <div className="formgrid grid">
+                            <div className="field col">
+                                <label htmlFor="patientId" className={cx('label-input')}>
+                                    Id Patient
+                                </label>
+                                <InputText
+                                    id="patientId"
+                                    value={meform.patientId}
+                                    required
+                                    disabled
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {submitted && !meform.patientId && <small className="p-error">Name is required.</small>}
+                            </div>
+                            <div className="field col">
+                                <label htmlFor="patientName">Full Name</label>
+                                <InputText
+                                    id="patientName"
+                                    value={meform._patient.name}
+                                    onChange={(e) => onInputChange(e, 'name', "patient")}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                            </div>
+                        </div>
+
+                        <div className="formgrid grid">
+                            <div className="field col">
+                                <label htmlFor="patientAddress">Address</label>
+                                <InputText
+                                    id="patientAddress"
+                                    value={meform._patient.address}
+                                    onChange={(e) => onInputChange(e, 'address', "patient")}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                            </div>
+                            <div className="field col">
+                                <label htmlFor="patientPhone">Phone number</label>
+                                <InputText
+                                    id="patientPhone"
+                                    value={meform._patient.phone}
+                                    onChange={(e) => onInputChange(e, 'phone', "patient")}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                            </div>
+                        </div>
+
+                        <div className="formgrid grid">
+                            <div className="field col">
+                                <label htmlFor="patientJob">Job</label>
+                                <InputText
+                                    id="patientJob"
+                                    value={meform._patient.career}
+                                    onChange={(e) => onInputChange(e, 'career', "patient")}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                            </div>
+                            <div className="field col">
+                                <label htmlFor="patientAge">Age</label>
+                                <InputText
+                                    id="patientAge"
+                                    value={meform._patient.age}
+                                    onChange={(e) => onInputChange(e, 'age', "patient")}
+                                    required
+                                    autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h1>Information of patient</h1>
+
                         <div className="formgrid grid">
                             <div className="field col">
                                 <label htmlFor="formId" className={cx('label-input')}>
-                                    formId
+                                    Id General Form
                                 </label>
                                 <InputText
                                     id="formId"
-                                    value={meform.formId}
-                                    onChange={(e) => onInputChange(e, 'formId')}
+                                    value={meform.formId === 0 ? (counterMEForm+1) : meform.formId}
                                     required
-                                    autoFocus
+                                    disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
                                 {submitted && !meform.formId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
-                                <label htmlFor="numOrder">numOrder</label>
+                                <label htmlFor="numOrder">Ordinal numbers</label>
                                 <InputText
                                     id="numOrder"
                                     value={meform.numOrder}
@@ -459,13 +582,13 @@ function MedicalChecklist() {
                         </div>
                         <div className="formgrid grid">
                             <div className="field col">
-                                <label htmlFor="personId" className={cx('label-input')}>
-                                    personId
+                                <label htmlFor="personName" className={cx('label-input')}>
+                                    Full name of Doctor
                                 </label>
                                 <InputText
-                                    id="personId"
-                                    value={meform.personId}
-                                    onChange={(e) => onInputChange(e, 'personId')}
+                                    id="personName"
+                                    value={meform._person.name}
+                                    onChange={(e) => onInputChange(e, 'name', "person")}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -474,11 +597,11 @@ function MedicalChecklist() {
                                 {submitted && !meform.personId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
-                                <label htmlFor="patientId">patientId</label>
+                                <label htmlFor="date">Date</label>
                                 <InputText
-                                    id="patientId"
-                                    value={meform.patientId}
-                                    onChange={(e) => onInputChange(e, 'patientId')}
+                                    id="date"
+                                    value={meform.date}
+                                    onChange={(e) => onInputChange(e, 'date')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -489,7 +612,7 @@ function MedicalChecklist() {
                         </div>
                     </div>
                     <div className="field">
-                        <label htmlFor="reason">reason</label>
+                        <label htmlFor="reason">Reasons to see a doctor</label>
                         <InputTextarea
                             id="reason"
                             value={meform.reason}
