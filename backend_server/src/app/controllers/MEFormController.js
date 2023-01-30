@@ -11,18 +11,34 @@ class MEFormController {
     getList(req, res, next) {
         let mEFormQuery = MEForm.find({});
         let patientQuery = Patient.find({});
+        let personQuery = Person.find({});
 
-        Promise.all([mEFormQuery, patientQuery])
-            .then(([mEForms, patients]) => {
+        Promise.all([mEFormQuery, patientQuery, personQuery])
+            .then(([mEForms, patients, persons]) => {
                 let data = mEForms.map((mEForm) => {
                     let newMEForm = mongooseToObject(mEForm);
                     patients.forEach((patient) => {
                         if (patient.id == newMEForm.patientId) {
+
+                            let {_id, id,name,address,phone,career,age} = patient;
+
                             newMEForm = {
                                 ...newMEForm,
                                 patientName: patient.name,
                                 patientPhone: patient.phone,
                                 date: new Date(newMEForm.date),
+                                _patient: {_id, id,name,address,phone,career,age},
+                            };
+                        }
+                    });
+
+                    persons.forEach((person) => {
+                        if (person.job == "Specialist doctor" && person.id == newMEForm.personId) {
+                            let {_id , name} = person;
+
+                            newMEForm = {
+                                ...newMEForm,
+                                _person: {_id, name},
                             };
                         }
                     });
@@ -39,7 +55,6 @@ class MEFormController {
         const { formId, numOrder, personId, patientId, reason } = req.body;
 
         const mEform = new MEForm({
-            formId: formId,
             numOrder: numOrder,
             personId: personId,
             patientId: patientId,
@@ -89,6 +104,13 @@ class MEFormController {
     //[DELETE] meform/delete/:id
     deleteForm(req, res, next) {
         MEForm.delete({ _id: req.params.id })
+            .then(() => res.status(201).json({ message: "DELETED" }))
+            .catch(next);
+    }
+
+    //[POST] meform/delete/selected
+    deleteSelectedForm(req, res, next) {
+        MEForm.delete({ _id: { $in: req.body } })
             .then(() => res.status(201).json({ message: "DELETED" }))
             .catch(next);
     }

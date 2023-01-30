@@ -39,3 +39,13 @@ export const deleteMEForm = async (_id) => {
         console.log(error);
     }
 };
+
+export const deleteSelectedMEForm = async (idList = []) => {
+    try {
+        const res = await httpRequest.post(`meform/delete/selected`,idList);
+        // console.log('res', res);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
