@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const Person = new Schema(
     {
-        id: { type: String, maxLength: 8 },
-        accountId: { type: String, maxLength: 8 },
+        id: { type: Number},
+        accountId: { type: Number },
         name: { type: String, maxLength: 255 },
         address: { type: String, maxLength: 255 },
         dayOfBirth: { type: Date, default: new Date(1900, 0, 2) },

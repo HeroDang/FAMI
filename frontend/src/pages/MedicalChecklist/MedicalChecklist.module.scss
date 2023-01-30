@@ -84,14 +84,23 @@
 .btn-delete {
     margin: 0px 6px;
     padding: 8px;
+    border: 1px solid transparent;
     background-color: white;
     border-radius: 50%;
+
+
+    &:hover{
+        cursor: pointer;
+        border: 1px solid var(--primary);
+    }
+
     .icon {
         display: flex;
         align-items: center;
         justify-content: center;
         color: var(--primary);
     }
+
 }
 
 .actionBtns {

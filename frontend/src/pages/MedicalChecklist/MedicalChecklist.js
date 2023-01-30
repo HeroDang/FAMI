@@ -217,12 +217,21 @@ function MedicalChecklist() {
     const deleteSelectedProducts = () => {
         // let _products = products.filter((val) => !selectedProducts.includes(val));
         // setProducts(_products);
+        let _selectedProducts = [ ...selectedProducts ];
+        let formIds = [];
 
-        console.log(selectedProducts);
+        _selectedProducts.forEach((item) => {
+            formIds.push(item._id);
+        })
 
-        setDeleteProductsDialog(false);
-        setSelectedProducts(null);
-        toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+        meformService.deleteSelectedMEForm(formIds)
+            .then((data) => {
+                console.log(data);
+                setChangeData(!changeData);
+                setDeleteProductsDialog(false);
+                setSelectedProducts(null);
+                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+            })
     };
 
     const deleteProductDialogFooter = (
@@ -268,11 +277,11 @@ function MedicalChecklist() {
                         className="p-button-rounded p-button-success mr-2"
                         onClick={() => editProduct(rowData)}
                     />
-                    <Button
+                    {/* <Button
                         icon="pi pi-trash"
                         className="p-button-rounded p-button-warning"
                         onClick={() => confirmDeleteProduct(rowData)}
-                    />
+                    /> */}
                     <button className={cx('btn-delete')} onClick={(e) => confirmDeleteProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <TrashSmallIcon />
