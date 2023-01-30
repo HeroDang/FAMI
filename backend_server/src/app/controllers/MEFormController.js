@@ -19,27 +19,27 @@ class MEFormController {
                 let data = mEForms.map((mEForm) => {
                     let newMEForm = mongooseToObject(mEForm);
                     patients.forEach((patient) => {
-                        if (patient.id == newMEForm.patientId) {
+                        if (patient.patientId == newMEForm.patientId) {
 
-                            let {_id, id,name,address,phone,career,age} = patient;
+                            let {_id,name,address,phone,career,age} = patient;
 
                             newMEForm = {
                                 ...newMEForm,
                                 patientName: patient.name,
                                 patientPhone: patient.phone,
                                 date: new Date(newMEForm.date),
-                                _patient: {_id, id,name,address,phone,career,age},
+                                _patient: {_id,name,address,phone,career,age},
                             };
                         }
                     });
 
                     persons.forEach((person) => {
-                        if (person.job == "Specialist doctor" && person.id == newMEForm.personId) {
-                            let {_id , name} = person;
+                        if (person.job == "General doctor" && person.personId == newMEForm.personId) {
+                            let {_id , personId ,name} = person;
 
                             newMEForm = {
                                 ...newMEForm,
-                                _person: {_id, name},
+                                _person: {_id,personId, name},
                             };
                         }
                     });
@@ -53,7 +53,8 @@ class MEFormController {
 
     //[POST] meform/create
     createFrom(req, res, next) {
-        const { formId, numOrder, personId, patientId, reason } = req.body;
+        const {numOrder, personId, patientId, reason,_patient} = req.body;
+        const {address, career, age, phone, name} = _patient
 
         const mEform = new MEForm({
             numOrder: numOrder,
@@ -63,10 +64,19 @@ class MEFormController {
             reason: reason,
             roomIds: [1, 2],
         });
-        mEform
-            .save()
-            .then(() => {
-                res.status(201).json(mEform);
+
+        const patient = new Patient({
+            id: 1,
+            address: address,
+            career: career,
+            age: age,
+            phone: phone,
+            name: name,
+        })
+        
+        Promise.all([mEform.save(), patient.save()])
+            .then(([newMEForm, newPatient]) => {
+                res.status(201).json([newMEForm, newPatient]);
             })
             .catch(next);
     }
@@ -117,8 +127,16 @@ class MEFormController {
 
     //[GET] meform/counter/form
     counterForm(req,res,next){
-        Counter.findOne({ id: "formId" })
-            .then((data) => res.json(data))
+        Counter.find({ id: { $in: ["formId", "patientId"]} })
+            .then((data) => {
+                let mEForm, patient;
+                data.forEach((item) => {
+                    if(item.id === "formId")
+                        mEForm = item;
+                    else patient = item
+                }) 
+                res.json({mEForm,patient})
+            })
             .catch(next);
     }
 

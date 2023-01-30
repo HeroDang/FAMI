@@ -15,6 +15,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { Dropdown } from "primereact/dropdown";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -25,6 +26,7 @@ import MyBtn from '@/components/Button';
 import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
 import * as meformService from '@/services/meformService';
+import * as personService from '@/services/personService';
 import styles from './MedicalChecklist.module.scss';
 
 const cx = classNames.bind(styles);
@@ -49,7 +51,7 @@ function MedicalChecklist() {
         patientId: 0,
         reason: 'Benh',
         _patient: {
-            id: 0,
+            patientId: 0,
             name: '',
             address: '',
             phone: '',
@@ -57,17 +59,26 @@ function MedicalChecklist() {
             age: 0,
         },
         _person: {
+            _id: '',
+            personId: 0,
             name: '',
         }
 
     };
+
+    const emptyCounter = {
+        mEFormSeq : 0,
+        patientSeq : 0,
+    }
 
     const [products, setProducts] = useState(null);
 
     const [meforms, setMeforms] = useState(null);
     const [meform, setMeform] = useState(emptyMEForm);
     const [changeData, setChangeData] = useState(false);
-    const [counterMEForm, setCounterMEForm] = useState(0);
+    const [counterMEForm, setCounterMEForm] = useState(emptyCounter);
+    const [persons, setPersons] = useState(null);
+    const [selectedPerson, setSelectedPerson] = useState(null);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -95,9 +106,27 @@ function MedicalChecklist() {
             setMeforms(newMEForms);
         });
         meformService.getCounterMEForm().then((data) => {
-            setCounterMEForm(data.seq);
+            const _counterMEForm = {
+                mEFormSeq : data.mEForm.seq + 1,
+                patientSeq : data.patient.seq + 1,
+            }
+
+            setCounterMEForm(_counterMEForm);
+        })
+        personService.getListToForm().then((data) => {
+            setPersons(data);
         })
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const onPersonChange = (e) => {
+
+        let _meform = {...meform};
+        _meform.personId = e.value.personId;
+        _meform._person = e.value;
+        setMeform(_meform);
+        // setSelectedPerson(e.value);
+        // console.log(_meform);
+      };
 
     const openNew = () => {
         setMeform(emptyMEForm);
@@ -127,38 +156,40 @@ function MedicalChecklist() {
 
         let _meforms = [...meforms];
         let _meform = { ...meform };
+
         if (meform._id) {
             meformService.updateMEForm(_meform, _meform._id).then((data) => {
-                console.log('data', data);
-
+                // console.log('data', data);
+                
                 toast.current.show({
                     severity: 'success',
                     summary: 'Successful',
                     detail: 'Form Created',
                     life: 3000,
                 });
-
+                
                 setProductDialog(false);
                 setMeform(emptyMEForm);
                 setChangeData(!changeData);
             });
         } else {
-            console.log(_meform);
-            // meformService.createMEForm(_meform).then((data) => {
-            //     console.log('data', data);
+            _meform.patientId = counterMEForm.patientSeq;
+            // console.log(_meform);
+            meformService.createMEForm(_meform).then((data) => {
+                // console.log('data', data);
 
-            //     toast.current.show({
-            //         severity: 'success',
-            //         summary: 'Successful',
-            //         detail: 'Product Created',
-            //         life: 3000,
-            //     });
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Product Created',
+                    life: 3000,
+                });
 
-            //     setProductDialog(false);
-            //     setMeform(emptyMEForm);
-            //     setChangeData(!changeData);
-            //     // setProduct(emptyProduct);
-            // });
+                setProductDialog(false);
+                setMeform(emptyMEForm);
+                setChangeData(!changeData);
+                // setProduct(emptyProduct);
+            });
         }
         // setProducts(_products);
     };
@@ -197,7 +228,7 @@ function MedicalChecklist() {
 
         switch(type){
         case "form" :{
-            console.log(val);
+            // console.log(val);
             _meform[`${name}`] = val;
             break;}
             case "patient":
@@ -236,7 +267,7 @@ function MedicalChecklist() {
 
         let _meform = { ...meform };
         meformService.deleteMEForm(_meform._id).then((data) => {
-            console.log('data', data);
+            // console.log('data', data);
             setChangeData(!changeData);
             setDeleteProductDialog(false);
             // setProduct(emptyProduct);
@@ -257,7 +288,7 @@ function MedicalChecklist() {
 
         meformService.deleteSelectedMEForm(formIds)
             .then((data) => {
-                console.log(data);
+                // console.log(data);
                 setChangeData(!changeData);
                 setDeleteProductsDialog(false);
                 setSelectedProducts(null);
@@ -466,7 +497,7 @@ function MedicalChecklist() {
                                 </label>
                                 <InputText
                                     id="patientId"
-                                    value={meform.patientId}
+                                    value={meform.formId === 0 ? (counterMEForm.patientSeq) : meform.patientId}
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -558,7 +589,7 @@ function MedicalChecklist() {
                                 </label>
                                 <InputText
                                     id="formId"
-                                    value={meform.formId === 0 ? (counterMEForm+1) : meform.formId}
+                                    value={meform.formId === 0 ? (counterMEForm.mEFormSeq) : meform.formId}
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -585,7 +616,17 @@ function MedicalChecklist() {
                                 <label htmlFor="personName" className={cx('label-input')}>
                                     Full name of Doctor
                                 </label>
-                                <InputText
+
+                                <Dropdown
+                                    value={meform._person}
+                                    // value={meform.personId === 0 ? selectedPerson : meform._person}
+                                    options={persons}
+                                    onChange={onPersonChange}
+                                    optionLabel="name"
+                                    placeholder={"Select a doctor"}
+                                />
+
+                                {/* <InputText
                                     id="personName"
                                     value={meform._person.name}
                                     onChange={(e) => onInputChange(e, 'name', "person")}
@@ -593,7 +634,7 @@ function MedicalChecklist() {
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                />
+                                /> */}
                                 {submitted && !meform.personId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
