@@ -277,11 +277,11 @@ function MedicalChecklist() {
                         className="p-button-rounded p-button-success mr-2"
                         onClick={() => editProduct(rowData)}
                     />
-                    <Button
+                    {/* <Button
                         icon="pi pi-trash"
                         className="p-button-rounded p-button-warning"
                         onClick={() => confirmDeleteProduct(rowData)}
-                    />
+                    /> */}
                     <button className={cx('btn-delete')} onClick={(e) => confirmDeleteProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <TrashSmallIcon />
