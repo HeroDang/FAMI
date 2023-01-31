@@ -27,14 +27,14 @@ import './DataTableDemo.css';
 import MyBtn from '@/components/Button';
 import { TrashIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
-import * as accountService from '@/services/accountService' //1
-import styles from './ManagerAccount.module.scss'; //hung
+import * as drugService from '@/services/drugService' //1
+import styles from './ManageDrug.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const cx = classNames.bind(styles);
 
 
-function ManagerAccount() {
+function ManagerDrug() {
     let emptyProduct = {
         id: null,
         //name: '',
@@ -47,7 +47,7 @@ function ManagerAccount() {
         rating: 0,
         //inventoryStatus: 'INSTOCK',
     };
-    let emptyAccount = {
+    let emptyDrug = {
         ID: 0,
         username: null,
         password: null,
@@ -58,12 +58,12 @@ function ManagerAccount() {
 
     const [products, setProducts] = useState(null);
 
-    const [accounts, setAccounts] = useState(null);
+    const [drugs, setDrugs] = useState(null);
 
-    const [account, setAccount] = useState(emptyAccount);
+    const [drug, setDrug] = useState(emptyDrug);
 
     const [changeData,setChangeData] =  useState(false);
-    const [counterAccount, setcounterAccount] = useState(0);
+    const [counterDrug, setcounterDrug] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -78,12 +78,12 @@ function ManagerAccount() {
 
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
-        accountService.getAccountList().then((data)  => {
-            setAccounts(data);
+        drugService.getDrugList().then((data)  => {
+            setDrugs(data);
             console.log(data);
         });
-        accountService.getCounterAccount().then((data)=>{
-            setcounterAccount(data.seq);
+        drugService.getCounterDrug().then((data)=>{
+            setcounterDrug(data.seq);
         })
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -93,22 +93,22 @@ function ManagerAccount() {
 
     const openNew = () => {
         setProduct(emptyProduct);
-        setAccount(emptyAccount);
+        setDrug(emptyDrug);
         setSubmitted(false);
         setProductDialog(true);
     };
-    const saveAccount = () => {
+    const saveDrug = () => {
         setSubmitted(true);
         
 
-            let _accounts = [...accounts];
-            let _account = { ...account };
-            if (account._id) {
+            let _drugs = [...drugs];
+            let _drug = { ...drug };
+            if (drug._id) {
                 // const index = findIndexById(product.id);
-                accountService.updateAccount(_account,_account._id).then((data)=>{
+                drugService.updateDrug(_drug,_drug._id).then((data)=>{
                     console.log(data)
                     setProductDialog(false);
-                    setAccount(emptyAccount);
+                    setDrug(emptyDrug);
                     setChangeData(!changeData);
                     toast.current.show({
                         severity: 'success',
@@ -122,11 +122,11 @@ function ManagerAccount() {
                 // _products[index] = _product;
                
             } else {
-               accountService.createAccount(_account).then((data)=> {
+               drugService.createDrug(_drug).then((data)=> {
                 
                 console.log(data)
                 setProductDialog(false);
-                setAccount(emptyAccount);
+                setDrug(emptyDrug);
                 setChangeData(!changeData);
                 toast.current.show({
                     severity: 'success',
@@ -146,10 +146,10 @@ function ManagerAccount() {
     const onInputChange = (e, name) => {
         console.log(e.target.value);
         const val = (e.target && e.target.value) || '';
-        let _account = { ...account };
-        _account[`${name}`] = val;
+        let _drug = { ...drug };
+        _drug[`${name}`] = val;
 
-        setAccount(_account);
+        setDrug(_drug);
         
     };
 
@@ -157,9 +157,9 @@ function ManagerAccount() {
         // let _product = { ...product };
         // _product['category'] = e.value;
         // setProduct(_product);
-        let _account= {...account};
-        _account['job'] = e.value;
-        setAccount(_account);
+        let _drug= {...drug};
+        _drug['job'] = e.value;
+        setDrug(_drug);
     };
 
     const hideDialog = () => {
@@ -176,13 +176,13 @@ function ManagerAccount() {
              onClick={hideDialog} />
             <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
             style={{color:'#ffffff',background: '#153AFF'}}
-            onClick={saveAccount} />
+            onClick={saveDrug} />
         </React.Fragment>
     );
 
-    const confirmDeleteProduct = (e,account) => {
+    const confirmDeleteProduct = (e,drug) => {
         // setProduct(product);
-        setAccount(account);
+        setDrug(drug);
          setDeleteProductDialog(true);
         e.stopPropagation();
      };
@@ -190,12 +190,12 @@ function ManagerAccount() {
     const deleteProduct = () => {
         // let _products = products.filter((val) => val.id !== product.id);
         // setProducts(_products);
-        let _account={...account}
-        accountService.deleteAccount(_account._id).then((data)=>{
+        let _drug={...drug}
+        drugService.deleteDrug(_drug._id).then((data)=>{
             setChangeData(!changeData);
             setDeleteProductDialog(false);
            // setProduct(emptyProduct);
-           setAccount(emptyAccount);
+           setDrug(emptyDrug);
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
             
         });
@@ -218,7 +218,7 @@ function ManagerAccount() {
         _selectedProducts.forEach((item) => {
             formIds.push(item._id);
         })
-        accountService.deleteSelectedAccount(formIds)
+        drugService.deleteSelectedDrug(formIds)
         .then((data) => {
             console.log(data);
             setChangeData(!changeData);
@@ -232,7 +232,7 @@ function ManagerAccount() {
         <React.Fragment>
             <Button  
             className={cx('btn-cancel')} 
-            label="No" 
+            label="Cancel" 
             style={{color:'#153AFF',background: '#ffffff',}}
             icon="pi pi-times"  
             onClick={hideDeleteProductDialog} />
@@ -246,14 +246,8 @@ function ManagerAccount() {
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
-            <Button  className={cx('btn-cancel')} 
-            label="No" 
-            style={{color:'#153AFF',background: '#ffffff',}}
-            icon="pi pi-times"   onClick={hideDeleteProductsDialog} />
-            <Button className={cx('btn-yes')} 
-            label="Yes"
-            icon="pi pi-check" 
-            style={{color:'#ffffff',background: '#153AFF'}} onClick={deleteSelectedProducts} />
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
         </React.Fragment>
     );
 
@@ -272,8 +266,8 @@ function ManagerAccount() {
     
    
     
-    const editProduct = (account) => {
-        setAccount({ ...account });
+    const editProduct = (drug) => {
+        setDrug({ ...drug });
         setProductDialog(true);
     };
 
@@ -476,7 +470,7 @@ function ManagerAccount() {
             <div className="card">
                 <DataTable
                     ref={dt}
-                    value={accounts}
+                    value={drugs}
                     selection={selectedProducts}
                     onSelectionChange={(e) => setSelectedProducts(e.value)}
                     dataKey="_id"
@@ -569,7 +563,7 @@ function ManagerAccount() {
     return (
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manager Account</h2>
+            <h2 className={cx('header-title')}>Manage Drug</h2>
         <div className={cx('body')}>
                 <div className={cx('toolbar')}>
                     <div className={cx('search')}>
@@ -610,7 +604,7 @@ function ManagerAccount() {
                 <Dialog 
                 visible={productDialog}
                 //header="Product Details"
-               header="Create account"
+               header="Create drug"
              // style="color: blue;"
                 modal
                 className="p-fluid"
@@ -635,7 +629,7 @@ function ManagerAccount() {
                         <label htmlFor="ID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
                         <InputText
                            id="ID"
-                            value={account.ID === 0? (counterAccount+1) : account.ID}
+                            value={drug.ID === 0? (counterDrug+1) : drug.ID}
                             disabled
                             //onChange={(e) => onInputChange(e, 'ID')}
                             //autoFocus
@@ -645,19 +639,19 @@ function ManagerAccount() {
                             // currency="USD"
                             // locale="en-US"
                         />
-                        {submitted && !account.ID && <small className="p-error">Name is required.</small>}
+                        {submitted && !drug.ID && <small className="p-error">Name is required.</small>}
                     </div>
                     <div className="field col">
                         <label htmlFor="fullname"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Fullname</b></label>
                         <InputText
                             id="fullname"
-                            value={account.fullname}
+                            value={drug.fullname}
                             onChange={(e) => onInputChange(e, 'fullname')}
                             autoFocus
                             required
                             className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                         />
-                        {submitted && !account.fullname && <small className="p-error">Fullname is required.</small>}
+                        {submitted && !drug.fullname && <small className="p-error">Fullname is required.</small>}
                     </div>
                 </div >
                 
@@ -666,7 +660,7 @@ function ManagerAccount() {
                         <label htmlFor="username"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
                         <InputText
                             id="username"
-                            value={account.username}
+                            value={drug.username}
                             onChange={(e) => onInputChange(e, 'username')}
                            // autoFocus
                             required
@@ -675,7 +669,7 @@ function ManagerAccount() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !account.username && <small className="p-error">Username is required.</small>}
+                        {submitted && !drug.username && <small className="p-error">Username is required.</small>}
                     </div>
                 </div>
                 <div className="formgrid grid">
@@ -683,14 +677,14 @@ function ManagerAccount() {
                         <label htmlFor="password"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
                         <InputText
                                     id="password"
-                                    value={account.password}
+                                    value={drug.password}
                                     onChange={(e) => onInputChange(e, 'password')}
                                     required
                                     //autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !account.password && <small className="p-error">Password is required.</small>}
+                        {submitted && !drug.password && <small className="p-error">Password is required.</small>}
                     </div>
                 </div>
                 {/* <div className="field">
@@ -726,7 +720,7 @@ function ManagerAccount() {
                                 name="job"
                                 value="Manager"
                                 onChange={onCategoryChange}
-                                checked={account.job === 'Manager'}
+                                checked={drug.job === 'Manager'}
                             />
                             <label htmlFor="Manager" style={{color:'#0D5BF1'}}>Manager</label>
                             
@@ -737,7 +731,7 @@ function ManagerAccount() {
                                 name="job"
                                 value="Staff"
                                 onChange={onCategoryChange}
-                                checked={account.job === 'Staff'}
+                                checked={drug.job === 'Staff'}
                             />
                             <label htmlFor="Staff"style={{color:'#0D5BF1'}}>Staff</label>
                         </div>
@@ -747,7 +741,7 @@ function ManagerAccount() {
                                 name="job"
                                 value="Specialist doctor"
                                 onChange={onCategoryChange}
-                                checked={account.job === 'Specialist doctor'}
+                                checked={drug.job === 'Specialist doctor'}
                             />
                             <label htmlFor="Specialist doctor"style={{color:'#0D5BF1'}}>Specialist doctor</label>
                         </div>
@@ -757,7 +751,7 @@ function ManagerAccount() {
                                 name="job"
                                 value="General doctor"
                                 onChange={onCategoryChange}
-                                checked={account.job === 'General doctor'}
+                                checked={drug.job === 'General doctor'}
                             />
                             <label htmlFor="General doctor"style={{color:'#0D5BF1'}}>General doctor</label>
                         </div>
@@ -768,7 +762,7 @@ function ManagerAccount() {
                                 name="job"
                                 value="Pharmacist"
                                 onChange={onCategoryChange}
-                                checked={account.job === 'Pharmacist'}
+                                checked={drug.job === 'Pharmacist'}
                             />
                             <label htmlFor="Pharmacist"style={{color:'#0D5BF1'}}>Pharmacist</label>
                         </div>
@@ -787,7 +781,7 @@ function ManagerAccount() {
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
                     {product && (
                         <span /*style="font-size:10px"*/>
-                            <b>Are you sure you want to delete account have <i>ID: {account.ID}</i> </b> ?
+                            Are you sure you want to delete <b>{product.name}</b>?
                         </span>
                     )}
                 </div>
@@ -798,20 +792,12 @@ function ManagerAccount() {
                 style={{ width: '450px' }}
                 header="Confirm"
                 modal
-                footer={deleteProductsDialogFooter}
+                // footer={deleteProductsDialogFooter}
                 onHide={hideDeleteProductsDialog}
             >
-                {/* <div className="confirmation-content">
+                <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
                     {product && <span>Are you sure you want to delete the selected products?</span>}
-                </div> */}
-                <div >
-                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
-                    {product && (
-                        <span /*style="font-size:10px"*/>
-                            <b>Are you sure you want to delete the selected accounts</b> ?
-                        </span>
-                    )}
                 </div>
             </Dialog>
             </div>
@@ -821,4 +807,4 @@ function ManagerAccount() {
     );
 }
 
-export default ManagerAccount;
+export default ManagerDrug;

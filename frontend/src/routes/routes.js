@@ -8,6 +8,9 @@ import Following from '@/pages/Following';
 import Profile from '@/pages/Profile';
 import ManagerAccount from '@/pages/ManagerAccount';
 import MedicalChecklist from '@/pages/MedicalChecklist';
+import ManageBill from '@/pages/ManageBill';
+import ManageDrugBook from '@/pages/ManageDrugBook';
+import ManageDrug from '@/pages/ManageDrug';
 
 const publicRoutes = [
     {
@@ -29,6 +32,21 @@ const publicRoutes = [
     {
         path: config.routes.medicalChecklist,
         component: MedicalChecklist,
+    },
+    {
+        path: config.routes.manageBill,
+        component: ManageBill,
+
+    },
+    {
+        path: config.routes.manageDrugBook,
+        component: ManageDrugBook,
+
+    },
+    {
+        path: config.routes.manageDrug,
+        component: ManageDrug,
+
     },
 ];
 

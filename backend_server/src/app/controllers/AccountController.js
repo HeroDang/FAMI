@@ -1,6 +1,6 @@
 const Account = require("../models/Account");
 const { multipleMongooseToObject } = require("../../utils/mongoose");
-
+const Counter = require("../models/Counter");
 class AccountController {
     // [GET] /home
     getList(req, res, next) {
@@ -14,19 +14,19 @@ class AccountController {
     createAccount(req, res, next){
 
         const {
-         ID,
+
          username ,
          password,
          fullname,
-         
+         job,
+        
         } = req.body;
 
         const account = new Account({
-        ID: ID,
         username: username,
         password: password,
         fullname: fullname,
-        job: "Manager"
+        job: job,
         });
         account
             .save()
@@ -35,21 +35,17 @@ class AccountController {
     }
 
     updateAccount(req, res, next){
-
         const {
-         ID,
          username ,
          password,
          fullname,
-         
+         job,
         } = req.body;
-
         const account = {
-        ID: parseInt(ID), 
         username: username,
         password: password,
         fullname: fullname,
-        job: "Manager"
+        job: job,
         };
         Account.updateOne({_id: req.params.id},account)
             .then(() => {res.status(201).json(account)})
@@ -60,6 +56,19 @@ class AccountController {
             .then(() => {res.status(201).json({message:"DELETE"})})
             .catch(next);
     }
+
+    deleteSelectedAccount(req, res, next) {
+        Account.delete({ _id: { $in: req.body } })
+            .then(() => res.status(201).json({ message: "DELETED" }))
+            .catch(next);
+    }
+
+    counterAccount(req,res,next){
+        Counter.findOne({ id: "ID" })
+        .then((data) => res.json(data))
+        .catch(next);
+    }
+
     // index(req, res, next) {
     //     Person.find({})
     //         .then((persons) =>
