@@ -5,6 +5,46 @@ const {
 } = require("../../utils/mongoose");
 
 class PersonController {
+
+    //[GET] /persons/api/create
+    createPerson(req,res,next){
+
+        const person = new Person({
+            id: 2,
+            accountId: 2,
+            name: "Nguyễn Minh",
+            address: "An Phú district, Nghệ An province",
+            dayOfBirth: new Date(1990, 4, 5),
+            avatar: '',
+            gender: "Male",
+            job: "General doctor",
+            phone: "0111222321",
+        });
+        person
+            .save()
+            .then((data) => {
+                res.status(201).json(data);
+            })
+            .catch(next);
+    }
+
+    //[GET] persons/getlisttoform
+    getListToForm(req,res,next){
+        Person.find()
+            .then((patient) => {     
+                
+                let result = [];
+                patient.forEach((item) => {
+                    let {_id,personId,name} = item;
+                    result.push({_id,personId,name})
+                })
+                
+                res.json(result)
+            })
+            .catch(next);
+    }
+
+
     //[GET] persons/:phone
     show(req, res, next) {
         Person.findOne({ phone: req.params.phone })

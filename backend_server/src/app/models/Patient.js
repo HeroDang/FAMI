@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 const mongooseDelete = require("mongoose-delete");
 
 const Schema = mongoose.Schema;
@@ -19,5 +20,6 @@ const Patient = new Schema(
 
 //App plugin
 Patient.plugin(mongooseDelete, { deletedAt: true, overrideMethods: "all" });
+Patient.plugin(AutoIncrement, {inc_field: 'patientId'});
 
 module.exports = mongoose.model("patients", Patient);
