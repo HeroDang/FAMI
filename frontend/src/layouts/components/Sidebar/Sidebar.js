@@ -9,6 +9,7 @@ import {
     UserGroupActiveIcon,
     LiveIcon,
     LiveActiveIcon,
+    ManageAccountIcon,
 } from '@/components/Icons';
 import Menu, { MenuItem } from './Menu';
 // import SuggestedAccounts from '@/components/SuggestedAccounts';
@@ -44,12 +45,24 @@ function Sidebar() {
                 <MenuItem
                     title="Manager Account"
                     to={config.routes.managerAccount}
-                    icon={<LiveIcon />}
+                    icon={<ManageAccountIcon />}
                     activeIcon={<LiveActiveIcon />}
                 />
                 <MenuItem
                     title="Manager Checklist"
                     to={config.routes.medicalChecklist}
+                    icon={<LiveIcon />}
+                    activeIcon={<LiveActiveIcon />}
+                />
+                <MenuItem
+                    title="Manage Bill"
+                    to={config.routes.manageBill}
+                    icon={<LiveIcon />}
+                    activeIcon={<LiveActiveIcon />}
+                />
+                 <MenuItem
+                    title="Manage Drug Book"
+                    to={config.routes.manageDrugBook}
                     icon={<LiveIcon />}
                     activeIcon={<LiveActiveIcon />}
                 />

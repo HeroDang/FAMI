@@ -38,3 +38,21 @@ export const deleteAccount= async (_id) => {
         console.log(error);
     }
 };
+export const deleteSelectedAccount = async (idList = []) => {
+    try {
+        const res = await httpRequest.post(`accounts/delete/selected`,idList);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getCounterAccount= async () => {
+    try {
+        const res = await httpRequest.get('accounts/counter/account', {
+            
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
