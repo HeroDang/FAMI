@@ -8,3 +8,12 @@ export const getListToForm = async () => {
         console.log(error);
     }
 };
+
+export const getListToSpecForm = async () => {
+    try {
+        const res = await httpRequest.get('persons/getlisttospecform');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};

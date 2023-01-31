@@ -11,6 +11,7 @@ import MedicalChecklist from '@/pages/MedicalChecklist';
 import ManageBill from '@/pages/ManageBill';
 import ManageDrugBook from '@/pages/ManageDrugBook';
 import ManageDrug from '@/pages/ManageDrug';
+import SpecialistChecklist from '@/pages/SpecialistChecklist';
 
 const publicRoutes = [
     {
@@ -32,6 +33,10 @@ const publicRoutes = [
     {
         path: config.routes.medicalChecklist,
         component: MedicalChecklist,
+    },
+    {
+        path: config.routes.specialistChecklist,
+        component: SpecialistChecklist,
     },
     {
         path: config.routes.manageBill,

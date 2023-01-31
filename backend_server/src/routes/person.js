@@ -3,8 +3,9 @@ const router = express.Router();
 
 const personController = require("../app/controllers/PersonController");
 
-// router.get("/api/create",personController.createPerson);
+router.get("/api/create",personController.createPerson);
 router.get("/getlisttoform",personController.getListToForm);
+router.get("/getlisttospecform",personController.getListToSpecForm);
 
 router.get("/stored/profile", personController.storedProfile);
 router.get("/trash/profile", personController.trashProfile);
