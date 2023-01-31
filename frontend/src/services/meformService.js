@@ -59,3 +59,13 @@ export const getCounterMEForm = async () => {
         console.log(error);
     }
 };
+
+export const getRoomsToForm = async () => {
+    try {
+        const res = await httpRequest.get('room/getlist');
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+

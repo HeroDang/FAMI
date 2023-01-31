@@ -5,26 +5,23 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
-import { classNames as primeClassnames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { RadioButton } from 'primereact/radiobutton';
-import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from "primereact/dropdown";
+import { Calendar } from 'primereact/calendar';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import '@/pages/ManagerAccount/index.css';
 import '@/pages/ManagerAccount/DataTableDemo.css';
 import MyBtn from '@/components/Button';
 import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
-import { ProductService } from './ProductService';
 import * as meformService from '@/services/meformService';
 import * as personService from '@/services/personService';
 import styles from './MedicalChecklist.module.scss';
@@ -50,6 +47,8 @@ function MedicalChecklist() {
         personId: 0,
         patientId: 0,
         reason: 'Benh',
+        date: new Date(Date.now()),
+        roomIds: [],
         _patient: {
             patientId: 0,
             name: '',
@@ -66,19 +65,22 @@ function MedicalChecklist() {
 
     };
 
+
+
     const emptyCounter = {
         mEFormSeq : 0,
         patientSeq : 0,
     }
-
-    const [products, setProducts] = useState(null);
 
     const [meforms, setMeforms] = useState(null);
     const [meform, setMeform] = useState(emptyMEForm);
     const [changeData, setChangeData] = useState(false);
     const [counterMEForm, setCounterMEForm] = useState(emptyCounter);
     const [persons, setPersons] = useState(null);
-    const [selectedPerson, setSelectedPerson] = useState(null);
+    const [roomsSelected, setRoomsSelected] = useState([]);
+    const [rooms, setRooms] = useState([]);
+    const [room, setRoom] = useState(null);
+    const [isAddRoom, setIsAddRoom] = useState(false);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -89,18 +91,15 @@ function MedicalChecklist() {
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
     const dt = useRef(null);
-    const productService = new ProductService();
 
     useEffect(() => {
-        productService.getProducts().then((data) => {
-            setProducts(data);
-        });
         meformService.getMEFormList().then((data) => {
             let newMEForms = data.map((item) => {
                 let newItem = { ...item };
                 newItem.formId = item.formId.toLocaleString();
                 newItem.patientId = item.patientId.toLocaleString();
-                newItem.date = new Date(item.date).toLocaleDateString('us-US');
+                newItem.dateStr = new Date(item.date).toLocaleDateString('us-US');
+                newItem.date = new Date(item.date);
                 return newItem;
             });
             setMeforms(newMEForms);
@@ -113,6 +112,11 @@ function MedicalChecklist() {
 
             setCounterMEForm(_counterMEForm);
         })
+
+        meformService.getRoomsToForm().then((data) => {
+            setRooms(data);
+        })
+
         personService.getListToForm().then((data) => {
             setPersons(data);
         })
@@ -126,10 +130,38 @@ function MedicalChecklist() {
         setMeform(_meform);
         // setSelectedPerson(e.value);
         // console.log(_meform);
-      };
+    };
+
+    const onRoomChange = (e) => {
+        let _room = e.value;
+        setRoom(_room);
+        if(meform.roomIds.includes(_room.roomId)){
+            setIsAddRoom(false);
+        }else{
+            setIsAddRoom(true);
+        }
+    };
+
+    const addRoomSelected = () => {
+        let _meform = {...meform};
+        let _roomsSelected = [ ...roomsSelected ];
+        let _room = {...room};
+        _roomsSelected.push(_room);
+        _meform.roomIds.push(_room.roomId);
+        setRoomsSelected(_roomsSelected);
+        setMeform(_meform);
+        setIsAddRoom(false);
+        setRoom(null);
+    }
+
+    const clearRoomSelected = () => {
+        setIsAddRoom(false);
+        setRoom(null);
+    }
 
     const openNew = () => {
         setMeform(emptyMEForm);
+        setRoomsSelected([]);
 
         setProduct(emptyProduct);
         setSubmitted(false);
@@ -140,12 +172,6 @@ function MedicalChecklist() {
         setDeleteProductsDialog(true);
     };
 
-    const onCategoryChange = (e) => {
-        let _product = { ...product };
-        _product['category'] = e.value;
-        setProduct(_product);
-    };
-
     const hideDialog = () => {
         setSubmitted(false);
         setProductDialog(false);
@@ -154,12 +180,12 @@ function MedicalChecklist() {
     const saveMEForm = () => {
         setSubmitted(true);
 
-        let _meforms = [...meforms];
         let _meform = { ...meform };
 
         if (meform._id) {
+            // console.log('data', _meform);
+
             meformService.updateMEForm(_meform, _meform._id).then((data) => {
-                // console.log('data', data);
                 
                 toast.current.show({
                     severity: 'success',
@@ -173,10 +199,10 @@ function MedicalChecklist() {
                 setChangeData(!changeData);
             });
         } else {
+            // console.log('data',_meform);
+
             _meform.patientId = counterMEForm.patientSeq;
-            // console.log(_meform);
             meformService.createMEForm(_meform).then((data) => {
-                // console.log('data', data);
 
                 toast.current.show({
                     severity: 'success',
@@ -188,10 +214,8 @@ function MedicalChecklist() {
                 setProductDialog(false);
                 setMeform(emptyMEForm);
                 setChangeData(!changeData);
-                // setProduct(emptyProduct);
             });
         }
-        // setProducts(_products);
     };
 
     const productDialogFooter = (
@@ -200,27 +224,6 @@ function MedicalChecklist() {
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={saveMEForm} />
         </React.Fragment>
     );
-
-    const findIndexById = (id) => {
-        let index = -1;
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    };
-
-    const createId = () => {
-        let id = '';
-        let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
-    };
 
     const onInputChange = (e, name, type = "form") => {
         const val = (e.target && e.target.value) || '';
@@ -243,14 +246,11 @@ function MedicalChecklist() {
         setMeform(_meform);
     };
 
-
-    const onInputNumberChange = (e, name) => {
-        const val = e.value || 0;
-        let _product = { ...product };
-        _product[`${name}`] = val;
-
-        setProduct(_product);
-    };
+    const onDateChange = (e) => {
+        let _meform = {...meform}
+        _meform.date = e.value;
+        setMeform(_meform);
+    }
 
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
@@ -262,23 +262,17 @@ function MedicalChecklist() {
     };
 
     const deleteProduct = () => {
-        // let _products = products.filter((val) => val.id !== product.id);
-        // setProducts(_products);
 
         let _meform = { ...meform };
         meformService.deleteMEForm(_meform._id).then((data) => {
-            // console.log('data', data);
             setChangeData(!changeData);
             setDeleteProductDialog(false);
-            // setProduct(emptyProduct);
             setMeform(emptyMEForm);
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Form Deleted', life: 3000 });
         });
     };
 
     const deleteSelectedProducts = () => {
-        // let _products = products.filter((val) => !selectedProducts.includes(val));
-        // setProducts(_products);
         let _selectedProducts = [ ...selectedProducts ];
         let formIds = [];
 
@@ -288,12 +282,23 @@ function MedicalChecklist() {
 
         meformService.deleteSelectedMEForm(formIds)
             .then((data) => {
-                // console.log(data);
                 setChangeData(!changeData);
                 setDeleteProductsDialog(false);
                 setSelectedProducts(null);
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
             })
+    };
+
+    const deleteRoomSelected = (e, room) => {
+
+        let _meform = {...meform};
+        let _roomsSelected = [...roomsSelected];
+
+        _roomsSelected = _roomsSelected.filter((item) => item.roomId !== room.roomId);
+        _meform.roomIds = _meform.roomIds.filter((item) => item !== room.roomId); 
+
+        setRoomsSelected(_roomsSelected);
+        setMeform(_meform);
     };
 
     const deleteProductDialogFooter = (
@@ -309,26 +314,38 @@ function MedicalChecklist() {
         </React.Fragment>
     );
 
+    const actionRoomBodyTemplate = (rowData) => {
+        return (
+            <div className={cx('actionBtns')}>
+                <button className={cx('btn-delete')} onClick={(e) => deleteRoomSelected(e, rowData)}>
+                    <span className={cx('icon')}>
+                        <TrashSmallIcon />
+                    </span>
+                </button>
+            </div>
+        );
+    };
+
     const DataTableCrudDemo = () => {
-        const formatCurrency = (value) => {
-            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        };
 
         const editProduct = (meform) => {
             setMeform({ ...meform });
-            // setProduct({ ...product });
+
+            let _roomsSelected = [];
+            rooms.forEach((item) => {
+                if(meform.roomIds.includes(item.roomId)){
+                    _roomsSelected.push(item);
+                }
+            })
+
+            setRoomsSelected(_roomsSelected);
             setProductDialog(true);
         };
 
         const confirmDeleteProduct = (e, meform) => {
             setMeform(meform);
-            // setProduct(product);
             setDeleteProductDialog(true);
             e.stopPropagation();
-        };
-
-        const priceBodyTemplate = (rowData) => {
-            return formatCurrency(rowData.price);
         };
 
         const actionBodyTemplate = (rowData) => {
@@ -339,11 +356,6 @@ function MedicalChecklist() {
                         className="p-button-rounded p-button-success mr-2"
                         onClick={() => editProduct(rowData)}
                     />
-                    {/* <Button
-                        icon="pi pi-trash"
-                        className="p-button-rounded p-button-warning"
-                        onClick={() => confirmDeleteProduct(rowData)}
-                    /> */}
                     <button className={cx('btn-delete')} onClick={(e) => confirmDeleteProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <TrashSmallIcon />
@@ -415,7 +427,7 @@ function MedicalChecklist() {
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="date"
+                            field="dateStr"
                             header="Date"
                             sortable
                             style={{ minWidth: '10rem' }}
@@ -618,28 +630,23 @@ function MedicalChecklist() {
                                 </label>
 
                                 <Dropdown
+                                    className={cx('dialog-dropdown')}
                                     value={meform._person}
                                     // value={meform.personId === 0 ? selectedPerson : meform._person}
                                     options={persons}
                                     onChange={onPersonChange}
                                     optionLabel="name"
                                     placeholder={"Select a doctor"}
+                                    // disabled = {meform.formId === 0 ? false : true}
                                 />
-
-                                {/* <InputText
-                                    id="personName"
-                                    value={meform._person.name}
-                                    onChange={(e) => onInputChange(e, 'name', "person")}
-                                    required
-                                    autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                /> */}
                                 {submitted && !meform.personId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
                                 <label htmlFor="date">Date</label>
-                                <InputText
+
+                                <Calendar id="icon" value={meform.date} onChange={(e) => onDateChange(e)} showIcon />
+
+                                {/* <InputText
                                     id="date"
                                     value={meform.date}
                                     onChange={(e) => onInputChange(e, 'date')}
@@ -647,7 +654,7 @@ function MedicalChecklist() {
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                />
+                                /> */}
                                 {submitted && !meform.patientId && <small className="p-error">Name is required.</small>}
                             </div>
                         </div>
@@ -664,74 +671,61 @@ function MedicalChecklist() {
                         />
                     </div>
 
-                    {/* <div className="field">
-                        <label className="mb-3">Category</label>
-                        <div className="formgrid grid">
-                            <div className="field-radiobutton col-6">
-                                <RadioButton
-                                    inputId="category1"
-                                    name="category"
-                                    value="Accessories"
-                                    onChange={onCategoryChange}
-                                    checked={product.category === 'Accessories'}
-                                />
-                                <label htmlFor="category1">Accessories</label>
-                            </div>
-                            <div className="field-radiobutton col-6">
-                                <RadioButton
-                                    inputId="category2"
-                                    name="category"
-                                    value="Clothing"
-                                    onChange={onCategoryChange}
-                                    checked={product.category === 'Clothing'}
-                                />
-                                <label htmlFor="category2">Clothing</label>
-                            </div>
-                            <div className="field-radiobutton col-6">
-                                <RadioButton
-                                    inputId="category3"
-                                    name="category"
-                                    value="Electronics"
-                                    onChange={onCategoryChange}
-                                    checked={product.category === 'Electronics'}
-                                />
-                                <label htmlFor="category3">Electronics</label>
-                            </div>
-                            <div className="field-radiobutton col-6">
-                                <RadioButton
-                                    inputId="category4"
-                                    name="category"
-                                    value="Fitness"
-                                    onChange={onCategoryChange}
-                                    checked={product.category === 'Fitness'}
-                                />
-                                <label htmlFor="category4">Fitness</label>
-                            </div>
-                        </div>
-                    </div>
+                    <div className="field">
+                        <label className={cx('label-input')}>
+                            Clinic Rooms
+                        </label>
+                        
+                        <div className={cx('input-room-group')}>
+                            <Dropdown
+                                className={cx('dialog-dropdown')}
+                                value={room}
+                                // value={meform.personId === 0 ? selectedPerson : meform._person}
+                                options={rooms}
+                                onChange={onRoomChange}
+                                optionLabel="name"
+                                placeholder={"Select a room to add"}
+                                // disabled = {meform.formId === 0 ? false : true}
+                            />
 
-                    <div className="formgrid grid">
-                        <div className="field col">
-                            <label htmlFor="price">Price</label>
-                            <InputNumber
-                                id="price"
-                                value={product.price}
-                                onValueChange={(e) => onInputNumberChange(e, 'price')}
-                                mode="currency"
-                                currency="USD"
-                                locale="en-US"
-                            />
+                            <MyBtn
+                                className={cx('btn-add')}
+                                primary
+                                small
+                                leftIcon={<FontAwesomeIcon icon={faXmark} />}
+                                disable={!isAddRoom}
+                                onClick={clearRoomSelected}
+                            >
+                                Clear
+                            </MyBtn>
+    
+                            <MyBtn
+                                className={cx('btn-add')}
+                                primary
+                                small
+                                leftIcon={<FontAwesomeIcon icon={faPlus} />}
+                                disable={!isAddRoom}
+                                onClick={addRoomSelected}
+                            >
+                                Add
+                            </MyBtn>
                         </div>
-                        <div className="field col">
-                            <label htmlFor="quantity">Quantity</label>
-                            <InputNumber
-                                id="quantity"
-                                value={product.quantity}
-                                onValueChange={(e) => onInputNumberChange(e, 'quantity')}
-                                integeronly="true"
-                            />
+
+                        <div className={cx('dialog-table-rooms')}>
+                            <DataTable value={roomsSelected} responsiveLayout="scroll" className={cx('data-table')}>
+                                <Column headerClassName={cx('column-thead', 'data-table-thead')}
+                                        bodyClassName={cx('column', 'data-table-td')} field="roomId" header="Room ID" style={{ minWidth: '8rem'}}></Column>
+                                <Column headerClassName={cx('column-thead', 'data-table-thead')}
+                                        bodyClassName={cx('column', 'data-table-td')} field="name" header="Name" style={{ minWidth: '16rem'}}></Column>
+                                <Column headerClassName={cx('column-thead', 'data-table-thead')}
+                                        bodyClassName={cx('column', 'data-table-td')}  body={actionRoomBodyTemplate} style={{ minWidth: '8rem'}}></Column>
+                                {/* <Column field="category" header="Category"></Column>
+                                <Column field="quantity" header="Quantity"></Column> */}
+                            </DataTable>
                         </div>
-                    </div> */}
+
+
+                    </div>
                 </div>
             </Dialog>
             {/* delete */}
