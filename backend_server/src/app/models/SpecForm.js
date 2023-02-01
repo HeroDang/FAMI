@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 
 const SpecForm = new Schema(
     {
+        specFormId: {type: String, maxLength: 8},
         formId: {type: Number},
         roomId: {type: Number},
         personId: {type: Number},
@@ -20,6 +21,5 @@ const SpecForm = new Schema(
 
 //App plugin
 SpecForm.plugin(mongooseDelete, { deletedAt: true, overrideMethods: "all" });
-SpecForm.plugin(AutoIncrement, {inc_field: 'specFormId'});
 
 module.exports = mongoose.model("specForms", SpecForm);

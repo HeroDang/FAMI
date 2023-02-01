@@ -50,6 +50,19 @@ export const deleteSelectedSpecForm = async (idList = []) => {
     }
 };
 
+export const createManySpecForm = async (data) => {
+    try {
+        const res = await httpRequest.post('specform/createmany', data);
+        // console.log('res', res);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
+////////////
+
 export const getCounterMEForm = async () => {
     try {
         const res = await httpRequest.get('meform/counter/form');

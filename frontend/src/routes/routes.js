@@ -1,7 +1,7 @@
 //Config
 import config from '@/config';
 //Layout
-// import { HeaderOnly } from '@/layouts';
+import { HeaderOnly } from '@/layouts';
 //Pages
 import Home from '@/pages/Home';
 import Following from '@/pages/Following';
@@ -12,6 +12,7 @@ import ManageBill from '@/pages/ManageBill';
 import ManageDrugBook from '@/pages/ManageDrugBook';
 import ManageDrug from '@/pages/ManageDrug';
 import SpecialistChecklist from '@/pages/SpecialistChecklist';
+import DetailInformation from '@/pages/DetailInformation';
 
 const publicRoutes = [
     {
@@ -37,6 +38,11 @@ const publicRoutes = [
     {
         path: config.routes.specialistChecklist,
         component: SpecialistChecklist,
+    },
+    {
+        path: config.routes.detailInformation,
+        component: DetailInformation,
+        layout: HeaderOnly,
     },
     {
         path: config.routes.manageBill,

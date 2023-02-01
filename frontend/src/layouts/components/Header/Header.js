@@ -64,8 +64,6 @@ function Header() {
         console.log(menuItem);
     };
 
-    console.log(<button className={cx('hung')}></button>);
-
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faUser} />,

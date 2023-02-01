@@ -8,6 +8,7 @@ const routes = {
     manageBill: '/manageBill',
     manageDrugBook: '/manageDrugBook',
     manageDrug: '/manageDrug',
+    detailInformation: '/detailInformation/:specFormId',
 };
 
 export default routes;

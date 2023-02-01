@@ -24,6 +24,7 @@ import MyBtn from '@/components/Button';
 import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
 import * as meformService from '@/services/meformService';
 import * as personService from '@/services/personService';
+import * as specFormService from '@/services/specformService';
 import styles from './MedicalChecklist.module.scss';
 
 const cx = classNames.bind(styles);
@@ -181,40 +182,44 @@ function MedicalChecklist() {
         setSubmitted(true);
 
         let _meform = { ...meform };
-
+        let inputSpecForm = {
+            formId: _meform.formId,
+            roomIds: _meform.roomIds,
+            request: "request",
+            patientId: _meform.patientId,
+        }
         if (meform._id) {
-            // console.log('data', _meform);
-
-            meformService.updateMEForm(_meform, _meform._id).then((data) => {
-                
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Form Created',
-                    life: 3000,
+            // console.log('data', _meform);            
+            Promise.all([meformService.updateMEForm(_meform, _meform._id), specFormService.createManySpecForm(inputSpecForm)])            
+                .then(([data, result]) => {
+                    
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Form Created',
+                        life: 3000,
+                    });
+                    
+                    setProductDialog(false);
+                    setMeform(emptyMEForm);
+                    setChangeData(!changeData);
                 });
-                
-                setProductDialog(false);
-                setMeform(emptyMEForm);
-                setChangeData(!changeData);
-            });
         } else {
             // console.log('data',_meform);
-
             _meform.patientId = counterMEForm.patientSeq;
-            meformService.createMEForm(_meform).then((data) => {
+            Promise.all([meformService.updateMEForm(_meform, _meform._id), specFormService.createManySpecForm(inputSpecForm)])            
+                .then(([data, result]) => {
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Product Created',
+                        life: 3000,
+                    });
 
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000,
+                    setProductDialog(false);
+                    setMeform(emptyMEForm);
+                    setChangeData(!changeData);
                 });
-
-                setProductDialog(false);
-                setMeform(emptyMEForm);
-                setChangeData(!changeData);
-            });
         }
     };
 

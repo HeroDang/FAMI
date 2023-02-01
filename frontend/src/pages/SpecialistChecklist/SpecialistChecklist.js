@@ -1,5 +1,6 @@
 import classNames from 'classnames/bind';
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
@@ -20,8 +21,9 @@ import { faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 
 import '@/pages/ManagerAccount/index.css';
 import '@/pages/ManagerAccount/DataTableDemo.css';
+import config from '@/config';
 import MyBtn from '@/components/Button';
-import { SearchIcon, TrashSmallIcon } from '@/components/Icons';
+import { SearchIcon, TrashSmallIcon, MedicalResultIcon, PencilSmallIcon } from '@/components/Icons';
 import * as meformService from '@/services/meformService';
 import * as specFormService from '@/services/specformService';
 import * as personService from '@/services/personService';
@@ -109,8 +111,8 @@ function SpecialistChecklist() {
     const [counterMEForm, setCounterMEForm] = useState(emptyCounter);
     const [persons, setPersons] = useState(null);
     // const [roomsSelected, setRoomsSelected] = useState([]);
-    // const [rooms, setRooms] = useState([]);
-    // const [room, setRoom] = useState(null);
+    const [rooms, setRooms] = useState([]);
+    const [room, setRoom] = useState(null);
     // const [isAddRoom, setIsAddRoom] = useState(false);
 
     const [productDialog, setProductDialog] = useState(false);
@@ -146,10 +148,22 @@ function SpecialistChecklist() {
             setCounterMEForm(_counterMEForm);
         })
 
+        meformService.getRoomsToForm().then((data) => {
+
+            let _roomOptions = [ ...data, {name: "All room", roomId: -1}]
+
+            setRooms(_roomOptions);
+        })
+
         personService.getListToSpecForm().then((data) => {
             setPersons(data);
         })
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const onRoomChange = (e) => {
+        let _room = e.value;
+        setRoom(_room);
+    };
 
     const onPersonChange = (e) => {
 
@@ -191,7 +205,7 @@ function SpecialistChecklist() {
             // console.log('data', _specForm);
 
             specFormService.updateSpecForm(_specForm, _specForm._id).then((data) => {
-                
+                // console.log(data);
                 toast.current.show({
                     severity: 'success',
                     summary: 'Successful',
@@ -205,7 +219,7 @@ function SpecialistChecklist() {
                 setChangeData(!changeData);
             });
         } else {
-            console.log('data',_specForm);
+            // console.log('data',_specForm);
 
             // _meform.patientId = counterMEForm.patientSeq;
             // meformService.createMEForm(_meform).then((data) => {
@@ -316,9 +330,10 @@ function SpecialistChecklist() {
 
     const DataTableCrudDemo = () => {
 
-        const editProduct = (specForm) => {
+        const editProduct = (e,specForm) => {
             setSpecForm({ ...specForm });
             setProductDialog(true);
+            e.stopPropagation();
         };
 
         const confirmDeleteProduct = (e, specForm) => {
@@ -328,13 +343,24 @@ function SpecialistChecklist() {
         };
 
         const actionBodyTemplate = (rowData) => {
+
             return (
                 <div className={cx('actionBtns')}>
-                    <Button
+                    {rowData._person && <Link className={cx('btn-delete')} to={`/detailInformation/${rowData._id}`} state={rowData}>
+                        <span className={cx('icon')}>
+                            <MedicalResultIcon />
+                        </span>
+                    </Link>}
+                    <button className={cx('btn-delete')} onClick={(e) => editProduct(e,rowData)}>
+                        <span className={cx('icon')}>
+                            <PencilSmallIcon />
+                        </span>
+                    </button>
+                    {/* <Button
                         icon="pi pi-pencil"
                         className="p-button-rounded p-button-success mr-2"
                         onClick={() => editProduct(rowData)}
-                    />
+                    /> */}
                     <button className={cx('btn-delete')} onClick={(e) => confirmDeleteProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <TrashSmallIcon />
@@ -372,7 +398,7 @@ function SpecialistChecklist() {
                         <Column
                             headerClassName={cx('column-thead')}
                             bodyClassName={cx('column')}
-                            field="formId"
+                            field="specFormId"
                             header="ID"
                             sortable
                             style={{ minWidth: '12rem' }}
@@ -427,7 +453,7 @@ function SpecialistChecklist() {
     return (
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Medical Checklist</h2>
+            <h2 className={cx('header-title')}>Specialist Checklist</h2>
             <div className={cx('body')}>
                 <div className={cx('toolbar')}>
                     <div className={cx('search')}>
@@ -442,7 +468,7 @@ function SpecialistChecklist() {
                         />
                     </div>
                     <div className={cx('btn-group')}>
-                        <MyBtn
+                        {/* <MyBtn
                             className={cx('btn-add')}
                             primary
                             large
@@ -450,7 +476,17 @@ function SpecialistChecklist() {
                             onClick={openNew}
                         >
                             New
-                        </MyBtn>
+                        </MyBtn> */}
+                        <Dropdown
+                                className={cx('dialog-dropdown')}
+                                value={room}
+                                // value={meform.personId === 0 ? selectedPerson : meform._person}
+                                options={rooms}
+                                onChange={onRoomChange}
+                                optionLabel="name"
+                                placeholder={"Select a room to add"}
+                                // disabled = {meform.formId === 0 ? false : true}
+                            />
                         <MyBtn
                             className={cx('btn-add')}
                             primary

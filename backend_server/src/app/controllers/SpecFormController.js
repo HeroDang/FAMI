@@ -10,8 +10,8 @@ class SpecFormController {
     createSpecForm(req,res,next){
         const specForm = new SpecForm({
             formId: 3,
-            roomId: 2,
-            personId: 4,
+            roomId: 1,
+            personId: 3,
             patientId: 3,
             request: "request",
             overResult: "",
@@ -81,34 +81,30 @@ class SpecFormController {
             .catch(next);
     }
 
-    //[POST] specform/create
-    createFrom(req, res, next) {
-        const { formId, roomId, request, overResult,numOrder, personId, patientId, reason,_patient, date} = req.body;
-        const {address, career, age, phone, name} = _patient
+    //[POST] specform/createmany
+    createManyFrom(req, res, next) {
+        const {formId, roomIds, request, patientId} = req.body;
 
-        const specForn = new SpecForm({
-            formId: formId,
-            roomId: roomId,
-            personId: personId,
-            patientId: patientId,
-            request: request,
-            overResult: overResult,
-        });
+        let specForms = [];
+        roomIds.forEach((roomId) => {
+            const specForm = new SpecForm({
+                specFormId: `GF${formId}R${roomId}`,
+                formId: formId,
+                roomId,
+                personId: -1,
+                patientId: patientId,
+                request: request,
+                overResult: '',
+            });
 
-        const patient = new Patient({
-            id: 1,
-            address: address,
-            career: career,
-            age: age,
-            phone: phone,
-            name: name,
+            specForms.push(specForm);
         })
         
-        Promise.all([specForn.save(), patient.save()])
-            .then(([newSpecForn, newPatient]) => {
-                res.status(201).json([newSpecForn, newPatient]);
+        SpecForm.insertMany(specForms)
+            .then(() => {
+                next();
             })
-            .catch(next);
+            .catch(() => res.status(404));
     }
 
     //[PUT] specform/update/:id
@@ -118,7 +114,7 @@ class SpecFormController {
         const specForm = {
             formId: parseInt(formId),
             roomId: parseInt(roomId),
-            personId: parseInt(personId),
+            personId,
             patientId: parseInt(patientId),
             request,
             overResult,
@@ -140,7 +136,7 @@ class SpecFormController {
 
         
 
-        Promise.all([MEForm.updateOne({ formId: formId}, mEForm), Patient.updateOne({_id : _patient._id},patient)], SpecForm.updateOne({ _id: req.params.id }, specForm))
+        Promise.all([MEForm.updateOne({ formId: formId}, mEForm), Patient.updateOne({_id : _patient._id},patient),SpecForm.updateOne({ _id: req.params.id }, specForm)])
             .then(([meformResult, patientResult, specFormResult]) => {
                 res.status(201).json([meformResult, patientResult, specFormResult]);
             })
@@ -161,6 +157,11 @@ class SpecFormController {
             .then(() => res.status(201).json({ message: "DELETED" }))
             .catch(next);
     }
+
+    deleteFormNotExist(req,res,next){
+        
+    }
+
 
     // // [GET] /home
     // index(req, res, next) {
