@@ -23,8 +23,12 @@ import '@/pages/ManagerAccount/index.css';
 import '@/pages/ManagerAccount/DataTableDemo.css';
 import config from '@/config';
 import MyBtn from '@/components/Button';
-import Tabs from '@/components/Tabs';
 import { SearchIcon, TrashSmallIcon, MedicalResultIcon, PencilSmallIcon } from '@/components/Icons';
+import FirstItem from '@/components/Tabs/FirstItem';
+import SecondItem from '@/components/Tabs/SecondItem';
+import ExamTab from './TabDetail/ExamTab';
+
+import Tabs from '@/components/Tabs';
 import * as meformService from '@/services/meformService';
 import * as specFormService from '@/services/specformService';
 import * as personService from '@/services/personService';
@@ -32,10 +36,29 @@ import styles from './DetailInformation.module.scss';
 
 const cx = classNames.bind(styles);
 
+
 function DetailInformation() {
     const location = useLocation();
     const specForm = location.state;
-    console.log(specForm);
+    // console.log(specForm);
+
+    const dataTab = [
+        {
+            id: "tab1",
+            title: "Exam",
+            content: <FirstItem />,
+        },
+        {
+            id: "tab2",
+            title: "Result",
+            content: <SecondItem />,
+        },
+        {
+            id: "tab3",
+            title: "Ultrasound result",
+            content: <ExamTab/>,
+        }
+    ]
 
     useEffect(() => {
         
@@ -65,7 +88,7 @@ function DetailInformation() {
                 </div>
 
                 <div>
-                    <Tabs></Tabs>
+                    <Tabs dataTab={dataTab}></Tabs>
                 </div>
             </div>
         </div>
