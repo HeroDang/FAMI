@@ -1,18 +1,46 @@
 // import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 /* A library that allows you to validate the props you pass to your React components. */
-// import PropTypes from 'prop-types';
-import { faTemperatureHigh } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
 
 import { InputTextarea } from 'primereact/inputtextarea';
 
 import { ThermometerIcon, ArmIcon, WeightIcon, PulseIcon, BreathIcon, HeightIcon } from '@/components/Icons';
+import * as examService from '@/services/examService';
 import classNames from 'classnames/bind';
 import styles from './TabDetail.module.scss';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
+const emptyExam = {
+    temperature: 0,
+    sysBloodPressure: 0, // <120
+    diasBloodPressure: 0,// <80
+    breathing: 0,
+    pulse: 0,
+    height: 0,
+    weight: 0,
+    note: 0,
+}
 
-function ExamTab() {
+function ExamTab({specFormId}) {
+    const [exam, setExam] = useState(emptyExam)
+
+    useEffect(()=>{
+        examService.getExamBySpecFormId(specFormId)
+            .then((exam) => {
+                let _exam = {...exam};
+                // console.log(exam._id);
+                setExam(_exam);
+            })
+    },[])
+    
+    const handleChange = (e, name) => {
+        const val = (e.target && e.target.value) || '';
+        let _exam = {...exam};
+        _exam[`${name}`] = val;
+        setExam(_exam);
+    }
+
     return (
         <div className={cx('grid', 'wide')}>
             <div className={cx('row','no-gutters')}>
@@ -24,7 +52,10 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Temperature</p>
-                            <p>30 <span>&#8451;</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.temperature} onChange={(e) => handleChange(e,'temperature')}/>
+                                <span>&#8451;</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -37,7 +68,12 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Blood pressure</p>
-                            <p>30 <span>/{` ... `}mmHg</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.sysBloodPressure} onChange={(e) => handleChange(e,'sysBloodPressure')}/>
+                                <span>/</span>
+                                <input value={exam.diasBloodPressure} onChange={(e) => handleChange(e,'diasBloodPressure')}/>
+                                <span>mmHg</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,7 +86,10 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Breathing</p>
-                            <p>30 <span>beats/minute</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.breathing} onChange={(e) => handleChange(e,'breathing')}/>
+                                <span>beats/minute</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -63,7 +102,10 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Pulse</p>
-                            <p>30 <span>beats/minute</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.pulse} onChange={(e) => handleChange(e,'pulse')}/>
+                                <span>beats/minute</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,7 +118,10 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Height</p>
-                            <p>160 <span>cm</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.height} onChange={(e) => handleChange(e,'height')}/>
+                                <span>cm</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -89,7 +134,10 @@ function ExamTab() {
 
                         <div className={cx('item-text')}>
                             <p>Weight</p>
-                            <p>30 <span>kg</span></p>
+                            <div className={cx('item-input')}>
+                                <input value={exam.weight} onChange={(e) => handleChange(e,'weight')}/>
+                                <span>kg</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,12 +145,12 @@ function ExamTab() {
 
             <div className={cx('row')}>
                 <div className={cx('input-group')}>
-                    <label className={cx('title-input')} htmlFor="overResult">Note</label>
+                    <label className={cx('title-input')} htmlFor="note">Note</label>
                     <InputTextarea
                         className={cx('input-text-area')}
-                        id="overResult"
-                        // value={}
-                        // onChange={(e) => onInputChange(e, 'overResult')}
+                        id="note"
+                        value={exam.note}
+                        onChange={(e) => handleChange(e, 'note')}
                         required
                         rows={3}
                         cols={20}
@@ -111,6 +159,10 @@ function ExamTab() {
             </div>
         </div>
     );
+}
+
+ExamTab.prototype={
+    specFormId: PropTypes.string,
 }
 
 export default ExamTab;

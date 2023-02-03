@@ -5,8 +5,10 @@ const accountRoute = require("./account");
 const patientRoute = require("./patient");
 const roomRoute = require("./room");
 const specForm = require("./specform");
+const examRoute = require('./exam');
 
 function route(app) {
+    app.use("/exam", examRoute);
     app.use("/specform",specForm);
     app.use("/persons", personRoute);
     app.use("/meform", meformRoute);

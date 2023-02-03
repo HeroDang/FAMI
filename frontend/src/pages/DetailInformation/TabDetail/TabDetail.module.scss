@@ -388,8 +388,7 @@
 
 .item-container{
     display: flex;
-    margin: 16px auto;
-    max-width: 250px;
+    margin: 16px;
     background-color: var(--background-color);
     border-radius: 10px;
 }
@@ -404,19 +403,29 @@
     border-radius: 8px;
 }
 .item-text{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     flex: 1;
     font-size: 1.8rem;
     color: var(--text-color);
+    margin: 0px 10px;
     p{
-        display: flex;
-        justify-content: space-between;
-        margin-right: 5px;
-        span{
-            opacity: 0.8;
-        }
+        text-align: start;
+    }
+}
+
+.item-input{
+    display: flex;
+    max-width: 100%;
+    input{
+        flex: 1;
+        padding: 0px;
+        margin: 0 2px;
+        border-bottom: 1px solid var(--text-color);
+        background-color: transparent;
+        font-size: 1.6rem;
+        max-width: 20%;
+    }
+    span{
+        opacity: 0.8;
     }
 }
 

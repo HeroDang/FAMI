@@ -26,12 +26,14 @@ import MyBtn from '@/components/Button';
 import { SearchIcon, TrashSmallIcon, MedicalResultIcon, PencilSmallIcon } from '@/components/Icons';
 import FirstItem from '@/components/Tabs/FirstItem';
 import SecondItem from '@/components/Tabs/SecondItem';
-import ExamTab from './TabDetail/ExamTab';
 
 import Tabs from '@/components/Tabs';
 import * as meformService from '@/services/meformService';
 import * as specFormService from '@/services/specformService';
 import * as personService from '@/services/personService';
+import ExamTab from './TabDetail/ExamTab';
+import ResultTab from './TabDetail/ResultTab';
+
 import styles from './DetailInformation.module.scss';
 
 const cx = classNames.bind(styles);
@@ -46,17 +48,17 @@ function DetailInformation() {
         {
             id: "tab1",
             title: "Exam",
-            content: <FirstItem />,
+            content: <ExamTab specFormId={specForm.specFormId}/>,
         },
         {
             id: "tab2",
             title: "Result",
-            content: <SecondItem />,
+            content: <ResultTab overResult={specForm.overResult} />,
         },
         {
             id: "tab3",
             title: "Ultrasound result",
-            content: <ExamTab/>,
+            content: <FirstItem/>,
         }
     ]
 
