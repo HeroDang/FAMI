@@ -21,7 +21,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { SearchIcon, TrashSmallIcon, PencilSmallIcon } from '@/components/Icons';
+import { SearchIcon, TrashSmallIcon, PencilSmallIcon, PDFIcon, PayIcon } from '@/components/Icons';
 import './index.css';
 import './DataTableDemo.css';
 import MyBtn from '@/components/Button';
@@ -61,7 +61,7 @@ function ManagerBill() {
 
     const [products, setProducts] = useState(null);
 
-    const [bills, setBills] = useState(null);
+    const [bills, setBills] = useState([]);
 
     const [bill, setBill] = useState(emptyBill);
 
@@ -72,7 +72,7 @@ function ManagerBill() {
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState(emptyProduct);
-    const [selectedProducts, setSelectedProducts] = useState(null);
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
@@ -104,7 +104,7 @@ function ManagerBill() {
         setSubmitted(true);
         
 
-            let _bills = [...bills];
+            //let _bills = [...bills];
             let _bill = { ...bill };
             if (bill._id) {
                 // const index = findIndexById(product.id);
@@ -156,14 +156,14 @@ function ManagerBill() {
         
     };
 
-    const onCategoryChange = (e) => {
-        // let _product = { ...product };
-        // _product['category'] = e.value;
-        // setProduct(_product);
-        let _bill= {...bill};
-        _bill['job'] = e.value;
-        setBill(_bill);
-    };
+    // const onCategoryChange = (e) => {
+    //     // let _product = { ...product };
+    //     // _product['category'] = e.value;
+    //     // setProduct(_product);
+    //     let _bill= {...bill};
+    //     _bill['job'] = e.value;
+    //     setBill(_bill);
+    // };
 
     const hideDialog = () => {
         setSubmitted(false);
@@ -186,7 +186,7 @@ function ManagerBill() {
     const confirmDeleteProduct = (e,bill) => {
         // setProduct(product);
         setBill(bill);
-         setDeleteProductDialog(true);
+        setDeleteProductDialog(true);
         e.stopPropagation();
      };
      
@@ -464,13 +464,32 @@ function ManagerBill() {
             </span> */}
         </div>
     );
+    const generalPDF =() =>{
+        // window.onload=function(){
+        //     document.getElementById("download").addEventListener("Click",()=>{
+        //         const invoice = this.document.getElementById("invoice")
+        //         console.log(invoice);
+        //         console.log(window);
+        //         var opt = {
+        //             margin :1 ,
+        //             filename: 'myfile.pdf',
+        //             image: { type : 'jpeg',quality: 0.98},
+        //             html2canvas: {scale:2},
+        //             jsPDF: {unit: 'in', format: 'letter', orientation: 'portrait' }
+        //         };
+        //         html2pdf().from(invoice).set(opt).save();
+        //     })
+        // }
+
+    }
   
     
     
 
+    
     return (
         <div className="">
-            <div className="card">
+            <div className="card" id="invoice">
                 <DataTable
                     ref={dt}
                     value={bills}
@@ -499,7 +518,8 @@ function ManagerBill() {
                     bodyClassName={cx('column')}
                     field="billID" 
                     header="ID" 
-                    sortable style={{ minWidth: '8rem' }}>
+                    sortable 
+                    style={{ minWidth: '8rem' }}>
                     </Column>
                     <Column
                     headerClassName={cx('column-thead')}
@@ -507,7 +527,7 @@ function ManagerBill() {
                     field="drugname"
                     header="Drug's name"
                     sortable
-                    style={{ minWidth: '16rem' }}
+                    style={{ minWidth: '12rem' }}
                     ></Column>
                     {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
                     {/* <Column
@@ -521,9 +541,17 @@ function ManagerBill() {
                     headerClassName={cx('column-thead')}
                     bodyClassName={cx('column')}
                     field="unit"
+                    header="Unit"
+                    sortable
+                    style={{ minWidth: '10rem' }}
+                    ></Column>
+                    <Column
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="unitprice"
                     header="Unit/Price"
                     sortable
-                    style={{ minWidth: '12rem' }}
+                    style={{ minWidth: '10rem' }}
                     ></Column>
                     <Column
                     headerClassName={cx('column-thead')}
@@ -561,6 +589,33 @@ function ManagerBill() {
                     ></Column>
                 </DataTable>
             </div>
+            <div>
+               <div className={cx('toolbar')}>
+                    <div class={cx('letter')}>
+                         <label><b> Total:</b></label> <span id="billID"></span >
+                    </div>
+                      <div className={cx('btn-group')}>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            id="download"
+                            primary
+                            large
+                            leftIcon={<PDFIcon width="0.5 rem" height="0.5 rem" />}
+                           // onClick={openNew}
+                           onClick={generalPDF}
+                        >PDF</MyBtn>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            primary
+                            large
+                            leftIcon={<PayIcon width="1.6rem" height="1.6rem" />}
+                           // onClick={confirmDeleteSelected}
+                            disable={!(selectedProducts.length==bills.length)}
+                        >Pay</MyBtn>
+                    </div>
+               </div>
+            
+            </div>
 
             
         </div>
@@ -568,10 +623,34 @@ function ManagerBill() {
     );
 };
     return (
+        
         <div className={cx('wrapper')}>
+            <head>
+            
+            </head>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manager Bill</h2>
+            <h2 className={cx('header-title')}>Manage Bill</h2>
         <div className={cx('body')}>
+            
+            <div className={cx('grid-container')}>
+                 <div class={cx('grid-item','letter')}>
+                    <label><b> Id bill:</b></label> <span id="billID"></span >
+                 </div>
+                  <div class={cx('grid-item','letter')}>
+                  <label><b> Id patient:</b></label> <span id="billID"></span >
+                 </div>
+                 <div class={cx('grid-item','letter')}>
+                 <label><b> Paitent’s name:</b></label> <span id="billID"></span >
+                  </div>
+                <div class={cx('grid-item','letter')}>
+                <label><b> Phone:</b></label> <span id="billID"></span >
+                </div>
+               <div class={cx('grid-item','letter')}>
+               <label><b> Time:</b></label> <span id="billID"></span >
+               </div>
+            </div>
+            
+            
                 <div className={cx('toolbar')}>
                     <div className={cx('search')}>
                         <span className={cx('search-icon')}>
@@ -682,14 +761,14 @@ function ManagerBill() {
                         <label htmlFor="unitprice"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit/Price</b></label>
                         <InputText
                                     id="unitprice"
-                                    value={bill.password}
+                                    value={bill.unitprice}
                                     onChange={(e) => onInputChange(e, 'unitprice')}
                                     required
                                    // autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !bill.unitprice && <small className="p-error">Quantity is required.</small>}
+                        {submitted && !bill.unitprice && <small className="p-error">Unit/Price is required.</small>}
                     </div>
                 </div>
             <div className="formgrid grid">
@@ -697,7 +776,7 @@ function ManagerBill() {
                         <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Quantity</b></label>
                         <InputText
                             id="quantity"
-                            value={bill.unit}
+                            value={bill.quantity}
                             onChange={(e) => onInputChange(e, 'quantity')}
                            // autoFocus
                             required
@@ -706,13 +785,13 @@ function ManagerBill() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !bill.quantity && <small className="p-error">Name is required.</small>}
+                        {submitted && !bill.quantity && <small className="p-error">Quantity is required.</small>}
                     </div>
                     <div className="field col">
                         <label htmlFor="amount"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Amount</b></label>
                         <InputText
                                     id="amount"
-                                    value={bill.password}
+                                    value={bill.amount}
                                     onChange={(e) => onInputChange(e, 'amount')}
                                     required
                                     //autoFocus
@@ -810,10 +889,11 @@ function ManagerBill() {
             >
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Are you sure you want to delete the selected products?</span>}
+                    {product && <span>Are you sure you want to delete the selected drugs?</span>}
                 </div>
             </Dialog>
             </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
          </div>
             
             

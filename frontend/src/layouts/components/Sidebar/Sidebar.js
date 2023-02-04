@@ -10,6 +10,10 @@ import {
     LiveIcon,
     LiveActiveIcon,
     ManageAccountIcon,
+    ManageAccountActiveIcon,
+    ManageBillIcon,
+    ManageBillActiveIcon,
+
 } from '@/components/Icons';
 import Menu, { MenuItem } from './Menu';
 // import SuggestedAccounts from '@/components/SuggestedAccounts';
@@ -46,7 +50,7 @@ function Sidebar() {
                     title="Manager Account"
                     to={config.routes.managerAccount}
                     icon={<ManageAccountIcon />}
-                    activeIcon={<LiveActiveIcon />}
+                    activeIcon={<ManageAccountActiveIcon />}
                 />
                 <MenuItem
                     title="Manager Checklist"
@@ -57,8 +61,8 @@ function Sidebar() {
                 <MenuItem
                     title="Manage Bill"
                     to={config.routes.manageBill}
-                    icon={<LiveIcon />}
-                    activeIcon={<LiveActiveIcon />}
+                    icon={<ManageBillIcon/>}
+                    activeIcon={<ManageBillActiveIcon />}
                 />
                  <MenuItem
                     title="Manage Drug Book"

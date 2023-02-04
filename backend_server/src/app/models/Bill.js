@@ -13,6 +13,7 @@ const Bill = new Schema(
         amount: { type: Number},
        // status: { type: String, maxLength: 255 },
         total: { type: Number},
+        time: { type: Date, default: Date.now() },
 
     },
     {
