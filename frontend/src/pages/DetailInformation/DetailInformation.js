@@ -33,6 +33,7 @@ import * as specFormService from '@/services/specformService';
 import * as personService from '@/services/personService';
 import ExamTab from './TabDetail/ExamTab';
 import ResultTab from './TabDetail/ResultTab';
+import UltrasoundResultTab from './TabDetail/UltrasoundResultTab';
 
 import styles from './DetailInformation.module.scss';
 
@@ -58,7 +59,7 @@ function DetailInformation() {
         {
             id: "tab3",
             title: "Ultrasound result",
-            content: <FirstItem/>,
+            content: <UltrasoundResultTab overResult={specForm.overResult} />,
         }
     ]
 
