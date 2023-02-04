@@ -22,15 +22,16 @@ import { faAngleLeft, faAnglesLeft, faPlus, faXmark } from '@fortawesome/free-so
 import '@/pages/ManagerAccount/index.css';
 import '@/pages/ManagerAccount/DataTableDemo.css';
 import config from '@/config';
-import MyBtn from '@/components/Button';
+import ButtonComponent from '@/components/Button';
 import { SearchIcon, TrashSmallIcon, MedicalResultIcon, PencilSmallIcon } from '@/components/Icons';
 import FirstItem from '@/components/Tabs/FirstItem';
 import SecondItem from '@/components/Tabs/SecondItem';
-
 import Tabs from '@/components/Tabs';
+
 import * as meformService from '@/services/meformService';
 import * as specFormService from '@/services/specformService';
-import * as personService from '@/services/personService';
+import * as examService from '@/services/examService';
+import * as ultrasoundResultService from '@/services/ultrasoundResultService';
 import ExamTab from './TabDetail/ExamTab';
 import ResultTab from './TabDetail/ResultTab';
 import UltrasoundResultTab from './TabDetail/UltrasoundResultTab';
@@ -39,33 +40,66 @@ import styles from './DetailInformation.module.scss';
 
 const cx = classNames.bind(styles);
 
+const emptyExam = {
+    temperature: 0,
+    sysBloodPressure: 0, // <120
+    diasBloodPressure: 0,// <80
+    breathing: 0,
+    pulse: 0,
+    height: 0,
+    weight: 0,
+    note: 0,
+}
+
+const emptyUltrasoundResult = {
+    specFormId: '',
+    result: '',
+    conclusion: '',
+    images: [],
+  }
 
 function DetailInformation() {
     const location = useLocation();
     const specForm = location.state;
+
+    const [exam, setExam] = useState(emptyExam);
+    const [overResult, setOverResult] = useState(specForm.overResult);
+    const [ultrasoundResult, setUltrasoundResult] = useState(emptyUltrasoundResult);
+
     // console.log(specForm);
+
+    useEffect(() => {
+        examService.getExamBySpecFormId(specForm.specFormId)
+            .then((exam) => {
+                let _exam = {...exam};
+                // console.log(exam._id);
+                setExam(_exam);
+        });
+        ultrasoundResultService.getUltrasoundResultBySpecFormId(specForm.specFormId)
+          .then((data) => {
+            let _ultrasoundResult = {...data};
+            setUltrasoundResult(_ultrasoundResult);
+        })
+        
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const dataTab = [
         {
             id: "tab1",
             title: "Exam",
-            content: <ExamTab specFormId={specForm.specFormId}/>,
+            content: <ExamTab exam={exam} setExam={setExam}/>,
         },
         {
             id: "tab2",
             title: "Result",
-            content: <ResultTab overResult={specForm.overResult} />,
+            content: <ResultTab overResult={overResult} _id={specForm._id} setOverResult={setOverResult}/>,
         },
         {
             id: "tab3",
             title: "Ultrasound result",
-            content: <UltrasoundResultTab overResult={specForm.overResult} />,
+            content: <UltrasoundResultTab ultrasoundResult={ultrasoundResult} setUltrasoundResult={setUltrasoundResult}/>,
         }
     ]
-
-    useEffect(() => {
-        
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div className={cx('wrapper')}>

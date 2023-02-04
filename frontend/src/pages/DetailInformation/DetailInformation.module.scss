@@ -30,7 +30,7 @@
 
 .header{
     display: flex;
-
+    position: relative;
 }
 
 .toolbar {
@@ -101,13 +101,17 @@
 }
 
 .btn-back {
+    position: absolute;
+    left: -24px;
+    top: 0;
     margin: 0px;
     padding: 4px;
     background-color: transparent;
-
+    transition: transform linear 0.2s;
 
     &:hover{
         cursor: pointer;
+        transform: scale(1.5);
     }
 
     .icon {
@@ -210,4 +214,11 @@ li{
             }
         }
     }
+}
+
+//detailInformation
+.btn-group{
+    display: flex;
+    margin: 0px 20px;
+    justify-content: end;
 }

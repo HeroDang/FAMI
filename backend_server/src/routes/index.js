@@ -8,8 +8,10 @@ const billRoute = require("./bill");
 const drugRoute = require("./drug");
 const specForm = require("./specform");
 const examRoute = require('./exam');
+const ultrasoundResultRoute = require('./ultrasoundResult')
 
 function route(app) {
+    app.use("/ultrasoundResult", ultrasoundResultRoute);
     app.use("/exam", examRoute);
     app.use("/specform",specForm);
     app.use("/persons", personRoute);

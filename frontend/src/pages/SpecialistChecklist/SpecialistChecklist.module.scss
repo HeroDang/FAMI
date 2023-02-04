@@ -87,11 +87,12 @@
     border: 1px solid transparent;
     background-color: white;
     border-radius: 50%;
-
+    transition: transform linear 0.1s;
 
     &:hover{
         cursor: pointer;
         border: 1px solid var(--primary);
+        transform: scale(1.5);
     }
 
     .icon {
