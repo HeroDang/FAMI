@@ -10,15 +10,15 @@ class PersonController {
     createPerson(req,res,next){
 
         const person = new Person({
-            id: 2,
-            accountId: 2,
-            name: "Nguyễn Minh",
-            address: "An Phú district, Nghệ An province",
-            dayOfBirth: new Date(1990, 4, 5),
+            id: 4,
+            accountId: 4,
+            name: "Nguyễn Thị Mai",
+            address: "Thanh Ba district, Phú Thọ province",
+            dayOfBirth: new Date(1980, 7, 25),
             avatar: '',
-            gender: "Male",
-            job: "General doctor",
-            phone: "0111222321",
+            gender: "Female",
+            job: "Specialist doctor",
+            phone: "0900111321",
         });
         person
             .save()
@@ -30,7 +30,23 @@ class PersonController {
 
     //[GET] persons/getlisttoform
     getListToForm(req,res,next){
-        Person.find()
+        Person.find({job: "General doctor"})
+            .then((patient) => {     
+                
+                let result = [];
+                patient.forEach((item) => {
+                    let {_id,personId,name} = item;
+                    result.push({_id,personId,name})
+                })
+                
+                res.json(result)
+            })
+            .catch(next);
+    }
+
+    //[GET] persons/getlisttospecform
+    getListToSpecForm(req,res,next){
+        Person.find({job: "Specialist doctor"})
             .then((patient) => {     
                 
                 let result = [];

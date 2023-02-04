@@ -59,6 +59,12 @@ function Sidebar() {
                     activeIcon={<LiveActiveIcon />}
                 />
                 <MenuItem
+                    title="Specialist Checklist"
+                    to={config.routes.specialistChecklist}
+                    icon={<LiveIcon />}
+                    activeIcon={<LiveActiveIcon />}
+                />
+                <MenuItem
                     title="Manage Bill"
                     to={config.routes.manageBill}
                     icon={<ManageBillIcon/>}
