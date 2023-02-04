@@ -4,6 +4,8 @@ const meformRoute = require("./meform");
 const accountRoute = require("./account");
 const patientRoute = require("./patient");
 const roomRoute = require("./room");
+const billRoute = require("./bill");
+const drugRoute = require("./drug");
 
 function route(app) {
     app.use("/persons", personRoute);
@@ -12,6 +14,8 @@ function route(app) {
     app.use("/patient", patientRoute);
     app.use("/room", roomRoute);
     app.use("/", siteController);
+    app.use("/bills", billRoute);
+    app.use("/drugs", drugRoute);
 }
 
 module.exports = route;

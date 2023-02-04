@@ -22,17 +22,19 @@ class BillController {
             amount,
             status,
             total,
+            time,
         
         } = req.body;
 
-        const Bill = new Bill({
+        const bill = new Bill({
             drugname:  drugname ,
             unit: unit,
             unitprice: unitprice,
             quantity: quantity,
             amount: amount,
-            status: status,
+           // status: status,
             total: total,
+            time: time,
         });
         bill
             .save()
@@ -47,16 +49,16 @@ class BillController {
             unitprice,
             quantity,
             amount,
-            status,
+            //status,
             total,
         } = req.body;
-        const Bill = {
+        const bill = {
             drugname:  drugname ,
             unit: unit,
             unitprice: unitprice,
             quantity: quantity,
             amount: amount,
-            status: status,
+            //status: status,
             total: total,
         };
         Bill.updateOne({_id: req.params.id},bill)
