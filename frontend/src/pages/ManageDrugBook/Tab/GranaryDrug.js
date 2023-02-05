@@ -6,7 +6,7 @@ import 'primeflex/primeflex.css';
 import ReactDOM from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames/bind'; //hung
-import Tabs from '@/components/Tabs';
+
 import { classNames as classNamesPrime } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -30,8 +30,7 @@ import { ProductService } from './ProductService';
 import * as drugbookService from '@/services/drugbookService' //1
 import styles from './ManageDrugBook.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import VendDrug from './Tab/VendDrug';
-import GranaryDrug from './Tab/GranaryDrug';
+
 
 
 const cx = classNames.bind(styles);
@@ -56,10 +55,12 @@ function ManagerDrugBook() {
         unit: null,
         unitprice: null,
         quantity: 0,
-        amount: 0,
         //status: null,
-        total: 0,
         //inventoryStatus: 'INSTOCK',
+        producer: null,
+        type: null,
+        quantityvend: 0,
+        datevend: new Date(Date.now()),
     };
 
     const [products, setProducts] = useState(null);
@@ -81,21 +82,8 @@ function ManagerDrugBook() {
     const toast = useRef(null);
     const dt = useRef(null);
     const productService = new ProductService();
-    const dataTab = [
-        {
-            id: "tab1",
-            title: "Granary",
-            content: <GranaryDrug />,
-        },
-        {
-            id: "tab2",
-            title: "Vended",
-            content: <VendDrug  />,
-        },
-       
-    ]
+  
 
-    
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
         drugbookService.getDrugBookList().then((data)  => {
@@ -283,6 +271,8 @@ function ManagerDrugBook() {
 
    
 
+    
+   
     
     const editProduct = (drugbook) => {
         setDrugBook({ ...drugbook });
@@ -485,9 +475,115 @@ function ManagerDrugBook() {
 
     return (
         <div className="">
-            <div>
-                    <Tabs dataTab={dataTab}></Tabs>
-                </div>
+            <div className="card">
+                <DataTable
+                    ref={dt}
+                    value={drugbooks}
+                    selection={selectedProducts}
+                    onSelectionChange={(e) => setSelectedProducts(e.value)}
+                    dataKey="_id"
+                    paginator
+                    rows={10}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
+                    globalFilter={globalFilter}
+                    //header={header}
+                    responsiveLayout="scroll"
+                >
+                   <Column
+                            headerClassName={cx('column-thead')}
+                            bodyClassName={cx('column')}
+                            selectionMode="multiple"
+                            headerStyle={{ width: '3rem' }}
+                            exportable={false}
+                        ></Column>
+
+                    <Column 
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="drugbookID" 
+                    header="ID" 
+                    sortable style={{ minWidth: '8rem' }}>
+                    </Column>
+                    <Column
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="drugname"
+                    header="Drug's name"
+                    sortable
+                    style={{ minWidth: '12rem' }}
+                    ></Column>
+                    {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
+                    {/* <Column
+                        field="price"
+                        header="Price"
+                        body={priceBodyTemplate}
+                        sortable
+                        style={{ minWidth: '8rem' }}
+                    ></Column> */}
+                    <Column
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="type"
+                    header="Type"
+                    sortable
+                    style={{ minWidth: '12rem' }}
+                    ></Column>
+                    <Column
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="producer"
+                    header="Producer"
+                    sortable
+                    style={{ minWidth: '12rem' }}
+                    ></Column>
+                    <Column
+                    headerClassName={cx('column-thead')}
+                    bodyClassName={cx('column')}
+                    field="quantity"
+                    header="Quantity"
+                    sortable
+                    style={{ minWidth: '12rem' }}
+                    ></Column>
+                    <Column
+                        field="unit"
+                        header="Unit"
+                        headerClassName={cx('column-thead')}
+                        bodyClassName={cx('column')}
+                       // body={ratingBodyTemplate}
+                        sortable
+                        style={{ minWidth: '12rem' }}
+                    ></Column>
+                    <Column
+                        field="unitprice"
+                        header="Unit/Price"
+                        headerClassName={cx('column-thead')}
+                        bodyClassName={cx('column')}
+                       // body={ratingBodyTemplate}
+                        sortable
+                        style={{ minWidth: '12rem' }}
+                    ></Column>
+                    {/* <Column
+                        field="status"
+                        header="Status"
+                        headerClassName={cx('column-thead')}
+                        bodyClassName={cx('column')}
+                        //body={statusBodyTemplate}
+                        sortable
+                        style={{ minWidth: '12rem' }}
+                    ></Column> */}
+                    <Column
+                        header="Action"
+                        headerClassName={cx('column-thead')}
+                        bodyClassName={cx('column')}
+                        body={actionBodyTemplate}
+                        exportable={false}
+                        style={{ minWidth: '10rem' }}
+                    ></Column>
+                </DataTable>
+            </div>
+
             
         </div>
         
@@ -496,9 +592,42 @@ function ManagerDrugBook() {
     return (
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manage Drug</h2>
+            <h2 className={cx('header-title')}>Granary of drug</h2>
         <div className={cx('body')}>
-
+                <div className={cx('toolbar')}>
+                    <div className={cx('search')}>
+                        <span className={cx('search-icon')}>
+                            <SearchIcon />
+                        </span>
+                        <InputText
+                            className={cx('search-input')}
+                            type="search"
+                            onInput={(e) => setGlobalFilter(e.target.value)}
+                            placeholder="Search..."
+                        />
+                    </div>
+                    <div className={cx('btn-group')}>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            primary
+                            large
+                            leftIcon={<FontAwesomeIcon icon={faPlus} />}
+                            onClick={openNew}
+                        >
+                            New
+                        </MyBtn>
+                        <MyBtn
+                            className={cx('btn-add')}
+                            primary
+                            large
+                            leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
+                            onClick={confirmDeleteSelected}
+                            disable={!selectedProducts || !selectedProducts.length}
+                        >
+                            Delete
+                        </MyBtn>
+                    </div>
+                </div>
                 
                 <DataTableCrudDemo />
                 <Dialog 
@@ -557,10 +686,10 @@ function ManagerDrugBook() {
                 
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="unit"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Type</b></label>
+                        <label htmlFor="type"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Type</b></label>
                         <InputText
-                            id="unit"
-                            value={drugbook.unit}
+                            id="type"
+                            value={drugbook.type}
                             onChange={(e) => onInputChange(e, 'unit')}
                           //  autoFocus
                             required
@@ -569,20 +698,20 @@ function ManagerDrugBook() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !drugbook.unit && <small className="p-error">Unit is required.</small>}
+                        {submitted && !drugbook.type && <small className="p-error">Type is required.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="unitprice"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit/Price</b></label>
+                        <label htmlFor="producer"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Producer</b></label>
                         <InputText
-                                    id="unitprice"
-                                    value={drugbook.password}
+                                    id="producer"
+                                    value={drugbook.producer}
                                     onChange={(e) => onInputChange(e, 'unitprice')}
                                     required
                                    // autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !drugbook.unitprice && <small className="p-error">Quantity is required.</small>}
+                        {submitted && !drugbook.producer && <small className="p-error">Producer is required.</small>}
                     </div>
                 </div>
             <div className="formgrid grid">
@@ -590,7 +719,7 @@ function ManagerDrugBook() {
                         <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Quantity</b></label>
                         <InputText
                             id="quantity"
-                            value={drugbook.unit}
+                            value={drugbook.quantity}
                             onChange={(e) => onInputChange(e, 'quantity')}
                            // autoFocus
                             required
@@ -599,20 +728,33 @@ function ManagerDrugBook() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !drugbook.quantity && <small className="p-error">Name is required.</small>}
+                        {submitted && !drugbook.quantity && <small className="p-error">Quantity is required.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="amount"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Amount</b></label>
+                        <label htmlFor="unit"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit</b></label>
                         <InputText
-                                    id="amount"
-                                    value={drugbook.password}
-                                    onChange={(e) => onInputChange(e, 'amount')}
+                                    id="unit"
+                                    value={drugbook.unit}
+                                    onChange={(e) => onInputChange(e, 'unit')}
                                     required
                                     //autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !drugbook.amount && <small className="p-error">Amount is required.</small>}
+                        {submitted && !drugbook.unit && <small className="p-error">Unit is required.</small>}
+                    </div>
+                    <div className="field col">
+                        <label htmlFor="unitprice"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit/Price</b></label>
+                        <InputText
+                                    id="unitprice"
+                                    value={drugbook.unitprice}
+                                    onChange={(e) => onInputChange(e, 'unitprice')}
+                                    required
+                                    //autoFocus
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                />
+                        {submitted && !drugbook.unitprice && <small className="p-error">Unit/Price is required.</small>}
                     </div>
                 
             </div>

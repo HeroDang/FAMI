@@ -10,9 +10,10 @@ const DrugBook = new Schema(
         unit: { type: String, maxLength: 255 },
         unitprice: { type: String, maxLength: 255 },
         quantity: { type: Number },
-        amount: { type: Number},
-       // status: { type: String, maxLength: 255 },
-        total: { type: Number},
+        producer: { type: String, maxLength: 255 },
+        type: {type: String, maxLength: 255},
+        quantityvend: {type: Number},
+        datevend: { type: Date, default: Date.now() },
 
     },
     {
@@ -21,7 +22,7 @@ const DrugBook = new Schema(
 );
 
 //App plugin
-Bill.plugin(mongooseDelete, { deletedAt: true, overrideMethods: "all" });
-Bill.plugin(AutoIncrement, {inc_field: 'billID'});
+DrugBook.plugin(mongooseDelete, { deletedAt: true, overrideMethods: "all" });
+DrugBook.plugin(AutoIncrement, {inc_field: 'drugbookID'});
 
-module.exports = mongoose.model("drugbooks", Bill);
+module.exports = mongoose.model("drugbooks", DrugBook);

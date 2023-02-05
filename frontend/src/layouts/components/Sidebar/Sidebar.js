@@ -13,6 +13,8 @@ import {
     ManageAccountActiveIcon,
     ManageBillIcon,
     ManageBillActiveIcon,
+    DrugIcon,
+    DrugActiveIcon,
 
 } from '@/components/Icons';
 import Menu, { MenuItem } from './Menu';
@@ -71,11 +73,17 @@ function Sidebar() {
                     activeIcon={<ManageBillActiveIcon />}
                 />
                  <MenuItem
-                    title="Manage Drug Book"
+                    title="Manage Drug"
                     to={config.routes.manageDrugBook}
+                    icon={<DrugIcon />}
+                    activeIcon={<DrugActiveIcon />}
+                />
+                {/* <MenuItem
+                    title="Manage Drug"
+                    to={config.routes.manageDrug}
                     icon={<LiveIcon />}
                     activeIcon={<LiveActiveIcon />}
-                />
+                /> */}
             </Menu>
             {/* <SuggestedAccounts label="Suggested accounts" data={SuggestedUsers} />
             <SuggestedAccounts label="Following accounts" /> */}
