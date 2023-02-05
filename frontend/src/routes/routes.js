@@ -13,6 +13,7 @@ import ManageDrugBook from '@/pages/ManageDrugBook';
 import ManageDrug from '@/pages/ManageDrug';
 import SpecialistChecklist from '@/pages/SpecialistChecklist';
 import DetailInformation from '@/pages/DetailInformation';
+import Login from '@/pages/Login';
 
 const publicRoutes = [
     {
@@ -58,6 +59,11 @@ const publicRoutes = [
         path: config.routes.manageDrug,
         component: ManageDrug,
 
+    },
+    {
+        path: config.routes.login,
+        component: Login,
+        layout: null,
     },
 ];
 

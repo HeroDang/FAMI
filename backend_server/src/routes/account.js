@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 
 const AccountController = require("../app/controllers/AccountController");
+const { route } = require("./prescription");
 
+router.post("/login", AccountController.login);
 router.get("/getlist", AccountController.getList);
 router.get("/counter/account", AccountController.counterAccount);
 router.post("/create",AccountController.createAccount);

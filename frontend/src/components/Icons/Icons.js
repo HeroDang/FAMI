@@ -416,3 +416,4 @@ export const PulseIcon = ({ width = '3.2rem', height = '3.2rem', className }) =>
     </g>
     </svg>
 );
+

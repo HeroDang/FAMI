@@ -32,9 +32,12 @@ import * as meformService from '@/services/meformService';
 import * as specFormService from '@/services/specformService';
 import * as examService from '@/services/examService';
 import * as ultrasoundResultService from '@/services/ultrasoundResultService';
+import * as billService from '@/services/billService';
+
 import ExamTab from './TabDetail/ExamTab';
 import ResultTab from './TabDetail/ResultTab';
 import UltrasoundResultTab from './TabDetail/UltrasoundResultTab';
+import PrescriptionTab from './TabDetail/PrescriptionTab';
 
 import styles from './DetailInformation.module.scss';
 
@@ -56,7 +59,19 @@ const emptyUltrasoundResult = {
     result: '',
     conclusion: '',
     images: [],
-  }
+}
+
+let emptyBill = {
+    billID: 0,
+    drugname: null,
+    unit: null,
+    unitprice: null,
+    quantity: 0,
+    amount: 0,
+    //status: null,
+    total: 0,
+    //inventoryStatus: 'INSTOCK',
+};
 
 function DetailInformation() {
     const location = useLocation();
@@ -65,6 +80,7 @@ function DetailInformation() {
     const [exam, setExam] = useState(emptyExam);
     const [overResult, setOverResult] = useState(specForm.overResult);
     const [ultrasoundResult, setUltrasoundResult] = useState(emptyUltrasoundResult);
+    const [bills, setBills] = useState([]);
 
     // console.log(specForm);
 
@@ -80,6 +96,10 @@ function DetailInformation() {
             let _ultrasoundResult = {...data};
             setUltrasoundResult(_ultrasoundResult);
         })
+        billService.getBillList().then((data)  => {
+            setBills(data);
+            console.log(data);
+        });
         
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -98,6 +118,11 @@ function DetailInformation() {
             id: "tab3",
             title: "Ultrasound result",
             content: <UltrasoundResultTab ultrasoundResult={ultrasoundResult} setUltrasoundResult={setUltrasoundResult}/>,
+        },
+        {
+            id: "tab4",
+            title: "Prescription",
+            content: <PrescriptionTab bills={bills} setBills={setBills}/>,
         }
     ]
 
