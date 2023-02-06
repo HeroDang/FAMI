@@ -37,6 +37,29 @@ class ExamController {
             .catch(next);
     }
 
+    //[PUT] /exam/update/:id
+    updateExam(req, res, next){
+        const {specFormId, temperature, sysBloodPressure, diasBloodPressure, breathing, pulse, height, weight, note} = req.body;
+
+        const exam = {
+            specFormId: specFormId,
+            temperature: parseInt(temperature) ,
+            sysBloodPressure: parseInt(sysBloodPressure) ,
+            diasBloodPressure: parseInt(diasBloodPressure) ,
+            breathing: parseInt(breathing) ,
+            pulse: parseInt(pulse) ,
+            height: parseInt(height) ,
+            weight: parseInt(weight) ,
+            note: note,
+        };
+
+        Exam.updateOne({_id: req.params.id}, exam)
+            .then((data) => {
+                res.json(data);
+            })
+            .catch(next);
+    }
+
     // // [GET] /home
     // index(req, res, next) {
     //     Person.find({})

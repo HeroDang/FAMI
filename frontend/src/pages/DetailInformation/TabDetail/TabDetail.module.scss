@@ -445,10 +445,113 @@
 }
 
 
+.btn-group{
+    display: flex;
+    margin: 20px 0px;
+    justify-content: flex-end;
+}
+
+
 //UltrasoundResultTab
 .image-group{
     padding: 20px;
     display: flex;
     justify-content: center;
     // border: 1px solid var(--primary);
+}
+
+
+//Prescription
+.drug-list{
+    justify-content: center;
+    flex-direction: column;
+    .title{
+        font-size: 2rem;
+        text-align: start;
+    }
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0px;
+    & .btn-group {
+        margin: 0px;
+        .btn-add {
+            font-size: 1.8rem;
+        }
+    }
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+
+    .search-input {
+        flex: 1;
+        height: 100%;
+        width: 350px;
+        color: var(--primary);
+        padding: 0 0 0 10px;
+        font-size: var(--text-size);
+        font-weight: 600;
+        caret-color: var(--primary);
+        background-color: transparent;
+        font-family: var(--font-family);
+        border: 0px;
+        outline: none;
+        box-shadow: none !important;
+    }
+
+    .search-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--search-button-width);
+        height: 100%;
+        font-size: 1.8rem;
+        color: var(--primary);
+    }
+}
+
+.column-thead {
+    font-size: var(--text-size);
+    color: var(--primary) !important;
+    background-color: var(--background-color) !important;
+}
+
+.column {
+    font-size: var(--text-size);
+    font-weight: 600;
+    color: var(--text-color);
+    border-top: 5px solid white !important;
+    border-bottom: 5px solid white !important;
+    background-color: var(--background-color);
+}
+
+
+.btn-delete {
+    margin: 0px 6px;
+    padding: 8px;
+    border: 1px solid transparent;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform linear 0.1s;
+
+    &:hover{
+        cursor: pointer;
+        border: 1px solid var(--primary);
+        transform: scale(1.2);
+    }
+
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+    }
+
 }

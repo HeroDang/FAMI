@@ -158,6 +158,21 @@ class SpecFormController {
             .catch(next);
     }
 
+    //[PATCH] specform/updateOverResult
+    updateOverResult(req,res,next){
+        const {overResult, _id} = req.body;
+
+        const specForm = {
+            overResult,
+        }
+
+        SpecForm.updateOne({ _id }, specForm)
+            .then((data) => {
+                res.status(201).json(data)
+            })
+            .catch(next);
+    }
+
     deleteFormNotExist(req,res,next){
         
     }

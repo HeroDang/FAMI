@@ -1,26 +1,32 @@
 // import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 /* A library that allows you to validate the props you pass to your React components. */
 import PropTypes from 'prop-types';
+import { useEffect, useState, useRef } from 'react';
 
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Galleria } from "primereact/galleria";
 import { Image } from "primereact/image";
+import { Toast } from 'primereact/toast';
 
 import { ThermometerIcon, ArmIcon, WeightIcon, PulseIcon, BreathIcon, HeightIcon } from '@/components/Icons';
-import * as examService from '@/services/examService';
 import ImageComponent from '@/components/Image';
+import ButtonComponent from '@/components/Button';
+
+import * as ultrasoundResultService from '@/services/ultrasoundResultService';
+
 import classNames from 'classnames/bind';
 import styles from './TabDetail.module.scss';
-import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
 
-function UltrasoundResultTab({overResult}) {
-    const [result, setResult] = useState(overResult)
+function UltrasoundResultTab({ultrasoundResult, setUltrasoundResult}) {
+  const toast = useRef(null);
     
-    const handleChange = (e) => {
+    const handleChange = (e,name) => {
         const val = (e.target && e.target.value) || '';
-        setResult(val)
+        let _ultrasoundResult = {...ultrasoundResult};
+        _ultrasoundResult[`${name}`] = val;
+        setUltrasoundResult(_ultrasoundResult);
     }
 
     const responsiveOptions = [
@@ -38,23 +44,6 @@ function UltrasoundResultTab({overResult}) {
         }
       ];
 
-    const images = [
-        {
-            itemImageSrc: "https://primereact.org/images/galleria/galleria1.jpg",
-            thumbnailImageSrc:
-              "https://primereact.org/images/galleria/galleria1s.jpg",
-            alt: "Description for Image 1",
-            title: "Title 1"
-          },
-          {
-            itemImageSrc: "https://primereact.org/images/galleria/galleria2.jpg",
-            thumbnailImageSrc:
-              "https://primereact.org/images/galleria/galleria2s.jpg",
-            alt: "Description for Image 2",
-            title: "Title 2"
-          }
-    ];
-
     const itemTemplate = (item) => {
         return (
           <div className="card flex justify-content-center">
@@ -67,22 +56,51 @@ function UltrasoundResultTab({overResult}) {
         return <img src={item.thumbnailImageSrc} alt={item.alt} />;
       };
 
+    const handlerComplete = () => {
+      let _ultrasoundResult = {...ultrasoundResult};
+
+      ultrasoundResultService.updateUltrasoundResult(_ultrasoundResult,_ultrasoundResult._id)
+        .then((result) => {
+            toast.current.show({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Ultrasound Result Updated',
+                life: 3000,
+            });
+
+        })
+    }
+
     return (
         <div className={cx('grid', 'wide')}>
+          <Toast ref={toast} />
+            <div className={cx('btn-group')}>
+                <ButtonComponent
+                    className={cx('btn-add')}
+                    primary
+                    large
+                    // leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
+                    onClick={handlerComplete}
+                    // disable={!selectedProducts || !selectedProducts.length}
+                >
+                    Complete
+                </ButtonComponent>
+            </div>
             <div className={cx('row')}>
                 <div className={cx('input-group')}>
-                    <label className={cx('title-input')} htmlFor="result">Image</label>
+                    <label className={cx('title-input')}>Image</label>
                     <div className={cx('image-group')}>
-                        <ImageComponent src="https://rimereact.org/images/galleria/galleria2s.jpg" alt="No Image" width="400px" height="400px"/>
+                        {ultrasoundResult.images.length === 0 && <ImageComponent src="https://rimereact.org/images/galleria/galleria2s.jpg" alt="No Image" width="400px" height="400px"/>}
 
-                        {/* <Galleria
-                            value={images}
+                        {ultrasoundResult.images.length !== 0 &&
+                          <Galleria
+                            value={ultrasoundResult.images}
                             responsiveOptions={responsiveOptions}
                             numVisible={5}
                             style={{ maxWidth: "500px" }}
                             item={itemTemplate}
                             thumbnail={thumbnailTemplate}
-                        /> */}
+                        />}
                     </div>
                 </div>
             </div>
@@ -92,8 +110,8 @@ function UltrasoundResultTab({overResult}) {
                     <InputTextarea
                         className={cx('input-text-area')}
                         id="result"
-                        value={result}
-                        onChange={(e) => handleChange(e)}
+                        value={ultrasoundResult.result}
+                        onChange={(e) => handleChange(e, 'result')}
                         required
                         rows={3}
                         cols={20}
@@ -102,12 +120,12 @@ function UltrasoundResultTab({overResult}) {
             </div>
             <div className={cx('row')}>
                 <div className={cx('input-group')}>
-                    <label className={cx('title-input')} htmlFor="result">Conclusion</label>
+                    <label className={cx('title-input')} htmlFor="conclusion">Conclusion</label>
                     <InputTextarea
                         className={cx('input-text-area')}
-                        id="result"
-                        value={result}
-                        onChange={(e) => handleChange(e)}
+                        id="conclusion"
+                        value={ultrasoundResult.conclusion}
+                        onChange={(e) => handleChange(e, 'conclusion')}
                         required
                         rows={3}
                         cols={20}
@@ -119,7 +137,8 @@ function UltrasoundResultTab({overResult}) {
 }
 
 UltrasoundResultTab.prototype={
-    overResult: PropTypes.string,
+    ultrasoundResult: PropTypes.string,
+    setUltrasoundResult: PropTypes.func,
 }
 
 export default UltrasoundResultTab;

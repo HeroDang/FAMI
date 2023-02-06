@@ -263,20 +263,10 @@ function ManagerBill() {
         return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     };
 
-
-   
-
-    
-   
-    
     const editProduct = (bill) => {
         setBill({ ...bill });
         setProductDialog(true);
     };
-
-    
-
-   
 
     const findIndexById = (id) => {
         let index = -1;
@@ -334,11 +324,6 @@ function ManagerBill() {
     const exportCSV = () => {
         dt.current.exportCSV();
     };
-
-
-    
-
-    
 
     const onInputNumberChange = (e, name) => {
         const val = e.value || 0;
@@ -483,9 +468,6 @@ function ManagerBill() {
 
     }
   
-    
-    
-
     
     return (
         <div className="">

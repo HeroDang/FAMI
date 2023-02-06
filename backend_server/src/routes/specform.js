@@ -8,6 +8,7 @@ const specFormController = require("../app/controllers/SpecFormController");
 
 router.get("/create", specFormController.createSpecForm);
 router.put("/update/:id", specFormController.updateFrom);
+router.patch("/updateOverResult", specFormController.updateOverResult);
 router.post("/createmany", CreateSpecFormMiddleware,
         GetRoomIdsInSpecFormMiddleware, DeleteSpecFormMiddleware, specFormController.createManyFrom);
 router.get("/getlist", specFormController.getList);

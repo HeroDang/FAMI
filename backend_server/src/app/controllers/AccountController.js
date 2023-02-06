@@ -69,6 +69,21 @@ class AccountController {
         .catch(next);
     }
 
+    //[POST] /accounts/login
+    login(req, res, next){
+        let {username, password} = req.body;
+
+        Account.findOne({username, password})
+            .then((account) => {
+                let {password, ...newAccount} = account;
+                res.send({
+                    token: 'test',  
+                    account: newAccount,
+                });
+            })
+            .catch(() => {res.send({error: "ERROR"})})
+    }
+
     // index(req, res, next) {
     //     Person.find({})
     //         .then((persons) =>

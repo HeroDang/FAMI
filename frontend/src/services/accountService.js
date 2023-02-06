@@ -56,3 +56,13 @@ export const getCounterAccount= async () => {
         console.log(error);
     }
 };
+
+export const login= async (account) => {
+    try {
+        const res = await httpRequest.post('accounts/login',account);
+        
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};

@@ -1,38 +1,33 @@
 // import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 /* A library that allows you to validate the props you pass to your React components. */
+import { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Toast } from 'primereact/toast';
 
 import { ThermometerIcon, ArmIcon, WeightIcon, PulseIcon, BreathIcon, HeightIcon } from '@/components/Icons';
+import ButtonComponent from '@/components/Button';
+
 import * as examService from '@/services/examService';
 import classNames from 'classnames/bind';
 import styles from './TabDetail.module.scss';
-import { useEffect, useState } from 'react';
+
 
 const cx = classNames.bind(styles);
-const emptyExam = {
-    temperature: 0,
-    sysBloodPressure: 0, // <120
-    diasBloodPressure: 0,// <80
-    breathing: 0,
-    pulse: 0,
-    height: 0,
-    weight: 0,
-    note: 0,
-}
 
-function ExamTab({specFormId}) {
-    const [exam, setExam] = useState(emptyExam)
+function ExamTab({exam, setExam}) {
+    // const [exam, setExam] = useState(emptyExam)
+    const toast = useRef(null);
 
-    useEffect(()=>{
-        examService.getExamBySpecFormId(specFormId)
-            .then((exam) => {
-                let _exam = {...exam};
-                // console.log(exam._id);
-                setExam(_exam);
-            })
-    },[])
+    // useEffect(()=>{
+    //     examService.getExamBySpecFormId(specFormId)
+    //         .then((exam) => {
+    //             let _exam = {...exam};
+    //             // console.log(exam._id);
+    //             setExam(_exam);
+    //         })
+    // },[])
     
     const handleChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
@@ -41,8 +36,36 @@ function ExamTab({specFormId}) {
         setExam(_exam);
     }
 
+    const handlerComplete = () => {
+        let _exam = {...exam};
+        examService.updateExam(_exam, _exam._id)
+            .then((result) => {
+                console.log(result);
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Exam Updated',
+                    life: 3000,
+                });
+            });
+
+    }
+
     return (
         <div className={cx('grid', 'wide')}>
+            <Toast ref={toast} />
+            <div className={cx('btn-group')}>
+                <ButtonComponent
+                    className={cx('btn-add')}
+                    primary
+                    large
+                    // leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
+                    onClick={handlerComplete}
+                    // disable={!selectedProducts || !selectedProducts.length}
+                >
+                    Complete
+                </ButtonComponent>
+            </div>
             <div className={cx('row','no-gutters')}>
                 <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
                     <div className={cx('item-container')}>
@@ -163,6 +186,8 @@ function ExamTab({specFormId}) {
 
 ExamTab.prototype={
     specFormId: PropTypes.string,
+    exam: PropTypes.object,
+    setExam: PropTypes.func,
 }
 
 export default ExamTab;

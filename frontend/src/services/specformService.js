@@ -30,6 +30,16 @@ export const updateSpecForm = async (specForm, _id) => {
     }
 };
 
+export const updateOverResult = async (overResult, _id) => {
+    try {
+        const res = await httpRequest.patch(`specform/updateOverResult`, {overResult, _id});
+        // console.log('res', res);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const deleteSpecForm = async (_id) => {
     try {
         const res = await httpRequest.deleted(`specform/delete/${_id}`);
