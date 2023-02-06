@@ -1,12 +1,13 @@
 const DrugBook = require("../models/DrugBook");
 const { multipleMongooseToObject } = require("../../utils/mongoose");
 const Counter = require("../models/Counter");
-class BillController {
+const DrugBook = require("../models/DrugBook");
+class DrugBookController {
     // [GET] /home
     getList(req, res, next) {
-        Bill.find({})
-            .then((bills) => {
-                res.json(bills);
+        DrugBook.find({})
+            .then((drugbooks) => {
+                res.json(drugbooks);
             })
             .catch(next);
     }
@@ -25,7 +26,7 @@ class BillController {
         
         } = req.body;
 
-        const DrugBook = new Bill({
+        const drugbook = new DrugBook({
             drugname:  drugname ,
             unit: unit,
             unitprice: unitprice,
@@ -34,9 +35,9 @@ class BillController {
             status: status,
             total: total,
         });
-        bill
+        drugbook
             .save()
-            .then(() => {res.status(201).json(bill)})
+            .then(() => {res.status(201).json(drugbook)})
             .catch(next);
     }
 
@@ -50,7 +51,7 @@ class BillController {
             status,
             total,
         } = req.body;
-        const DrugBook = {
+        const drugbook = {
             drugname:  drugname ,
             unit: unit,
             unitprice: unitprice,
@@ -59,8 +60,8 @@ class BillController {
             status: status,
             total: total,
         };
-        DrugBook.updateOne({_id: req.params.id},bill)
-            .then(() => {res.status(201).json(bill)})
+        DrugBook.updateOne({_id: req.params.id},drugbook)
+            .then(() => {res.status(201).json(drugbook)})
             .catch(next);
     }
     deleteDrugBook(req, res, next){
@@ -76,7 +77,7 @@ class BillController {
     }
 
     counterDrugBook(req,res,next){
-        Counter.findOne({ id: "billID" })
+        Counter.findOne({ id: "drugbookID" })
         .then((data) => res.json(data))
         .catch(next);
     }

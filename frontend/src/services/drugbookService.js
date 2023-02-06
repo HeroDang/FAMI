@@ -1,8 +1,8 @@
 import * as httpRequest from '@/utils/httpRequest';
 
-export const getBillList= async () => {
+export const getDrugBookList= async () => {
     try {
-        const res = await httpRequest.get('bills/getlist', {
+        const res = await httpRequest.get('drugbooks/getlist', {
             
         });
         return res;
@@ -11,44 +11,44 @@ export const getBillList= async () => {
     }
 };
 
-export const createBill= async (bill) => {
+export const createDrugBook= async (drugbook) => {
     try {
-        const res = await httpRequest.post('bills/create',bill);
+        const res = await httpRequest.post('drugbooks/create',drugbook);
         
         return res;
     } catch (error) {
         console.log(error);
     }
 };
-export const updateBill= async (bill,_id) => {
+export const updateDrugBook= async (drugbook,_id) => {
     try {
-        const res = await httpRequest.put(`bills/update/${_id}`,bill);
+        const res = await httpRequest.put(`drugbooks/update/${_id}`,drugbook);
         
         return res;
     } catch (error) {
         console.log(error);
     }
 };
-export const deleteBill= async (_id) => {
+export const deleteDrugBook = async (_id) => {
     try {
-        const res = await httpRequest.deleted(`bills/delete/${_id}`);
+        const res = await httpRequest.deleted(`drugbooks/delete/${_id}`);
         
         return res;
     } catch (error) {
         console.log(error);
     }
 };
-export const deleteSelectedBill = async (idList = []) => {
+export const deleteSelectedDrugBook = async (idList = []) => {
     try {
-        const res = await httpRequest.post(`bills/delete/selected`,idList);
+        const res = await httpRequest.post(`drugbooks/delete/selected`,idList);
         return res;
     } catch (error) {
         console.log(error);
     }
 };
-export const getCounterBill= async () => {
+export const getCounterDrugBook= async () => {
     try {
-        const res = await httpRequest.get('bills/counter/bill', {
+        const res = await httpRequest.get('drugbooks/counter/drugbook', {
             
         });
         return res;
