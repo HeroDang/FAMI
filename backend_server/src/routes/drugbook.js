@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const BillController = require("../app/controllers/BillController");
+const DrugBookController = require("../app/controllers/DrugBookController");
 
-router.get("/getlist", BillController.getList);
-router.get("/counter/bill", BillController.counterBill);
-router.post("/create",BillController.createBill);
-router.put("/update/:id",BillController.updateBill);
-router.delete("/delete/:id",BillController.deleteBill);
-router.post("/delete/selected", BillController.deleteSelectedBill);
+router.get("/getlist", DrugBookController.getList);
+router.get("/counter/drugbook", DrugBookController.counterDrugBook);
+router.post("/create",DrugBookController.createDrugBook);
+router.get("/create",DrugBookController.createDrugBook);
+router.put("/update/:id",DrugBookController.updateDrugBook);
+router.delete("/delete/:id",DrugBookController.deleteDrugBook);
+router.post("/delete/selected", DrugBookController.deleteSelectedDrugBook);
+
 
 module.exports = router;
