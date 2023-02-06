@@ -417,8 +417,6 @@ export const PulseIcon = ({ width = '3.2rem', height = '3.2rem', className }) =>
     </svg>
 );
 
-<<<<<<< HEAD
-=======
 export const DrugIcon = ({ width = '3.2rem', height = '3.2rem', className }) => (
     <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width = '3.2rem' height = '3.2rem' viewBox="0 0 512.000000 512.000000" preserveAspectRatio="xMidYMid meet">
 
@@ -438,4 +436,3 @@ export const DrugActiveIcon = ({ width = '3.2rem', height = '3.2rem', className 
     </g>
     </svg>
 );
->>>>>>> origin/development
