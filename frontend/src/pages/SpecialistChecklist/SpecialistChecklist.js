@@ -13,7 +13,7 @@ import { Button } from 'primereact/button';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown } from 'primereact/dropdown';
 import { Calendar } from 'primereact/calendar';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -64,8 +64,7 @@ function SpecialistChecklist() {
             _id: '',
             personId: 0,
             name: '',
-        }
-
+        },
     };
 
     let emptySpecForm = {
@@ -92,16 +91,13 @@ function SpecialistChecklist() {
             _id: '',
             personId: 0,
             name: '',
-        }
-
+        },
     };
 
-
-
     const emptyCounter = {
-        mEFormSeq : 0,
-        patientSeq : 0,
-    }
+        mEFormSeq: 0,
+        patientSeq: 0,
+    };
     const [specForms, setSpecForms] = useState(null);
     const [specForm, setSpecForm] = useState(emptySpecForm);
 
@@ -138,26 +134,24 @@ function SpecialistChecklist() {
             setSpecForms(newSpecForms);
         });
 
-
         meformService.getCounterMEForm().then((data) => {
             const _counterMEForm = {
-                mEFormSeq : data.mEForm.seq + 1,
-                patientSeq : data.patient.seq + 1,
-            }
+                mEFormSeq: data.mEForm.seq + 1,
+                patientSeq: data.patient.seq + 1,
+            };
 
             setCounterMEForm(_counterMEForm);
-        })
+        });
 
         meformService.getRoomsToForm().then((data) => {
-
-            let _roomOptions = [ ...data, {name: "All room", roomId: -1}]
+            let _roomOptions = [...data, { name: 'All room', roomId: -1 }];
 
             setRooms(_roomOptions);
-        })
+        });
 
         personService.getListToSpecForm().then((data) => {
             setPersons(data);
-        })
+        });
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onRoomChange = (e) => {
@@ -166,8 +160,7 @@ function SpecialistChecklist() {
     };
 
     const onPersonChange = (e) => {
-
-        let _specForm = {...specForm};
+        let _specForm = { ...specForm };
         _specForm.personId = e.value.personId;
         _specForm._person = e.value;
         setSpecForm(_specForm);
@@ -175,7 +168,6 @@ function SpecialistChecklist() {
         // setSelectedPerson(e.value);
         // console.log(_meform);
     };
-
 
     const openNew = () => {
         setSpecForm(emptySpecForm);
@@ -212,7 +204,7 @@ function SpecialistChecklist() {
                     detail: 'Form Created',
                     life: 3000,
                 });
-                
+
                 setProductDialog(false);
                 setSpecForm(emptySpecForm);
                 // setMeform(emptyMEForm);
@@ -220,17 +212,14 @@ function SpecialistChecklist() {
             });
         } else {
             // console.log('data',_specForm);
-
             // _meform.patientId = counterMEForm.patientSeq;
             // meformService.createMEForm(_meform).then((data) => {
-
             //     toast.current.show({
             //         severity: 'success',
             //         summary: 'Successful',
             //         detail: 'Product Created',
             //         life: 3000,
             //     });
-
             //     setProductDialog(false);
             //     setMeform(emptyMEForm);
             //     setChangeData(!changeData);
@@ -245,23 +234,25 @@ function SpecialistChecklist() {
         </React.Fragment>
     );
 
-    const onInputChange = (e, name, type = "form") => {
+    const onInputChange = (e, name, type = 'form') => {
         const val = (e.target && e.target.value) || '';
         // let _specForm = { ...meform };
         let _specForm = { ...specForm };
 
-        switch(type){
-        case "form" :{
-            // console.log(val);
-            _specForm[`${name}`] = val;
-            break;}
-            case "patient":
+        switch (type) {
+            case 'form': {
+                // console.log(val);
+                _specForm[`${name}`] = val;
+                break;
+            }
+            case 'patient':
                 _specForm._patient[`${name}`] = val;
                 break;
-            case "person":
+            case 'person':
                 _specForm._person[`${name}`] = val;
                 break;
-            default: break;
+            default:
+                break;
         }
 
         setSpecForm(_specForm);
@@ -269,12 +260,12 @@ function SpecialistChecklist() {
     };
 
     const onDateChange = (e) => {
-        let _specForm = {...specForm}
+        let _specForm = { ...specForm };
         _specForm.date = e.value;
         // setMeform(_meform);
 
         setSpecForm(_specForm);
-    }
+    };
 
     const hideDeleteProductDialog = () => {
         setDeleteProductDialog(false);
@@ -286,7 +277,6 @@ function SpecialistChecklist() {
     };
 
     const deleteProduct = () => {
-
         // let _meform = { ...meform };
         let _specForm = { ...specForm };
         specFormService.deleteSpecForm(_specForm._id).then((data) => {
@@ -299,20 +289,19 @@ function SpecialistChecklist() {
     };
 
     const deleteSelectedProducts = () => {
-        let _selectedProducts = [ ...selectedProducts ];
+        let _selectedProducts = [...selectedProducts];
         let specFormIds = [];
 
         _selectedProducts.forEach((item) => {
             specFormIds.push(item._id);
-        })
+        });
 
-        specFormService.deleteSelectedSpecForm(specFormIds)
-            .then((data) => {
-                setChangeData(!changeData);
-                setDeleteProductsDialog(false);
-                setSelectedProducts(null);
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
-            })
+        specFormService.deleteSelectedSpecForm(specFormIds).then((data) => {
+            setChangeData(!changeData);
+            setDeleteProductsDialog(false);
+            setSelectedProducts(null);
+            toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+        });
     };
 
     const deleteProductDialogFooter = (
@@ -329,8 +318,7 @@ function SpecialistChecklist() {
     );
 
     const DataTableCrudDemo = () => {
-
-        const editProduct = (e,specForm) => {
+        const editProduct = (e, specForm) => {
             setSpecForm({ ...specForm });
             setProductDialog(true);
             e.stopPropagation();
@@ -343,15 +331,16 @@ function SpecialistChecklist() {
         };
 
         const actionBodyTemplate = (rowData) => {
-
             return (
                 <div className={cx('actionBtns')}>
-                    {rowData._person && <Link className={cx('btn-delete')} to={`/detailInformation/${rowData._id}`} state={rowData}>
-                        <span className={cx('icon')}>
-                            <MedicalResultIcon />
-                        </span>
-                    </Link>}
-                    <button className={cx('btn-delete')} onClick={(e) => editProduct(e,rowData)}>
+                    {rowData._person && (
+                        <Link className={cx('btn-delete')} to={`/detailInformation/${rowData._id}`} state={rowData}>
+                            <span className={cx('icon')}>
+                                <MedicalResultIcon />
+                            </span>
+                        </Link>
+                    )}
+                    <button className={cx('btn-delete')} onClick={(e) => editProduct(e, rowData)}>
                         <span className={cx('icon')}>
                             <PencilSmallIcon />
                         </span>
@@ -478,15 +467,15 @@ function SpecialistChecklist() {
                             New
                         </MyBtn> */}
                         <Dropdown
-                                className={cx('dialog-dropdown')}
-                                value={room}
-                                // value={meform.personId === 0 ? selectedPerson : meform._person}
-                                options={rooms}
-                                onChange={onRoomChange}
-                                optionLabel="name"
-                                placeholder={"Select a room to add"}
-                                // disabled = {meform.formId === 0 ? false : true}
-                            />
+                            className={cx('dialog-dropdown')}
+                            value={room}
+                            // value={meform.personId === 0 ? selectedPerson : meform._person}
+                            options={rooms}
+                            onChange={onRoomChange}
+                            optionLabel="name"
+                            placeholder={'Select a room to add'}
+                            // disabled = {meform.formId === 0 ? false : true}
+                        />
                         <MyBtn
                             className={cx('btn-add')}
                             primary
@@ -524,20 +513,22 @@ function SpecialistChecklist() {
                                 </label>
                                 <InputText
                                     id="patientId"
-                                    value={specForm.specFormId === 0 ? (counterMEForm.patientSeq) : specForm.patientId}
+                                    value={specForm.specFormId === 0 ? counterMEForm.patientSeq : specForm.patientId}
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !specForm.patientId && <small className="p-error">Name is required.</small>}
+                                {submitted && !specForm.patientId && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                             <div className="field col">
                                 <label htmlFor="patientName">Full Name</label>
                                 <InputText
                                     id="patientName"
                                     value={specForm._patient.name}
-                                    onChange={(e) => onInputChange(e, 'name', "patient")}
+                                    onChange={(e) => onInputChange(e, 'name', 'patient')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -553,7 +544,7 @@ function SpecialistChecklist() {
                                 <InputText
                                     id="patientAddress"
                                     value={specForm._patient.address}
-                                    onChange={(e) => onInputChange(e, 'address', "patient")}
+                                    onChange={(e) => onInputChange(e, 'address', 'patient')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -566,7 +557,7 @@ function SpecialistChecklist() {
                                 <InputText
                                     id="patientPhone"
                                     value={specForm._patient.phone}
-                                    onChange={(e) => onInputChange(e, 'phone', "patient")}
+                                    onChange={(e) => onInputChange(e, 'phone', 'patient')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -582,7 +573,7 @@ function SpecialistChecklist() {
                                 <InputText
                                     id="patientJob"
                                     value={specForm._patient.career}
-                                    onChange={(e) => onInputChange(e, 'career', "patient")}
+                                    onChange={(e) => onInputChange(e, 'career', 'patient')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -595,7 +586,7 @@ function SpecialistChecklist() {
                                 <InputText
                                     id="patientAge"
                                     value={specForm._patient.age}
-                                    onChange={(e) => onInputChange(e, 'age', "patient")}
+                                    onChange={(e) => onInputChange(e, 'age', 'patient')}
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
@@ -616,13 +607,15 @@ function SpecialistChecklist() {
                                 </label>
                                 <InputText
                                     id="formId"
-                                    value={specForm.specFormId === 0 ? (counterMEForm.mEFormSeq) : specForm.specFormId}
+                                    value={specForm.specFormId === 0 ? counterMEForm.mEFormSeq : specForm.specFormId}
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !specForm.specFormId && <small className="p-error">Name is required.</small>}
+                                {submitted && !specForm.specFormId && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                             <div className="field col">
                                 <label htmlFor="numOrder">Ordinal numbers</label>
@@ -635,7 +628,9 @@ function SpecialistChecklist() {
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !specForm.numOrder && <small className="p-error">Name is required.</small>}
+                                {submitted && !specForm.numOrder && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                         </div>
                         <div className="formgrid grid">
@@ -651,10 +646,12 @@ function SpecialistChecklist() {
                                     options={persons}
                                     onChange={onPersonChange}
                                     optionLabel="name"
-                                    placeholder={"Select a doctor"}
+                                    placeholder={'Select a doctor'}
                                     // disabled = {specForm.specFormId === 0 ? false : true}
                                 />
-                                {submitted && !specForm.personId && <small className="p-error">Name is required.</small>}
+                                {submitted && !specForm.personId && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                             <div className="field col">
                                 <label htmlFor="date">Date</label>
@@ -670,7 +667,9 @@ function SpecialistChecklist() {
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 /> */}
-                                {submitted && !specForm.patientId && <small className="p-error">Name is required.</small>}
+                                {submitted && !specForm.patientId && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -709,7 +708,6 @@ function SpecialistChecklist() {
                             cols={20}
                         />
                     </div>
-
                 </div>
             </Dialog>
             {/* delete */}

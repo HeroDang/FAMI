@@ -48,17 +48,14 @@ const publicRoutes = [
     {
         path: config.routes.manageBill,
         component: ManageBill,
-
     },
     {
         path: config.routes.manageDrugBook,
         component: ManageDrugBook,
-
     },
     {
         path: config.routes.manageDrug,
         component: ManageDrug,
-
     },
     {
         path: config.routes.login,
