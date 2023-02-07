@@ -15,69 +15,101 @@ import {
     ManageBillActiveIcon,
     DrugIcon,
     DrugActiveIcon,
-
 } from '@/components/Icons';
 import Menu, { MenuItem } from './Menu';
 // import SuggestedAccounts from '@/components/SuggestedAccounts';
 // import * as userService from '@/services/userService';
 import styles from './Sidebar.module.scss';
+import { useEffect, useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 // const PER_PAGE = 5;
 
-function Sidebar() {
+function Sidebar({ currentAccount }) {
     // const [SuggestedUsers, setSuggestedUser] = useState([]);
+    const [managerAccount, setManagerAccount] = useState(false);
+    const [medicalChecklist, setMedicalChecklist] = useState(false);
+    const [specialistChecklist, setSpecialistChecklist] = useState(false);
+    const [manageBill, setManageBill] = useState(false);
+    const [manageDrugBook, setManageDrugBook] = useState(false);
 
-    // useEffect(() => {
-    //     userService
-    //         .getSuggested({ page: 1, perPage: PER_PAGE })
-    //         .then((data) => {
-    //             setSuggestedUser((prevUsers) => [...prevUsers, ...data]);
-    //         })
-    //         .catch((error) => console.log(error));
-    // }, []);
+    useEffect(() => {
+        if (currentAccount) {
+            const job = currentAccount.job;
+            switch (job) {
+                case 'Specialist doctor':
+                    setSpecialistChecklist(true);
+                    break;
+                case 'General doctor':
+                    setMedicalChecklist(true);
+                    break;
+                case 'Pharmacist':
+                    setManageDrugBook(true);
+                    break;
+                case 'Staff':
+                    setMedicalChecklist(true);
+                    break;
+                case 'Manager':
+                    setManagerAccount(true);
+                    break;
+                default:
+                    break;
+            }
+        }
+        console.log('sidebar', currentAccount);
+    }, []);
 
     return (
         <aside className={cx('wrapper')}>
             <Menu>
-                <MenuItem title="For You" to={config.routes.home} icon={<HomeIcon />} activeIcon={<HomeActiveIcon />} />
+                {/* <MenuItem title="For You" to={config.routes.home} icon={<HomeIcon />} activeIcon={<HomeActiveIcon />} />
                 <MenuItem
                     title="Following"
                     to={config.routes.following}
                     icon={<UserGroupIcon />}
                     activeIcon={<UserGroupActiveIcon />}
-                />
-                <MenuItem
-                    title="Manager Account"
-                    to={config.routes.managerAccount}
-                    icon={<ManageAccountIcon />}
-                    activeIcon={<ManageAccountActiveIcon />}
-                />
-                <MenuItem
-                    title="Manager Checklist"
-                    to={config.routes.medicalChecklist}
-                    icon={<LiveIcon />}
-                    activeIcon={<LiveActiveIcon />}
-                />
-                <MenuItem
-                    title="Specialist Checklist"
-                    to={config.routes.specialistChecklist}
-                    icon={<LiveIcon />}
-                    activeIcon={<LiveActiveIcon />}
-                />
-                <MenuItem
-                    title="Manage Bill"
-                    to={config.routes.manageBill}
-                    icon={<ManageBillIcon/>}
-                    activeIcon={<ManageBillActiveIcon />}
-                />
-                 <MenuItem
-                    title="Manage Drug"
-                    to={config.routes.manageDrugBook}
-                    icon={<DrugIcon />}
-                    activeIcon={<DrugActiveIcon />}
-                />
+                /> */}
+                {managerAccount && (
+                    <MenuItem
+                        title="Manager Account"
+                        to={config.routes.managerAccount}
+                        icon={<ManageAccountIcon />}
+                        activeIcon={<ManageAccountActiveIcon />}
+                    />
+                )}
+                {medicalChecklist && (
+                    <MenuItem
+                        title="Manager Checklist"
+                        to={config.routes.medicalChecklist}
+                        icon={<LiveIcon />}
+                        activeIcon={<LiveActiveIcon />}
+                    />
+                )}
+                {specialistChecklist && (
+                    <MenuItem
+                        title="Specialist Checklist"
+                        to={config.routes.specialistChecklist}
+                        icon={<LiveIcon />}
+                        activeIcon={<LiveActiveIcon />}
+                    />
+                )}
+                {manageBill && (
+                    <MenuItem
+                        title="Manage Bill"
+                        to={config.routes.manageBill}
+                        icon={<ManageBillIcon />}
+                        activeIcon={<ManageBillActiveIcon />}
+                    />
+                )}
+                {manageDrugBook && (
+                    <MenuItem
+                        title="Manage Drug"
+                        to={config.routes.manageDrugBook}
+                        icon={<DrugIcon />}
+                        activeIcon={<DrugActiveIcon />}
+                    />
+                )}
                 {/* <MenuItem
                     title="Manage Drug"
                     to={config.routes.manageDrug}

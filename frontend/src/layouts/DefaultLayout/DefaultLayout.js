@@ -32,7 +32,7 @@ function DefaultLayout({ children }) {
                 <div className={cx('wrapper')}>
                     <Header currentAccount={token.account._doc} />
                     <div className={cx('container')}>
-                        <Sidebar />
+                        <Sidebar currentAccount={token.account._doc} />
                         <div className={cx('content')}>{children}</div>
                     </div>
                 </div>

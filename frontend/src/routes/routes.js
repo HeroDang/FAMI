@@ -26,6 +26,7 @@ const publicRoutes = [
         component: Following,
     },
     {
+        // jobs: ['Manager'],
         path: config.routes.managerAccount,
         component: ManagerAccount,
     },
