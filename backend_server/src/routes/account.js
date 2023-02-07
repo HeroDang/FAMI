@@ -5,6 +5,7 @@ const AccountController = require("../app/controllers/AccountController");
 const CreatePersonMiddleware = require("../app/middleware/CreatePersonMiddleware");
 const UpdatePersonMiddleware = require("../app/middleware/UpdatePersonMiddleware");
 const DeletePersonMiddleware = require("../app/middleware/DeletePersonMiddleware");
+const DeletePersonsMiddleware = require("../app/middleware/DeletePersonsMiddleware");
 const { route } = require("./prescription");
 
 router.post("/login", AccountController.login);
@@ -21,6 +22,10 @@ router.delete(
     DeletePersonMiddleware,
     AccountController.deleteAccount,
 );
-router.post("/delete/selected", AccountController.deleteSelectedAccount);
+router.post(
+    "/delete/selected",
+    DeletePersonsMiddleware,
+    AccountController.deleteSelectedAccount,
+);
 
 module.exports = router;

@@ -186,7 +186,7 @@ function ManagerAccount() {
         // let _products = products.filter((val) => val.id !== product.id);
         // setProducts(_products);
         let _account = { ...account };
-        accountService.deleteAccount(_account._id).then((data) => {
+        accountService.deleteAccount(_account.ID).then((data) => {
             setChangeData(!changeData);
             setDeleteProductDialog(false);
             // setProduct(emptyProduct);
@@ -208,7 +208,7 @@ function ManagerAccount() {
         let formIds = [];
         //console.log(selectedProducts);
         _selectedProducts.forEach((item) => {
-            formIds.push(item._id);
+            formIds.push(item.ID);
         });
         accountService.deleteSelectedAccount(formIds).then((data) => {
             setChangeData(!changeData);
@@ -663,7 +663,7 @@ function ManagerAccount() {
                                 )}
                             </div>
                         </div>
-                        <div className="formgrid grid">
+                        {/* <div className="formgrid grid">
                             <div className="field col">
                                 <label htmlFor="password" style={{ color: '#0D5BF1', fontSize: '13px' }}>
                                     <b>Password</b>
@@ -681,7 +681,7 @@ function ManagerAccount() {
                                     <small className="p-error">Password is required.</small>
                                 )}
                             </div>
-                        </div>
+                        </div> */}
                         {/* <div className="field">
                         <label htmlFor="name">Name</label>
                         <InputText

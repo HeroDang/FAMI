@@ -157,6 +157,11 @@ function SpecialistChecklist() {
     const onRoomChange = (e) => {
         let _room = e.value;
         setRoom(_room);
+        if (_room.roomId > 0) {
+            setGlobalFilter(`r${_room.roomId}`);
+        } else {
+            setGlobalFilter('');
+        }
     };
 
     const onPersonChange = (e) => {
@@ -332,7 +337,7 @@ function SpecialistChecklist() {
 
         const actionBodyTemplate = (rowData) => {
             return (
-                <div className={cx('actionBtns')}>
+                <div className={cx('actionBtns', 'spec-form')}>
                     {rowData._person && (
                         <Link className={cx('btn-delete')} to={`/detailInformation/${rowData._id}`} state={rowData}>
                             <span className={cx('icon')}>
@@ -466,7 +471,7 @@ function SpecialistChecklist() {
                         >
                             New
                         </MyBtn> */}
-                        <Dropdown
+                        {/* <Dropdown
                             className={cx('dialog-dropdown')}
                             value={room}
                             // value={meform.personId === 0 ? selectedPerson : meform._person}
@@ -475,7 +480,7 @@ function SpecialistChecklist() {
                             optionLabel="name"
                             placeholder={'Select a room to add'}
                             // disabled = {meform.formId === 0 ? false : true}
-                        />
+                        /> */}
                         <MyBtn
                             className={cx('btn-add')}
                             primary

@@ -4,6 +4,10 @@ const router = express.Router();
 const prescriptionController = require("../app/controllers//PrescriptionController");
 
 router.get("/create", prescriptionController.createPrescription);
-// router.get("/getlist", roomController.getList);
+router.get("/getPrescription/:formId", prescriptionController.getPrescription);
+router.put(
+    "/update/:prescriptionId",
+    prescriptionController.updatePrescription,
+);
 
 module.exports = router;

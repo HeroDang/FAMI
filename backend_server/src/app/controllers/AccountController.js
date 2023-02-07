@@ -51,7 +51,7 @@ class AccountController {
     }
 
     deleteSelectedAccount(req, res, next) {
-        Account.delete({ _id: { $in: req.body } })
+        Account.delete({ ID: { $in: req.body } })
             .then(() => res.status(201).json({ message: "DELETED" }))
             .catch(next);
     }

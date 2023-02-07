@@ -1,14 +1,15 @@
-const Room = require('../models/Room');
-const Exam = require('../models/Exam');
-const { multipleMongooseToObject, mongooseToObject } = require('../../utils/mongoose');
+const Room = require("../models/Room");
+const Exam = require("../models/Exam");
+const {
+    multipleMongooseToObject,
+    mongooseToObject,
+} = require("../../utils/mongoose");
 
 class ExamController {
-
     //[GET] /exam/create
-    createRoom(req,res,next){
-
+    createRoom(req, res, next) {
         const exam = new Exam({
-            specFormId: 'GF3R2',
+            specFormId: "GF3R2",
             temperature: 29,
             sysBloodPressure: 100,
             diasBloodPressure: 60,
@@ -16,44 +17,84 @@ class ExamController {
             pulse: 30,
             height: 170,
             weight: 30,
-            note: '',
+            note: "",
         });
-        exam
-            .save()
+        exam.save()
             .then((data) => {
-                
-
                 res.status(201).json(exam);
             })
             .catch(next);
     }
 
     //[GET] /exam/getExam/:specFormId
-    getExam(req,res,next){
-        Exam.findOne({specFormId: req.params.specFormId})
+    getExam(req, res, next) {
+        Exam.findOne({ specFormId: req.params.specFormId })
             .then((exam) => {
-                res.json(exam)
+                res.json(exam);
+            })
+            .catch(next);
+    }
+
+    //[POST] /exam/create
+    createExam(req, res, next) {
+        const {
+            specFormId,
+            temperature,
+            sysBloodPressure,
+            diasBloodPressure,
+            breathing,
+            pulse,
+            height,
+            weight,
+            note,
+        } = req.body;
+
+        const exam = new Exam({
+            specFormId: specFormId,
+            temperature: parseInt(temperature),
+            sysBloodPressure: parseInt(sysBloodPressure),
+            diasBloodPressure: parseInt(diasBloodPressure),
+            breathing: parseInt(breathing),
+            pulse: parseInt(pulse),
+            height: parseInt(height),
+            weight: parseInt(weight),
+            note: note,
+        });
+
+        exam.save()
+            .then((data) => {
+                res.json(data);
             })
             .catch(next);
     }
 
     //[PUT] /exam/update/:id
-    updateExam(req, res, next){
-        const {specFormId, temperature, sysBloodPressure, diasBloodPressure, breathing, pulse, height, weight, note} = req.body;
+    updateExam(req, res, next) {
+        const {
+            specFormId,
+            temperature,
+            sysBloodPressure,
+            diasBloodPressure,
+            breathing,
+            pulse,
+            height,
+            weight,
+            note,
+        } = req.body;
 
         const exam = {
             specFormId: specFormId,
-            temperature: parseInt(temperature) ,
-            sysBloodPressure: parseInt(sysBloodPressure) ,
-            diasBloodPressure: parseInt(diasBloodPressure) ,
-            breathing: parseInt(breathing) ,
-            pulse: parseInt(pulse) ,
-            height: parseInt(height) ,
-            weight: parseInt(weight) ,
+            temperature: parseInt(temperature),
+            sysBloodPressure: parseInt(sysBloodPressure),
+            diasBloodPressure: parseInt(diasBloodPressure),
+            breathing: parseInt(breathing),
+            pulse: parseInt(pulse),
+            height: parseInt(height),
+            weight: parseInt(weight),
             note: note,
         };
 
-        Exam.updateOne({_id: req.params.id}, exam)
+        Exam.updateOne({ _id: req.params.id }, exam)
             .then((data) => {
                 res.json(data);
             })

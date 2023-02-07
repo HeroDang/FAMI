@@ -5,31 +5,19 @@ import classNames from 'classnames/bind';
 import styles from './Login.module.scss';
 
 import * as accountService from '@/services/accountService';
-import useToken from '@/hooks/useToken';
 import images from '@/assets/images';
 import Image from '@/components/Image';
 
 const cx = classNames.bind(styles);
-
-// async function loginUser(credentials) {
-//  return fetch('http://localhost:8080/login', {
-//    method: 'POST',
-//    headers: {
-//      'Content-Type': 'application/json'
-//    },
-//    body: JSON.stringify(credentials)
-//  })
-//    .then(data => data.json())
-// }
 
 export default function Login({ setToken }) {
     const [username, setUserName] = useState();
     const [password, setPassword] = useState();
     // const [loading, setLoading] = useState(false);
     const [isLogin, setIsLogin] = useState(false);
-    // const [isError, setIsError] = useState(false);
+    const [isError, setIsError] = useState(false);
     const [submitted, setSubmited] = useState(false);
-    const [message, setMessage] = useState('loi');
+    const [message, setMessage] = useState('');
     // const { token, setToken } = useToken();
 
     useEffect(() => {
@@ -38,58 +26,28 @@ export default function Login({ setToken }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // const token = await loginUser({
-        //   username,
-        //   password
-        // });
-        // setToken(token);
+        setSubmited(true);
 
-        accountService
-            .login({
-                username,
-                password,
-            })
-            .then((token) => {
-                localStorage.setItem('token', JSON.stringify(token));
-                setIsLogin(true);
-                // setToken(token);
-            });
+        if (username.trim() && password.trim()) {
+            accountService
+                .login({
+                    username,
+                    password,
+                })
+                .then((token) => {
+                    if (token.account) {
+                        localStorage.setItem('token', JSON.stringify(token));
+                        setIsLogin(true);
+                    } else {
+                        setIsError(true);
+                        setMessage('Username or password invalid');
+                    }
+                });
+        }
     };
-
-    // const handleSubmit = async (e) => {
-    //     setSubmited(true);
-    //     // setLoading(true);
-    //     e.preventDefault();
-    //     // if (username.trim() && password.trim()) {
-    //     const token = await accountService.login({
-    //         username,
-    //         password,
-    //     });
-    //     setToken(token);
-    //     // console.log(token);
-    //     // if (_token.error) {
-    //     //     setMessage('Username or password invalid');
-    //     //     setToken(_token);
-    //     //     setIsError(true);
-    //     // } else {
-    //     //     setToken(_token);
-    //     //     // setIsLogin(true);
-    //     //     console.log(token);
-    //     //     // if (_token.account) {
-    //     //     //     setToken(_token);
-    //     //     //     // setIsLogin(true);
-    //     //     //     console.log(token);
-    //     //     // } else {
-    //     //     //     console.log('loi');
-    //     //     // }
-    //     // }
-    //     // }
-    //     // setLoading(false);
-    // };
 
     return (
         <div className={cx('login-wrapper')}>
-            {/* {loading && <p>Loading</p>} */}
             {isLogin && <Navigate to="/" replace={true} />}
 
             <div className={cx('image-group')}>
@@ -111,7 +69,7 @@ export default function Login({ setToken }) {
                         <input type="password" onChange={(e) => setPassword(e.target.value)} />
                         {submitted && !password && <p className={cx('invalid')}>Password is require</p>}
                     </label>
-                    {/* {isError && <p className={cx('error-title')}>{message}</p>} */}
+                    {isError && <p className={cx('error-title')}>{message}</p>}
                     <div className={cx('btn-login')}>
                         <button type="submit">Submit</button>
                     </div>

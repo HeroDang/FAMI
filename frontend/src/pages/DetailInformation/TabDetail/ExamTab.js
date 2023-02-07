@@ -13,10 +13,9 @@ import * as examService from '@/services/examService';
 import classNames from 'classnames/bind';
 import styles from './TabDetail.module.scss';
 
-
 const cx = classNames.bind(styles);
 
-function ExamTab({exam, setExam}) {
+function ExamTab({ exam, setExam, specFormId, setDataChange, dataChange }) {
     // const [exam, setExam] = useState(emptyExam)
     const toast = useRef(null);
 
@@ -28,18 +27,18 @@ function ExamTab({exam, setExam}) {
     //             setExam(_exam);
     //         })
     // },[])
-    
+
     const handleChange = (e, name) => {
         const val = (e.target && e.target.value) || '';
-        let _exam = {...exam};
+        let _exam = { ...exam };
         _exam[`${name}`] = val;
         setExam(_exam);
-    }
+    };
 
     const handlerComplete = () => {
-        let _exam = {...exam};
-        examService.updateExam(_exam, _exam._id)
-            .then((result) => {
+        let _exam = { ...exam };
+        if (_exam._id) {
+            examService.updateExam(_exam, _exam._id).then((result) => {
                 console.log(result);
                 toast.current.show({
                     severity: 'success',
@@ -48,8 +47,21 @@ function ExamTab({exam, setExam}) {
                     life: 3000,
                 });
             });
-
-    }
+        } else {
+            _exam.specFormId = specFormId;
+            console.log('exam', _exam);
+            examService.createExam(_exam).then((result) => {
+                console.log(result);
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Successful',
+                    detail: 'Exam Create',
+                    life: 3000,
+                });
+            });
+            setDataChange(!dataChange);
+        }
+    };
 
     return (
         <div className={cx('grid', 'wide')}>
@@ -66,99 +78,105 @@ function ExamTab({exam, setExam}) {
                     Complete
                 </ButtonComponent>
             </div>
-            <div className={cx('row','no-gutters')}>
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+            <div className={cx('row', 'no-gutters')}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <ThermometerIcon/>
+                            <ThermometerIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Temperature</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.temperature} onChange={(e) => handleChange(e,'temperature')}/>
+                                <input value={exam.temperature} onChange={(e) => handleChange(e, 'temperature')} />
                                 <span>&#8451;</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <ArmIcon/>
+                            <ArmIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Blood pressure</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.sysBloodPressure} onChange={(e) => handleChange(e,'sysBloodPressure')}/>
+                                <input
+                                    value={exam.sysBloodPressure}
+                                    onChange={(e) => handleChange(e, 'sysBloodPressure')}
+                                />
                                 <span>/</span>
-                                <input value={exam.diasBloodPressure} onChange={(e) => handleChange(e,'diasBloodPressure')}/>
+                                <input
+                                    value={exam.diasBloodPressure}
+                                    onChange={(e) => handleChange(e, 'diasBloodPressure')}
+                                />
                                 <span>mmHg</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <BreathIcon/>
+                            <BreathIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Breathing</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.breathing} onChange={(e) => handleChange(e,'breathing')}/>
+                                <input value={exam.breathing} onChange={(e) => handleChange(e, 'breathing')} />
                                 <span>beats/minute</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <PulseIcon/>
+                            <PulseIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Pulse</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.pulse} onChange={(e) => handleChange(e,'pulse')}/>
+                                <input value={exam.pulse} onChange={(e) => handleChange(e, 'pulse')} />
                                 <span>beats/minute</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <HeightIcon/>
+                            <HeightIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Height</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.height} onChange={(e) => handleChange(e,'height')}/>
+                                <input value={exam.height} onChange={(e) => handleChange(e, 'height')} />
                                 <span>cm</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className={(cx('col', 'l-4', 'm-4' ,'c-6'))}>
+                <div className={cx('col', 'l-4', 'm-4', 'c-6')}>
                     <div className={cx('item-container')}>
                         <span className={cx('item-icon')}>
-                            <WeightIcon/>
+                            <WeightIcon />
                         </span>
 
                         <div className={cx('item-text')}>
                             <p>Weight</p>
                             <div className={cx('item-input')}>
-                                <input value={exam.weight} onChange={(e) => handleChange(e,'weight')}/>
+                                <input value={exam.weight} onChange={(e) => handleChange(e, 'weight')} />
                                 <span>kg</span>
                             </div>
                         </div>
@@ -168,7 +186,9 @@ function ExamTab({exam, setExam}) {
 
             <div className={cx('row')}>
                 <div className={cx('input-group')}>
-                    <label className={cx('title-input')} htmlFor="note">Note</label>
+                    <label className={cx('title-input')} htmlFor="note">
+                        Note
+                    </label>
                     <InputTextarea
                         className={cx('input-text-area')}
                         id="note"
@@ -184,10 +204,10 @@ function ExamTab({exam, setExam}) {
     );
 }
 
-ExamTab.prototype={
+ExamTab.prototype = {
     specFormId: PropTypes.string,
     exam: PropTypes.object,
     setExam: PropTypes.func,
-}
+};
 
 export default ExamTab;
