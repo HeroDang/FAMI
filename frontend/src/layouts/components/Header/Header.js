@@ -65,7 +65,7 @@ function Header() {
     const {token} = useToken();
 
     useLayoutEffect(() => {
-        setAccount(token.account._doc)
+        // setAccount(token.account._doc)
         console.log(account);
     },[])
 

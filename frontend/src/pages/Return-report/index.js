@@ -2,7 +2,7 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.css';
 import 'primeflex/primeflex.css';
-import html2canvas from 'html2canvas';
+
 import ReactDOM from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames/bind'; //hung
@@ -21,21 +21,22 @@ import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { SearchIcon, TrashSmallIcon, PencilSmallIcon, PDFIcon, PayIcon } from '@/components/Icons';
+import { SearchIcon, TrashSmallIcon, PencilSmallIcon } from '@/components/Icons';
 import './index.css';
 import './DataTableDemo.css';
 import MyBtn from '@/components/Button';
 import { TrashIcon } from '@/components/Icons';
 import { ProductService } from './ProductService';
-import * as billService from '@/services/billService' //1
-import styles from './ManageBill.module.scss'; //hung
+import * as accountService from '@/services/accountService' //1
+import styles from './ManagerAccount.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPieChart } from '@fortawesome/free-solid-svg-icons';
+///chart
 
+import { Chart } from 'primereact/chart';
 const cx = classNames.bind(styles);
 
 
-function ManagerBill() {
+function ManagerAccount() {
     let emptyProduct = {
         id: null,
         //name: '',
@@ -48,32 +49,39 @@ function ManagerBill() {
         rating: 0,
         //inventoryStatus: 'INSTOCK',
     };
-    let emptyBill = {
-        billID: 0,
-        drugname: null,
-        unit: null,
-        unitprice: null,
-        quantity: 0,
-        amount: 0,
-        //status: null,
-        total: 0,
+    let emptyAccount = {
+        ID: 0,
+        username: null,
+        password: null,
+        fullname: null,
+        job: null,
         //inventoryStatus: 'INSTOCK',
     };
+    ///chart
+    const [chartData, setChartData] = useState({});
+    const [chartOptions, setChartOptions] = useState({});
+    ////chart
 
     const [products, setProducts] = useState(null);
+    
+    const [accounts, setAccounts] = useState(null);
 
-    const [bills, setBills] = useState([]);
-
-    const [bill, setBill] = useState(emptyBill);
+    const [account, setAccount] = useState(emptyAccount);
 
     const [changeData,setChangeData] =  useState(false);
-    const [counterBill, setcounterBill] = useState(0);
+    const [counterAccount, setcounterAccount] = useState(0);
+
+    const [mana,countMana] = useState(0);
+    const [pha,countPha] = useState(0);
+    const [spe,countSpecial] = useState(0);
+    const [staff,countStaff] = useState(0);
+    const [genaral,countGeneral] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState(emptyProduct);
-    const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const toast = useRef(null);
@@ -82,13 +90,65 @@ function ManagerBill() {
 
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
-        billService.getBillList().then((data)  => {
-            setBills(data);
+        accountService.getAccountList().then((data)  => {
+            setAccounts(data);
             console.log(data);
         });
-        billService.getCounterBill().then((data)=>{
-            setcounterBill(data.seq);
+        accountService.getCounterAccount().then((data)=>{
+            setcounterAccount(data.seq);
         })
+        accountService.getcountPha().then((pha) =>{
+            countPha(pha);
+            console.log(typeof pha);
+        });
+        accountService.getcountMana().then((mana) =>{
+            countMana(mana);
+        });
+        accountService.getcountSpecial().then((spe) =>{
+            countSpecial(spe);
+        });
+        accountService.getcountStaff().then((staff) =>{
+            countStaff(staff);
+        });
+        accountService.getcountGeneral().then((genaral) =>{
+            countGeneral(genaral);
+        });
+
+        const documentStyle = getComputedStyle(document.documentElement);
+        const data = {
+            labels: ['Pharmacist', "Specilist doctor","General doctor","Staff","Manager"],
+            datasets: [
+                {
+                    data: [pha, spe,genaral,staff,mana],
+                    backgroundColor: [
+                        documentStyle.getPropertyValue('--blue-500'), 
+                       documentStyle.getPropertyValue('--yellow-500'), 
+                        documentStyle.getPropertyValue('--green-500'),
+                        documentStyle.getPropertyValue('--red-500'), 
+                        documentStyle.getPropertyValue('--brown-500')
+                    ],
+                    hoverBackgroundColor: [
+                        documentStyle.getPropertyValue('--blue-400'), 
+                       documentStyle.getPropertyValue('--yellow-400'), 
+                        documentStyle.getPropertyValue('--green-400'),
+                        documentStyle.getPropertyValue('--red-500'), 
+                        documentStyle.getPropertyValue('--brown-500')
+                    ]
+                }
+            ]
+        }
+        const options = {
+            plugins: {
+                legend: {
+                    labels: {
+                        usePointStyle: true
+                    }
+                }
+            }
+        };
+
+        setChartData(data);
+        setChartOptions(options);
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const confirmDeleteSelected = () => {
@@ -97,22 +157,22 @@ function ManagerBill() {
 
     const openNew = () => {
         setProduct(emptyProduct);
-        setBill(emptyBill);
+        setAccount(emptyAccount);
         setSubmitted(false);
         setProductDialog(true);
     };
-    const saveBill = () => {
+    const saveAccount = () => {
         setSubmitted(true);
         
 
-            //let _bills = [...bills];
-            let _bill = { ...bill };
-            if (bill._id) {
+            let _accounts = [...accounts];
+            let _account = { ...account };
+            if (account._id) {
                 // const index = findIndexById(product.id);
-                billService.updateBill(_bill,_bill._id).then((data)=>{
+                accountService.updateAccount(_account,_account._id).then((data)=>{
                     console.log(data)
                     setProductDialog(false);
-                    setBill(emptyBill);
+                    setAccount(emptyAccount);
                     setChangeData(!changeData);
                     toast.current.show({
                         severity: 'success',
@@ -126,11 +186,11 @@ function ManagerBill() {
                 // _products[index] = _product;
                
             } else {
-               billService.createBill(_bill).then((data)=> {
+               accountService.createAccount(_account).then((data)=> {
                 
                 console.log(data)
                 setProductDialog(false);
-                setBill(emptyBill);
+                setAccount(emptyAccount);
                 setChangeData(!changeData);
                 toast.current.show({
                     severity: 'success',
@@ -150,21 +210,21 @@ function ManagerBill() {
     const onInputChange = (e, name) => {
         console.log(e.target.value);
         const val = (e.target && e.target.value) || '';
-        let _bill = { ...bill };
-        _bill[`${name}`] = val;
+        let _account = { ...account };
+        _account[`${name}`] = val;
 
-        setBill(_bill);
+        setAccount(_account);
         
     };
 
-    // const onCategoryChange = (e) => {
-    //     // let _product = { ...product };
-    //     // _product['category'] = e.value;
-    //     // setProduct(_product);
-    //     let _bill= {...bill};
-    //     _bill['job'] = e.value;
-    //     setBill(_bill);
-    // };
+    const onCategoryChange = (e) => {
+        // let _product = { ...product };
+        // _product['category'] = e.value;
+        // setProduct(_product);
+        let _account= {...account};
+        _account['job'] = e.value;
+        setAccount(_account);
+    };
 
     const hideDialog = () => {
         setSubmitted(false);
@@ -180,26 +240,26 @@ function ManagerBill() {
              onClick={hideDialog} />
             <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
             style={{color:'#ffffff',background: '#153AFF'}}
-            onClick={saveBill} />
+            onClick={saveAccount} />
         </React.Fragment>
     );
 
-    const confirmDeleteProduct = (e,bill) => {
+    const confirmDeleteProduct = (e,account) => {
         // setProduct(product);
-        setBill(bill);
-        setDeleteProductDialog(true);
+        setAccount(account);
+         setDeleteProductDialog(true);
         e.stopPropagation();
      };
      
     const deleteProduct = () => {
         // let _products = products.filter((val) => val.id !== product.id);
         // setProducts(_products);
-        let _bill={...bill}
-        billService.deleteBill(_bill._id).then((data)=>{
+        let _account={...account}
+        accountService.deleteAccount(_account._id).then((data)=>{
             setChangeData(!changeData);
             setDeleteProductDialog(false);
            // setProduct(emptyProduct);
-           setBill(emptyBill);
+           setAccount(emptyAccount);
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
             
         });
@@ -222,7 +282,7 @@ function ManagerBill() {
         _selectedProducts.forEach((item) => {
             formIds.push(item._id);
         })
-        billService.deleteSelectedBill(formIds)
+        accountService.deleteSelectedAccount(formIds)
         .then((data) => {
             console.log(data);
             setChangeData(!changeData);
@@ -236,7 +296,7 @@ function ManagerBill() {
         <React.Fragment>
             <Button  
             className={cx('btn-cancel')} 
-            label="Cancel" 
+            label="No" 
             style={{color:'#153AFF',background: '#ffffff',}}
             icon="pi pi-times"  
             onClick={hideDeleteProductDialog} />
@@ -246,13 +306,18 @@ function ManagerBill() {
             icon="pi pi-check" 
             style={{color:'#ffffff',background: '#153AFF'}}
             onClick={deleteProduct} />
-            
         </React.Fragment>
     );
     const deleteProductsDialogFooter = (
         <React.Fragment>
-            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteProductsDialog} />
-            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deleteSelectedProducts} />
+            <Button  className={cx('btn-cancel')} 
+            label="No" 
+            style={{color:'#153AFF',background: '#ffffff',}}
+            icon="pi pi-times"   onClick={hideDeleteProductsDialog} />
+            <Button className={cx('btn-yes')} 
+            label="Yes"
+            icon="pi pi-check" 
+            style={{color:'#ffffff',background: '#153AFF'}} onClick={deleteSelectedProducts} />
         </React.Fragment>
     );
 
@@ -265,10 +330,20 @@ function ManagerBill() {
         return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
     };
 
-    const editProduct = (bill) => {
-        setBill({ ...bill });
+
+   
+
+    
+   
+    
+    const editProduct = (account) => {
+        setAccount({ ...account });
         setProductDialog(true);
     };
+
+    
+
+   
 
     const findIndexById = (id) => {
         let index = -1;
@@ -326,6 +401,11 @@ function ManagerBill() {
     const exportCSV = () => {
         dt.current.exportCSV();
     };
+
+
+    
+
+    
 
     const onInputNumberChange = (e, name) => {
         const val = e.value || 0;
@@ -451,189 +531,16 @@ function ManagerBill() {
             </span> */}
         </div>
     );
-    // const generalPDF =() =>{
-    //         var quotes = document.getElementById('container-fluid');
-        
-    //         html2canvas(quotes, {
-    //             onrendered: function(canvas) {
-    //              window.jsPDF = window.jspdf.jsPDF;
-    //             //! MAKE YOUR PDF
-    //             var pdf = new jsPDF('p', 'pt', 'letter');
-        
-    //             for (var i = 0; i <= quotes.clientHeight/980; i++) {
-    //                 //! This is all just html2canvas stuff
-    //                 var srcImg  = canvas;
-    //                 var sX      = 0;
-    //                 var sY      = 980*i; // start 980 pixels down for every new page
-    //                 var sWidth  = 900;
-    //                 var sHeight = 980;
-    //                 var dX      = 0;
-    //                 var dY      = 0;
-    //                 var dWidth  = 900;
-    //                 var dHeight = 980;
-        
-    //                 window.onePageCanvas = document.createElement("canvas");
-    //                 onePageCanvas.setAttribute('width', 900);
-    //                 onePageCanvas.setAttribute('height', 980);
-    //                 var ctx = onePageCanvas.getContext('2d');
-    //                 // details on this usage of this function: 
-    //                 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images#Slicing
-    //                 ctx.drawImage(srcImg,sX,sY,sWidth,sHeight,dX,dY,dWidth,dHeight);
-        
-    //                 // document.body.appendChild(canvas);
-    //                 var canvasDataURL = onePageCanvas.toDataURL("image/png", 1.0);
-        
-    //                 var width         = onePageCanvas.width;
-    //                 var height        = onePageCanvas.clientHeight;
-        
-    //                 //! If we're on anything other than the first page,
-    //                 // add another page
-    //                 if (i > 0) {
-    //                     pdf.addPage(612, 791); //8.5" x 11" in pts (in*72)
-    //                 }
-    //                 //! now we declare that we're working on that page
-    //                 pdf.setPage(i+1);
-    //                 //! now we add content to that page!
-    //                 pdf.addImage(canvasDataURL, 'PNG', 20, 40, (width*.62), (height*.62));
-        
-    //             }
-    //             //! after the for loop is finished running, we save the pdf.
-    //             pdf.save('test.pdf');
-    //         }
-    //       });
-
-    // }
   
     
+    
+
     return (
         <div className="">
-            <div className="card" id="invoice">
-                <DataTable
-                    ref={dt}
-                    value={bills}
-                    selection={selectedProducts}
-                    onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="_id"
-                    paginator
-                    rows={10}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                    globalFilter={globalFilter}
-                    //header={header}
-                    responsiveLayout="scroll"
-                >
-                   <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            selectionMode="multiple"
-                            headerStyle={{ width: '3rem' }}
-                            exportable={false}
-                        ></Column>
-
-                    <Column 
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="billID" 
-                    header="ID" 
-                    sortable 
-                    style={{ minWidth: '8rem' }}>
-                    </Column>
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="drugname"
-                    header="Drug's name"
-                    sortable
-                    style={{ minWidth: '12rem' }}
-                    ></Column>
-                    {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
-                    {/* <Column
-                        field="price"
-                        header="Price"
-                        body={priceBodyTemplate}
-                        sortable
-                        style={{ minWidth: '8rem' }}
-                    ></Column> */}
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="unit"
-                    header="Unit"
-                    sortable
-                    style={{ minWidth: '10rem' }}
-                    ></Column>
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="unitprice"
-                    header="Unit/Price"
-                    sortable
-                    style={{ minWidth: '10rem' }}
-                    ></Column>
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="quantity"
-                    header="Quantity"
-                    sortable
-                    style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column
-                        field="amount"
-                        header="Amount"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                       // body={ratingBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column>
-                    {/* <Column
-                        field="status"
-                        header="Status"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                        //body={statusBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column> */}
-                    <Column
-                        header="Action"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                        body={actionBodyTemplate}
-                        exportable={false}
-                        style={{ minWidth: '10rem' }}
-                    ></Column>
-                </DataTable>
-                {/* <p:faPieChart model="#{chartJsView.pieModel}" style="width: 100%; height: 500px;"/> */}
-            </div>
-            <div>
-               <div className={cx('toolbar')}>
-                    <div class={cx('letter')}>
-                         <label><b> Total:</b></label> <span id="billID"></span >
-                    </div>
-                      <div className={cx('btn-group')}>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            id="download"
-                            primary
-                            large
-                            leftIcon={<PDFIcon width="0.5 rem" height="0.5 rem" />}
-                           // onClick={openNew}
-                          // onClick={window.print()}
-                        >PDF</MyBtn>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<PayIcon width="1.6rem" height="1.6rem" />}
-                           // onClick={confirmDeleteSelected}
-                            disable={!(selectedProducts.length==bills.length)}
-                        >Pay</MyBtn>
-                    </div>
-               </div>
-            
+            <div className="card">
+                
+                  
+                    
             </div>
 
             
@@ -642,75 +549,24 @@ function ManagerBill() {
     );
 };
     return (
-        
         <div className={cx('wrapper')}>
-            <head>
-            
-            </head>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manage Bill</h2>
+            <h2 className={cx('header-title')}>Return-Report</h2>
         <div className={cx('body')}>
-            
-            <div className={cx('grid-container')}>
-                 <div class={cx('grid-item','letter')}>
-                    <label><b> Id bill:</b></label> <span id="billID"></span >
-                 </div>
-                  <div class={cx('grid-item','letter')}>
-                  <label><b> Id patient:</b></label> <span id="billID"></span >
-                 </div>
-                 <div class={cx('grid-item','letter')}>
-                 <label><b> Paitent’s name:</b></label> <span id="billID"></span >
-                  </div>
-                <div class={cx('grid-item','letter')}>
-                <label><b> Phone:</b></label> <span id="billID"></span >
-                </div>
-               <div class={cx('grid-item','letter')}>
-               <label><b> Time:</b></label> <span id="billID"></span >
-               </div>
-            </div>
-            
-            
                 <div className={cx('toolbar')}>
-                    <div className={cx('search')}>
-                        <span className={cx('search-icon')}>
-                            <SearchIcon />
-                        </span>
-                        <InputText
-                            className={cx('search-input')}
-                            type="search"
-                            onInput={(e) => setGlobalFilter(e.target.value)}
-                            placeholder="Search..."
-                        />
-                    </div>
-                    <div className={cx('btn-group')}>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<FontAwesomeIcon icon={faPlus} />}
-                            onClick={openNew}
-                        >
-                            New
-                        </MyBtn>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
-                            onClick={confirmDeleteSelected}
-                            disable={!selectedProducts || !selectedProducts.length}
-                        >
-                            Delete
-                        </MyBtn>
-                    </div>
+                    
+                <div className="card flex justify-content-center">
+            <Chart type="pie" data={chartData} options={chartOptions} className="w-full md:w-30rem" />
+        </div>
                 </div>
                 
                 <DataTableCrudDemo />
                 <Dialog 
                 visible={productDialog}
                 //header="Product Details"
-               header="Create bill"
+               header="Create account"
              // style="color: blue;"
+             headerClassName={cx('detail-dialog-header')}
                 modal
                 className="p-fluid"
                 footer={productDialogFooter}
@@ -731,10 +587,10 @@ function ManagerBill() {
                 )} */}
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="billID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
+                        <label htmlFor="ID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
                         <InputText
-                           id="billID"
-                            value={bill.billID === 0? (counterBill+1) : bill.billID}
+                           id="ID"
+                            value={account.ID === 0? (counterAccount+1) : account.ID}
                             disabled
                             //onChange={(e) => onInputChange(e, 'ID')}
                             //autoFocus
@@ -744,59 +600,29 @@ function ManagerBill() {
                             // currency="USD"
                             // locale="en-US"
                         />
-                        {submitted && !bill.billID && <small className="p-error">Name is required.</small>}
+                        {submitted && !account.ID && <small className="p-error">Name is required.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="drugname"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Drug's name</b></label>
+                        <label htmlFor="fullname"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Fullname</b></label>
                         <InputText
-                            id="drugname"
-                            value={bill.drugname}
-                            onChange={(e) => onInputChange(e, 'drugname')}
+                            id="fullname"
+                            value={account.fullname}
+                            onChange={(e) => onInputChange(e, 'fullname')}
                             autoFocus
                             required
                             className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                         />
-                        {submitted && !bill.drugname && <small className="p-error">Drug's name is required.</small>}
+                        {submitted && !account.fullname && <small className="p-error">Fullname is required.</small>}
                     </div>
                 </div >
                 
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="unit"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit</b></label>
+                        <label htmlFor="username"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Username</b></label>
                         <InputText
-                            id="unit"
-                            value={bill.unit}
-                            onChange={(e) => onInputChange(e, 'unit')}
-                          //  autoFocus
-                            required
-                            className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                            //mode="currency"
-                            //currency="USD"
-                           // locale="en-US"
-                        />
-                        {submitted && !bill.unit && <small className="p-error">Unit is required.</small>}
-                    </div>
-                    <div className="field col">
-                        <label htmlFor="unitprice"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit/Price</b></label>
-                        <InputText
-                                    id="unitprice"
-                                    value={bill.unitprice}
-                                    onChange={(e) => onInputChange(e, 'unitprice')}
-                                    required
-                                   // autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                />
-                        {submitted && !bill.unitprice && <small className="p-error">Unit/Price is required.</small>}
-                    </div>
-                </div>
-            <div className="formgrid grid">
-                 <div className="field col">
-                        <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Quantity</b></label>
-                        <InputText
-                            id="quantity"
-                            value={bill.quantity}
-                            onChange={(e) => onInputChange(e, 'quantity')}
+                            id="username"
+                            value={account.username}
+                            onChange={(e) => onInputChange(e, 'username')}
                            // autoFocus
                             required
                             className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
@@ -804,79 +630,103 @@ function ManagerBill() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !bill.quantity && <small className="p-error">Quantity is required.</small>}
+                        {submitted && !account.username && <small className="p-error">Username is required.</small>}
                     </div>
+                </div>
+                <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="amount"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Amount</b></label>
+                        <label htmlFor="password"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Password</b></label>
                         <InputText
-                                    id="amount"
-                                    value={bill.amount}
-                                    onChange={(e) => onInputChange(e, 'amount')}
+                                    id="password"
+                                    value={account.password}
+                                    onChange={(e) => onInputChange(e, 'password')}
                                     required
                                     //autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !bill.amount && <small className="p-error">Amount is required.</small>}
+                        {submitted && !account.password && <small className="p-error">Password is required.</small>}
                     </div>
-                
-            </div>
+                </div>
+                {/* <div className="field">
+                    <label htmlFor="name">Name</label>
+                    <InputText
+                        id="name"
+                        value={product.name}
+                        onChange={(e) => onInputChange(e, 'name')}
+                        required
+                        autoFocus
+                        className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
+                    />
+                    {submitted && !product.name && <small className="p-error">Name is required.</small>}
+                </div> */}
+                {/* <div className="field">
+                    <label htmlFor="description">Description</label>
+                    <InputTextarea
+                        id="description"
+                        value={product.description}
+                        onChange={(e) => onInputChange(e, 'description')}
+                        required
+                        rows={3}
+                        cols={20}
+                    />
+                </div> */}
                 <div className="field">
-                    {/* <label className="mb-3"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Status</b></label> */}
+                    <label className="mb-3"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Role</b></label>
                     {/* classNăe="feild cold" */}
                     <div className={cx('grid-container')}>
-                        {/* <div class={cx('grid-item')}>
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category1"
-                                name="status"
-                                value=""
+                                name="job"
+                                value="Manager"
                                 onChange={onCategoryChange}
-                                checked={bill.job === 'Manager'}
+                                checked={account.job === 'Manager'}
                             />
                             <label htmlFor="Manager" style={{color:'#0D5BF1'}}>Manager</label>
                             
-                        </div> */}
-                        {/* <div class={cx('grid-item')}>
+                        </div>
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category2"
                                 name="job"
                                 value="Staff"
                                 onChange={onCategoryChange}
-                                checked={bill.job === 'Staff'}
+                                checked={account.job === 'Staff'}
                             />
                             <label htmlFor="Staff"style={{color:'#0D5BF1'}}>Staff</label>
-                        </div> */}
-                        {/* <div class={cx('grid-item')}>
+                        </div>
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category3"
                                 name="job"
                                 value="Specialist doctor"
                                 onChange={onCategoryChange}
-                                checked={bill.job === 'Specialist doctor'}
+                                checked={account.job === 'Specialist doctor'}
                             />
                             <label htmlFor="Specialist doctor"style={{color:'#0D5BF1'}}>Specialist doctor</label>
-                        </div> */}
-                        {/* <div class={cx('grid-item')}>
+                        </div>
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category4"
                                 name="job"
                                 value="General doctor"
                                 onChange={onCategoryChange}
-                                checked={bill.job === 'General doctor'}
+                                checked={account.job === 'General doctor'}
                             />
                             <label htmlFor="General doctor"style={{color:'#0D5BF1'}}>General doctor</label>
-                        </div> */}
+                        </div>
                        {/* className="field-radiobutton col-6" */}
-                        {/* <div class={cx('grid-item')}>
+                        <div class={cx('grid-item')}>
                             <RadioButton
                                 inputId="category5"
                                 name="job"
                                 value="Pharmacist"
                                 onChange={onCategoryChange}
-                                checked={bill.job === 'Pharmacist'}
+                                checked={account.job === 'Pharmacist'}
                             />
                             <label htmlFor="Pharmacist"style={{color:'#0D5BF1'}}>Pharmacist</label>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
                 </Dialog>
@@ -889,11 +739,10 @@ function ManagerBill() {
                 onHide={hideDeleteProductDialog}
             >
                 <div >
-                    
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
                     {product && (
                         <span /*style="font-size:10px"*/>
-                            Are you sure you want to delete <b>{product.name}</b>?
+                            <b>Are you sure you want to delete account have <i>ID: {account.ID}</i> </b> ?
                         </span>
                     )}
                 </div>
@@ -904,21 +753,27 @@ function ManagerBill() {
                 style={{ width: '450px' }}
                 header="Confirm"
                 modal
-                // footer={deleteProductsDialogFooter}
+                footer={deleteProductsDialogFooter}
                 onHide={hideDeleteProductsDialog}
             >
-                <div className="confirmation-content">
-                    
+                {/* <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Are you sure you want to delete the selected drugs?</span>}
+                    {product && <span>Are you sure you want to delete the selected products?</span>}
+                </div> */}
+                <div >
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
+                    {product && (
+                        <span /*style="font-size:10px"*/>
+                            <b>Are you sure you want to delete the selected accounts</b> ?
+                        </span>
+                    )}
                 </div>
             </Dialog>
             </div>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
          </div>
             
             
     );
 }
 
-export default ManagerBill;
+export default ManagerAccount;

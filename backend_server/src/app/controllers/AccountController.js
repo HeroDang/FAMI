@@ -83,6 +83,31 @@ class AccountController {
             })
             .catch(() => {res.send({error: "ERROR"})})
     }
+    getSpecial(req, res, next){
+       Account.countDocuments({ job: 'Specialist doctor' })
+            .then((data) => {res.status(201).json(data)})
+            .catch(next);
+    }
+    getGeneral(req, res, next){
+        Account.countDocuments({ job: 'General doctor' })
+             .then((data) => {res.status(201).json(data)})
+             .catch(next);
+     }
+     getMana(req, res, next){
+        Account.countDocuments({ job: 'Manager' })
+             .then((data) => {res.status(201).json(data)})
+             .catch(next);
+     }
+     getPhar(req, res, next){
+        Account.countDocuments({ job: 'Pharmacist' })
+             .then((data) => {res.status(201).json(data)})
+             .catch(next);
+     }
+     getStaff(req, res, next){
+        Account.countDocuments({ job: 'Staff' })
+             .then((data) => {res.status(201).json(data)})
+             .catch(next);
+     }
 
     // index(req, res, next) {
     //     Person.find({})

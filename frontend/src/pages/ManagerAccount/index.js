@@ -30,7 +30,9 @@ import { ProductService } from './ProductService';
 import * as accountService from '@/services/accountService' //1
 import styles from './ManagerAccount.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+// import React, {Component} from 'react';
+// import React, { useState, useEffect } from 'react';
+// import { Chart } from 'primereact/chart';
 const cx = classNames.bind(styles);
 
 
@@ -612,6 +614,7 @@ function ManagerAccount() {
                 //header="Product Details"
                header="Create account"
              // style="color: blue;"
+             headerClassName={cx('detail-dialog-header')}
                 modal
                 className="p-fluid"
                 footer={productDialogFooter}
