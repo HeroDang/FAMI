@@ -78,7 +78,7 @@ function Header({ currentAccount }) {
         {
             icon: <FontAwesomeIcon icon={faUser} />,
             title: 'View Profile',
-            to: '/@khoii',
+            to: '/profileAccount',
         },
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,

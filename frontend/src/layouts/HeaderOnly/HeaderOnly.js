@@ -10,7 +10,11 @@ import styles from './HeaderOnly.module.scss';
 const cx = classNames.bind(styles);
 
 function HeaderOnly({ children }) {
+    const token = JSON.parse(localStorage.getItem('token'));
     const [isLogin, setIsLogin] = useState(true);
+    useLayoutEffect(() => {
+        console.log('truoc', token.account._doc);
+    }, []);
     // const { token } = useToken();
     // useLayoutEffect(() => {
     //     if(token){
@@ -23,12 +27,12 @@ function HeaderOnly({ children }) {
     // }, [])
     return (
         <div>
-            {!isLogin && (
+            {!token && (
                 <div>
                     <Navigate to="/login" replace={true} />
                 </div>
             )}
-            {isLogin && (
+            {token && (
                 <div className={cx('wrapper')}>
                     <Header />
                     <div className={cx('container')}>
