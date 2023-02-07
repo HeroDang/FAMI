@@ -186,41 +186,40 @@ function MedicalChecklist() {
             request: 'request',
             patientId: _meform.patientId,
         };
-        if (meform._id) {
-            // console.log('data', _meform);
-            Promise.all([
-                meformService.updateMEForm(_meform, _meform._id),
-                specFormService.createManySpecForm(inputSpecForm),
-            ]).then(([data, result]) => {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Form Created',
-                    life: 3000,
-                });
+        if (_meform._patient.name.trim()) {
+            if (meform._id) {
+                // console.log('data', _meform);
+                Promise.all([
+                    meformService.updateMEForm(_meform, _meform._id),
+                    specFormService.createManySpecForm(inputSpecForm),
+                ]).then(([data, result]) => {
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Form Created',
+                        life: 3000,
+                    });
 
-                setProductDialog(false);
-                setMeform(emptyMEForm);
-                setChangeData(!changeData);
-            });
-        } else {
-            // console.log('data',_meform);
-            _meform.patientId = counterMEForm.patientSeq;
-            Promise.all([
-                meformService.updateMEForm(_meform, _meform._id),
-                specFormService.createManySpecForm(inputSpecForm),
-            ]).then(([data, result]) => {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000,
+                    setProductDialog(false);
+                    setMeform(emptyMEForm);
+                    setChangeData(!changeData);
                 });
+            } else {
+                // console.log('data',_meform);
+                _meform.patientId = counterMEForm.patientSeq;
+                Promise.all([meformService.createMEForm(_meform)]).then(([datat]) => {
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Product Created',
+                        life: 3000,
+                    });
 
-                setProductDialog(false);
-                setMeform(emptyMEForm);
-                setChangeData(!changeData);
-            });
+                    setProductDialog(false);
+                    setMeform(emptyMEForm);
+                    setChangeData(!changeData);
+                });
+            }
         }
     };
 
@@ -537,9 +536,7 @@ function MedicalChecklist() {
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !meform.patientId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
                                 <label htmlFor="patientName">Full Name</label>
@@ -550,9 +547,11 @@ function MedicalChecklist() {
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                    className={cx({ 'p-invalid': submitted && !product.name })}
                                 />
-                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
+                                {submitted && !meform._patient.name && (
+                                    <small className="p-error">Name is required.</small>
+                                )}
                             </div>
                         </div>
 
@@ -566,7 +565,6 @@ function MedicalChecklist() {
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
                                 {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
                             </div>
@@ -578,8 +576,6 @@ function MedicalChecklist() {
                                     onChange={(e) => onInputChange(e, 'phone', 'patient')}
                                     required
                                     autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
                                 {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
                             </div>
@@ -594,8 +590,7 @@ function MedicalChecklist() {
                                     onChange={(e) => onInputChange(e, 'career', 'patient')}
                                     required
                                     autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name }
                                 />
                                 {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
                             </div>
@@ -607,8 +602,7 @@ function MedicalChecklist() {
                                     onChange={(e) => onInputChange(e, 'age', 'patient')}
                                     required
                                     autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                    // className={primeClassnames({ 'p-invalid': submitted && !product.na
                                 />
                                 {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
                             </div>
@@ -616,7 +610,7 @@ function MedicalChecklist() {
                     </div>
 
                     <div>
-                        <h1>Information of patient</h1>
+                        <h1>Information of form</h1>
 
                         <div className="formgrid grid">
                             <div className="field col">
@@ -629,9 +623,7 @@ function MedicalChecklist() {
                                     required
                                     disabled
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !meform.formId && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
                                 <label htmlFor="numOrder">Ordinal numbers</label>
@@ -642,9 +634,9 @@ function MedicalChecklist() {
                                     required
                                     autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                    // className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                                {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>}
+                                {/* {submitted && !meform.numOrder && <small className="p-error">Name is required.</small>} */}
                             </div>
                         </div>
                         <div className="formgrid grid">
@@ -663,7 +655,7 @@ function MedicalChecklist() {
                                     placeholder={'Select a doctor'}
                                     // disabled = {meform.formId === 0 ? false : true}
                                 />
-                                {submitted && !meform.personId && <small className="p-error">Name is required.</small>}
+                                {/* {submitted && !meform.personId && <small className="p-error">Name is required.</small>} */}
                             </div>
                             <div className="field col">
                                 <label htmlFor="date">Date</label>
@@ -679,7 +671,7 @@ function MedicalChecklist() {
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 /> */}
-                                {submitted && !meform.patientId && <small className="p-error">Name is required.</small>}
+                                {/* {submitted && !meform.patientId && <small className="p-error">Name is required.</small>} */}
                             </div>
                         </div>
                     </div>
@@ -694,7 +686,6 @@ function MedicalChecklist() {
                             cols={20}
                         />
                     </div>
-
                     <div className="field">
                         <label className={cx('label-input')}>Clinic Rooms</label>
 

@@ -103,36 +103,38 @@ function ManagerAccount() {
         let _accounts = [...accounts];
         let _account = { ...account };
         _account.accountId = counterAccount + 1;
-        if (account._id) {
-            // const index = findIndexById(product.id);
-            _account.accountId = _account.ID;
-            accountService.updateAccount(_account, _account._id).then((data) => {
-                setProductDialog(false);
-                setAccount(emptyAccount);
-                setChangeData(!changeData);
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Updated',
-                    life: 3000,
+        if (_account.fullname.trim() && _account.username) {
+            if (account._id) {
+                // const index = findIndexById(product.id);
+                _account.accountId = _account.ID;
+                accountService.updateAccount(_account, _account._id).then((data) => {
+                    setProductDialog(false);
+                    setAccount(emptyAccount);
+                    setChangeData(!changeData);
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Product Updated',
+                        life: 3000,
+                    });
                 });
-            });
 
-            // _products[index] = _product;
-        } else {
-            accountService.createAccount(_account).then((data) => {
-                setProductDialog(false);
-                setAccount(emptyAccount);
-                setChangeData(!changeData);
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Product Created',
-                    life: 3000,
+                // _products[index] = _product;
+            } else {
+                accountService.createAccount(_account).then((data) => {
+                    setProductDialog(false);
+                    setAccount(emptyAccount);
+                    setChangeData(!changeData);
+                    toast.current.show({
+                        severity: 'success',
+                        summary: 'Successful',
+                        detail: 'Product Created',
+                        life: 3000,
+                    });
                 });
-            });
 
-            // setProducts(_products);
+                // setProducts(_products);
+            }
         }
     };
 
@@ -585,6 +587,7 @@ function ManagerAccount() {
                 <DataTableCrudDemo />
                 <Dialog
                     visible={productDialog}
+                    headerClassName={cx('detail-dialog-header')}
                     //header="Product Details"
                     header="Create account"
                     // style="color: blue;"
@@ -597,16 +600,6 @@ function ManagerAccount() {
                         <head>
                             <title>Page Title</title>
                         </head>
-                        {/* {product.image && (
-                        <img
-                            src={`images/product/${product.image}`}
-                            onError={(e) =>
-                                (e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png')
-                            }
-                            alt={product.image}
-                            className="product-image block m-auto pb-3"
-                        />
-                    )} */}
                         <div className="formgrid grid">
                             <div className="field col">
                                 <label htmlFor="ID" style={{ color: '#0D5BF1', fontSize: '13px' }}>
@@ -616,15 +609,7 @@ function ManagerAccount() {
                                     id="ID"
                                     value={account.ID === 0 ? counterAccount + 1 : account.ID}
                                     disabled
-                                    //onChange={(e) => onInputChange(e, 'ID')}
-                                    //autoFocus
-                                    required
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                    // mode="currency"
-                                    // currency="USD"
-                                    // locale="en-US"
                                 />
-                                {submitted && !account.ID && <small className="p-error">Name is required.</small>}
                             </div>
                             <div className="field col">
                                 <label htmlFor="fullname" style={{ color: '#0D5BF1', fontSize: '13px' }}>
@@ -665,48 +650,7 @@ function ManagerAccount() {
                                 )}
                             </div>
                         </div>
-                        {/* <div className="formgrid grid">
-                            <div className="field col">
-                                <label htmlFor="password" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                    <b>Password</b>
-                                </label>
-                                <InputText
-                                    id="password"
-                                    value={account.password}
-                                    onChange={(e) => onInputChange(e, 'password')}
-                                    required
-                                    //autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                />
-                                {submitted && !account.password && (
-                                    <small className="p-error">Password is required.</small>
-                                )}
-                            </div>
-                        </div> */}
-                        {/* <div className="field">
-                        <label htmlFor="name">Name</label>
-                        <InputText
-                            id="name"
-                            value={product.name}
-                            onChange={(e) => onInputChange(e, 'name')}
-                            required
-                            autoFocus
-                            className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
-                        />
-                        {submitted && !product.name && <small className="p-error">Name is required.</small>}
-                    </div> */}
-                        {/* <div className="field">
-                        <label htmlFor="description">Description</label>
-                        <InputTextarea
-                            id="description"
-                            value={product.description}
-                            onChange={(e) => onInputChange(e, 'description')}
-                            required
-                            rows={3}
-                            cols={20}
-                        />
-                    </div> */}
+
                         <div className="field">
                             <label className="mb-3" style={{ color: '#0D5BF1', fontSize: '13px' }}>
                                 <b>Role</b>
@@ -785,6 +729,7 @@ function ManagerAccount() {
                     modal
                     footer={deleteProductDialogFooter}
                     onHide={hideDeleteProductDialog}
+                    headerClassName={cx('detail-dialog-header')}
                 >
                     <div>
                         <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />

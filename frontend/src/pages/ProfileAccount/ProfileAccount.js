@@ -152,7 +152,7 @@ function ProfileAccount() {
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
             <div className={cx('header')}>
-                <Link className={cx('btn-back')} to={config.routes.specialistChecklist}>
+                <Link className={cx('btn-back')} to={config.routes.home}>
                     <span className={cx('icon')}>
                         <FontAwesomeIcon icon={faAnglesLeft} />
                     </span>

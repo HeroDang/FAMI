@@ -15,6 +15,7 @@ import SpecialistChecklist from '@/pages/SpecialistChecklist';
 import DetailInformation from '@/pages/DetailInformation';
 import Login from '@/pages/Login';
 import Report from '@/pages/Return-report';
+import ProfileAccount from '@/pages/ProfileAccount';
 
 const publicRoutes = [
     {
@@ -68,6 +69,11 @@ const publicRoutes = [
     {
         path: config.routes.report,
         component: Report,
+    },
+    {
+        path: config.routes.profileAccount,
+        component: ProfileAccount,
+        layout: HeaderOnly,
     },
 ];
 

@@ -48,7 +48,7 @@ function PrescriptionTab({ bills, setBills, prescription, setPrescription }) {
             let _drugsAdded = [...drugsAdded];
             drugIds.forEach((id) => {
                 bills.forEach((bill) => {
-                    if (id === bill.billID) {
+                    if (id === bill.drugbookID) {
                         _drugsAdded.push(bill);
                     }
                 });
@@ -84,9 +84,9 @@ function PrescriptionTab({ bills, setBills, prescription, setPrescription }) {
         let _drug = { ...drug };
         let _drugsAdded = [...drugsAdded];
         let _drugIds = [...drugIds];
-        if (!_drugIds.includes(_drug.billID)) {
+        if (!_drugIds.includes(_drug.drugbookID)) {
             _drugsAdded.push(_drug);
-            _drugIds.push(_drug.billID);
+            _drugIds.push(_drug.drugbookID);
             setDrugsAdded(_drugsAdded);
             setDrugIds(_drugIds);
         }
@@ -97,8 +97,8 @@ function PrescriptionTab({ bills, setBills, prescription, setPrescription }) {
         let _drug = { ...drug };
         let _drugsAdded = [...drugsAdded];
         let _drugIds = [...drugIds];
-        _drugsAdded = _drugsAdded.filter((item) => item.billID !== _drug.billID);
-        _drugIds = _drugIds.filter((item) => item !== _drug.billID);
+        _drugsAdded = _drugsAdded.filter((item) => item.drugbookID !== _drug.drugbookID);
+        _drugIds = _drugIds.filter((item) => item !== _drug.drugbookID);
         console.log('drug added', _drugsAdded);
         setDrugsAdded(_drugsAdded);
         setDrugIds(_drugIds);
@@ -188,7 +188,7 @@ function PrescriptionTab({ bills, setBills, prescription, setPrescription }) {
                     <Column
                         headerClassName={cx('column-thead')}
                         bodyClassName={cx('column')}
-                        field="billID"
+                        field="drugbookID"
                         header="ID"
                         sortable
                         style={{ minWidth: '8rem' }}
@@ -222,14 +222,6 @@ function PrescriptionTab({ bills, setBills, prescription, setPrescription }) {
                         bodyClassName={cx('column')}
                         field="quantity"
                         header="Quantity"
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column
-                        field="amount"
-                        header="Amount"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
                         sortable
                         style={{ minWidth: '12rem' }}
                     ></Column>

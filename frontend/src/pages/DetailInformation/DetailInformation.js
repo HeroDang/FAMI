@@ -34,6 +34,7 @@ import * as examService from '@/services/examService';
 import * as ultrasoundResultService from '@/services/ultrasoundResultService';
 import * as billService from '@/services/billService';
 import * as prescriptionService from '@/services/prescriptionService';
+import * as drugbookService from '@/services/drugbookService';
 
 import ExamTab from './TabDetail/ExamTab';
 import ResultTab from './TabDetail/ResultTab';
@@ -63,7 +64,7 @@ const emptyUltrasoundResult = {
 };
 
 let emptyBill = {
-    billID: 0,
+    drugbookID: 0,
     drugname: null,
     unit: null,
     unitprice: null,
@@ -110,7 +111,7 @@ function DetailInformation() {
                 setUltrasoundResult(_ultrasoundResult);
             }
         });
-        billService.getBillList().then((data) => {
+        drugbookService.getDrugBookList().then((data) => {
             setBills(data);
             console.log(data);
         });

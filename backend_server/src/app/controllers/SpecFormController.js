@@ -1,13 +1,15 @@
-const SpecForm = require('../models/SpecForm');
-const MEForm = require('../models/MEForm');
-const Patient = require('../models/Patient');
-const Person = require('../models/Person');
-const { multipleMongooseToObject, mongooseToObject } = require('../../utils/mongoose');
+const SpecForm = require("../models/SpecForm");
+const MEForm = require("../models/MEForm");
+const Patient = require("../models/Patient");
+const Person = require("../models/Person");
+const {
+    multipleMongooseToObject,
+    mongooseToObject,
+} = require("../../utils/mongoose");
 
 class SpecFormController {
-
     //[GET] /specform/create
-    createSpecForm(req,res,next){
+    createSpecForm(req, res, next) {
         const specForm = new SpecForm({
             formId: 3,
             roomId: 1,
@@ -37,39 +39,49 @@ class SpecFormController {
                     let newSpecForm = mongooseToObject(specForm);
 
                     mEForms.forEach((mEForm) => {
-                        if(mEForm.formId === newSpecForm.formId) {
-                            let {date, numOrder, reason} = mEForm;
+                        if (mEForm.formId === newSpecForm.formId) {
+                            let { date, numOrder, reason } = mEForm;
 
                             newSpecForm = {
                                 ...newSpecForm,
-                                date : new Date(date),
+                                date: new Date(date),
                                 numOrder,
                                 reason,
-                            }
+                            };
                         }
-                    })
+                    });
 
                     patients.forEach((patient) => {
                         if (patient.patientId == newSpecForm.patientId) {
-
-                            let {_id,name,address,phone,career,age} = patient;
+                            let { _id, name, address, phone, career, age } =
+                                patient;
 
                             newSpecForm = {
                                 ...newSpecForm,
                                 patientName: patient.name,
                                 patientPhone: patient.phone,
-                                _patient: {_id,name,address,phone,career,age},
+                                _patient: {
+                                    _id,
+                                    name,
+                                    address,
+                                    phone,
+                                    career,
+                                    age,
+                                },
                             };
                         }
                     });
 
                     persons.forEach((person) => {
-                        if (person.job == "Specialist doctor" && person.personId == newSpecForm.personId) {
-                            let {_id , personId ,name} = person;
+                        if (
+                            person.job == "Specialist doctor" &&
+                            person.personId == newSpecForm.personId
+                        ) {
+                            let { _id, personId, name } = person;
 
                             newSpecForm = {
                                 ...newSpecForm,
-                                _person: {_id,personId, name},
+                                _person: { _id, personId, name },
                             };
                         }
                     });
@@ -81,9 +93,9 @@ class SpecFormController {
             .catch(next);
     }
 
-    //[POST] specform/createmany
+    //[POST] specform/createMany
     createManyFrom(req, res, next) {
-        const {formId, roomIds, request, patientId} = req.body;
+        const { formId, roomIds, request, patientId } = req.body;
 
         let specForms = [];
         roomIds.forEach((roomId) => {
@@ -94,12 +106,12 @@ class SpecFormController {
                 personId: -1,
                 patientId: patientId,
                 request: request,
-                overResult: '',
+                overResult: "",
             });
 
             specForms.push(specForm);
-        })
-        
+        });
+
         SpecForm.insertMany(specForms)
             .then(() => {
                 next();
@@ -109,7 +121,18 @@ class SpecFormController {
 
     //[PUT] specform/update/:id
     updateFrom(req, res, next) {
-        const { formId, roomId, request, overResult,numOrder, personId, patientId, reason,_patient, date} = req.body;
+        const {
+            formId,
+            roomId,
+            request,
+            overResult,
+            numOrder,
+            personId,
+            patientId,
+            reason,
+            _patient,
+            date,
+        } = req.body;
 
         const specForm = {
             formId: parseInt(formId),
@@ -126,24 +149,29 @@ class SpecFormController {
             career: _patient.career,
             name: _patient.name,
             phone: _patient.phone,
-        }
+        };
 
         const mEForm = {
             numOrder,
             date: new Date(date),
             reason,
-        }
+        };
 
-        
-
-        Promise.all([MEForm.updateOne({ formId: formId}, mEForm), Patient.updateOne({_id : _patient._id},patient),SpecForm.updateOne({ _id: req.params.id }, specForm)])
+        Promise.all([
+            MEForm.updateOne({ formId: formId }, mEForm),
+            Patient.updateOne({ _id: _patient._id }, patient),
+            SpecForm.updateOne({ _id: req.params.id }, specForm),
+        ])
             .then(([meformResult, patientResult, specFormResult]) => {
-                res.status(201).json([meformResult, patientResult, specFormResult]);
+                res.status(201).json([
+                    meformResult,
+                    patientResult,
+                    specFormResult,
+                ]);
             })
             .catch(next);
     }
 
-    
     //[DELETE] specform/delete/:id
     deleteForm(req, res, next) {
         SpecForm.delete({ _id: req.params.id })
@@ -159,24 +187,21 @@ class SpecFormController {
     }
 
     //[PATCH] specform/updateOverResult
-    updateOverResult(req,res,next){
-        const {overResult, _id} = req.body;
+    updateOverResult(req, res, next) {
+        const { overResult, _id } = req.body;
 
         const specForm = {
             overResult,
-        }
+        };
 
         SpecForm.updateOne({ _id }, specForm)
             .then((data) => {
-                res.status(201).json(data)
+                res.status(201).json(data);
             })
             .catch(next);
     }
 
-    deleteFormNotExist(req,res,next){
-        
-    }
-
+    deleteFormNotExist(req, res, next) {}
 
     // // [GET] /home
     // index(req, res, next) {

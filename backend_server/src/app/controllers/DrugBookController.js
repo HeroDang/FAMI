@@ -12,38 +12,37 @@ class DrugBookController {
             .catch(next);
     }
 
-    createDrugBook(req, res, next){
-
-        // const {
-
-        //     drugname,
-        //     unit,
-        //     unitprice,
-        //     quantity,
-        //     producer,
-        //     type,
-        //     quantityvend,
-        //     datevend,
-        
-        // } = req.body;
+    createDrugBook(req, res, next) {
+        const {
+            drugname,
+            unit,
+            unitprice,
+            quantity,
+            producer,
+            type,
+            quantityvend,
+            datevend,
+        } = req.body;
 
         const drugbook = new DrugBook({
-            drugname: "heart",
-            unit: "viên",
-            unitprice: "100d/1vien",
-            quantity: 30,
-            producer: "Huyen company",
-            type: "heart",
-            quantityvend: 10,
-            datevend: Date.now(),
+            drugname: drugname,
+            unit: unit,
+            unitprice: unitprice,
+            quantity: parseInt(quantity),
+            producer: producer,
+            type: type,
+            quantityvend: quantityvend,
+            datevend: new Date(datevend),
         });
         drugbook
             .save()
-            .then(() => {res.status(201).json(drugbook)})
+            .then(() => {
+                res.status(201).json(drugbook);
+            })
             .catch(next);
     }
 
-    updateDrugBook(req, res, next){
+    updateDrugBook(req, res, next) {
         const {
             drugname,
             unit,
@@ -55,22 +54,26 @@ class DrugBookController {
             datevend,
         } = req.body;
         const drugbook = {
-            drugname:  drugname ,
+            drugname: drugname,
             unit: unit,
             unitprice: unitprice,
-            quantity: quantity,
+            quantity: parseInt(quantity),
             type: type,
             producer: producer,
             quantityvend: quantityvend,
             datevend: datevend,
         };
-        DrugBook.updateOne({_id: req.params.id},drugbook)
-            .then(() => {res.status(201).json(drugbook)})
+        DrugBook.updateOne({ _id: req.params.id }, drugbook)
+            .then(() => {
+                res.status(201).json(drugbook);
+            })
             .catch(next);
     }
-    deleteDrugBook(req, res, next){
-        DrugBook.delete({_id: req.params.id})
-            .then(() => {res.status(201).json({message:"DELETE"})})
+    deleteDrugBook(req, res, next) {
+        DrugBook.delete({ _id: req.params.id })
+            .then(() => {
+                res.status(201).json({ message: "DELETE" });
+            })
             .catch(next);
     }
 
@@ -80,10 +83,10 @@ class DrugBookController {
             .catch(next);
     }
 
-    counterDrugBook(req,res,next){
+    counterDrugBook(req, res, next) {
         Counter.findOne({ id: "drugbookID" })
-        .then((data) => res.json(data))
-        .catch(next);
+            .then((data) => res.json(data))
+            .catch(next);
     }
 }
 module.exports = new DrugBookController();

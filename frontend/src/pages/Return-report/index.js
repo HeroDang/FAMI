@@ -64,7 +64,7 @@ function ManagerAccount() {
 
     const [products, setProducts] = useState(null);
 
-    const [accounts, setAccounts] = useState(null);
+    // const [accounts, setAccounts] = useState(null);
 
     const [account, setAccount] = useState(emptyAccount);
 
@@ -75,7 +75,7 @@ function ManagerAccount() {
     const [pha, countPha] = useState(0);
     const [spe, countSpecial] = useState(0);
     const [staff, countStaff] = useState(0);
-    const [genaral, countGeneral] = useState(0);
+    const [general, countGeneral] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -90,28 +90,32 @@ function ManagerAccount() {
 
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
-        accountService.getAccountList().then((data) => {
-            setAccounts(data);
-            console.log(data);
-        });
+        // accountService.getAccountList().then((data) => {
+        //     setAccounts(data);
+        //     console.log(data);
+        // });
         accountService.getCounterAccount().then((data) => {
             setcounterAccount(data.seq);
         });
-        accountService.getcountPha().then((pha) => {
-            countPha(pha);
-            console.log(typeof pha);
+        accountService.getcountPha().then((pha1) => {
+            countPha(pha1);
+            console.log(pha);
         });
-        accountService.getcountMana().then((mana) => {
-            countMana(mana);
+        accountService.getcountMana().then((mana1) => {
+            countMana(mana1);
+            console.log(mana);
         });
-        accountService.getcountSpecial().then((spe) => {
-            countSpecial(spe);
+        accountService.getcountSpecial().then((spe1) => {
+            countSpecial(spe1);
+            console.log(spe);
         });
-        accountService.getcountStaff().then((staff) => {
-            countStaff(staff);
+        accountService.getcountStaff().then((staff1) => {
+            countStaff(staff1);
+            console.log(staff);
         });
-        accountService.getcountGeneral().then((genaral) => {
-            countGeneral(genaral);
+        accountService.getcountGeneral().then((general1) => {
+            countGeneral(general1);
+            console.log(general);
         });
 
         const documentStyle = getComputedStyle(document.documentElement);
@@ -119,7 +123,7 @@ function ManagerAccount() {
             labels: ['Pharmacist', 'Specilist doctor', 'General doctor', 'Staff', 'Manager'],
             datasets: [
                 {
-                    data: [pha, spe, genaral, staff, mana],
+                    data: [pha, spe, general, staff, mana],
                     backgroundColor: [
                         documentStyle.getPropertyValue('--blue-500'),
                         documentStyle.getPropertyValue('--yellow-500'),
@@ -149,7 +153,7 @@ function ManagerAccount() {
 
         setChartData(data);
         setChartOptions(options);
-    }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [pha, spe, general, staff, mana]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const confirmDeleteSelected = () => {
         setDeleteProductsDialog(true);
@@ -164,7 +168,7 @@ function ManagerAccount() {
     const saveAccount = () => {
         setSubmitted(true);
 
-        let _accounts = [...accounts];
+        // let _accounts = [...accounts];
         let _account = { ...account };
         if (account._id) {
             // const index = findIndexById(product.id);
@@ -526,243 +530,9 @@ function ManagerAccount() {
             <Toast ref={toast} />
             <h2 className={cx('header-title')}>Return-Report</h2>
             <div className={cx('body')}>
-                <div className={cx('toolbar')}>
-                    <div className="card flex justify-content-center">
-                        <Chart type="pie" data={chartData} options={chartOptions} className="w-full md:w-30rem" />
-                    </div>
+                <div className="card flex justify-content-center">
+                    <Chart type="pie" data={chartData} options={chartOptions} className="w-full md:w-30rem" />
                 </div>
-
-                <DataTableCrudDemo />
-                <Dialog
-                    visible={productDialog}
-                    //header="Product Details"
-                    header="Create account"
-                    // style="color: blue;"
-                    headerClassName={cx('detail-dialog-header')}
-                    modal
-                    className="p-fluid"
-                    footer={productDialogFooter}
-                    onHide={hideDialog}
-                >
-                    <head>
-                        <title>Page Title</title>
-                    </head>
-                    {/* {product.image && (
-                    <img
-                        src={`images/product/${product.image}`}
-                        onError={(e) =>
-                            (e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png')
-                        }
-                        alt={product.image}
-                        className="product-image block m-auto pb-3"
-                    />
-                )} */}
-                    <div className="formgrid grid">
-                        <div className="field col">
-                            <label htmlFor="ID" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                <b>Id</b>
-                            </label>
-                            <InputText
-                                id="ID"
-                                value={account.ID === 0 ? counterAccount + 1 : account.ID}
-                                disabled
-                                //onChange={(e) => onInputChange(e, 'ID')}
-                                //autoFocus
-                                required
-                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                // mode="currency"
-                                // currency="USD"
-                                // locale="en-US"
-                            />
-                            {submitted && !account.ID && <small className="p-error">Name is required.</small>}
-                        </div>
-                        <div className="field col">
-                            <label htmlFor="fullname" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                <b>Fullname</b>
-                            </label>
-                            <InputText
-                                id="fullname"
-                                value={account.fullname}
-                                onChange={(e) => onInputChange(e, 'fullname')}
-                                autoFocus
-                                required
-                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                            />
-                            {submitted && !account.fullname && <small className="p-error">Fullname is required.</small>}
-                        </div>
-                    </div>
-
-                    <div className="formgrid grid">
-                        <div className="field col">
-                            <label htmlFor="username" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                <b>Username</b>
-                            </label>
-                            <InputText
-                                id="username"
-                                value={account.username}
-                                onChange={(e) => onInputChange(e, 'username')}
-                                // autoFocus
-                                required
-                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                //mode="currency"
-                                //currency="USD"
-                                // locale="en-US"
-                            />
-                            {submitted && !account.username && <small className="p-error">Username is required.</small>}
-                        </div>
-                    </div>
-                    <div className="formgrid grid">
-                        <div className="field col">
-                            <label htmlFor="password" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                <b>Password</b>
-                            </label>
-                            <InputText
-                                id="password"
-                                value={account.password}
-                                onChange={(e) => onInputChange(e, 'password')}
-                                required
-                                //autoFocus
-                                // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                            />
-                            {submitted && !account.password && <small className="p-error">Password is required.</small>}
-                        </div>
-                    </div>
-                    {/* <div className="field">
-                    <label htmlFor="name">Name</label>
-                    <InputText
-                        id="name"
-                        value={product.name}
-                        onChange={(e) => onInputChange(e, 'name')}
-                        required
-                        autoFocus
-                        className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
-                    />
-                    {submitted && !product.name && <small className="p-error">Name is required.</small>}
-                </div> */}
-                    {/* <div className="field">
-                    <label htmlFor="description">Description</label>
-                    <InputTextarea
-                        id="description"
-                        value={product.description}
-                        onChange={(e) => onInputChange(e, 'description')}
-                        required
-                        rows={3}
-                        cols={20}
-                    />
-                </div> */}
-                    <div className="field">
-                        <label className="mb-3" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                            <b>Role</b>
-                        </label>
-                        {/* classNăe="feild cold" */}
-                        <div className={cx('grid-container')}>
-                            <div class={cx('grid-item')}>
-                                <RadioButton
-                                    inputId="category1"
-                                    name="job"
-                                    value="Manager"
-                                    onChange={onCategoryChange}
-                                    checked={account.job === 'Manager'}
-                                />
-                                <label htmlFor="Manager" style={{ color: '#0D5BF1' }}>
-                                    Manager
-                                </label>
-                            </div>
-                            <div class={cx('grid-item')}>
-                                <RadioButton
-                                    inputId="category2"
-                                    name="job"
-                                    value="Staff"
-                                    onChange={onCategoryChange}
-                                    checked={account.job === 'Staff'}
-                                />
-                                <label htmlFor="Staff" style={{ color: '#0D5BF1' }}>
-                                    Staff
-                                </label>
-                            </div>
-                            <div class={cx('grid-item')}>
-                                <RadioButton
-                                    inputId="category3"
-                                    name="job"
-                                    value="Specialist doctor"
-                                    onChange={onCategoryChange}
-                                    checked={account.job === 'Specialist doctor'}
-                                />
-                                <label htmlFor="Specialist doctor" style={{ color: '#0D5BF1' }}>
-                                    Specialist doctor
-                                </label>
-                            </div>
-                            <div class={cx('grid-item')}>
-                                <RadioButton
-                                    inputId="category4"
-                                    name="job"
-                                    value="General doctor"
-                                    onChange={onCategoryChange}
-                                    checked={account.job === 'General doctor'}
-                                />
-                                <label htmlFor="General doctor" style={{ color: '#0D5BF1' }}>
-                                    General doctor
-                                </label>
-                            </div>
-                            {/* className="field-radiobutton col-6" */}
-                            <div class={cx('grid-item')}>
-                                <RadioButton
-                                    inputId="category5"
-                                    name="job"
-                                    value="Pharmacist"
-                                    onChange={onCategoryChange}
-                                    checked={account.job === 'Pharmacist'}
-                                />
-                                <label htmlFor="Pharmacist" style={{ color: '#0D5BF1' }}>
-                                    Pharmacist
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </Dialog>
-                <Dialog
-                    visible={deleteProductDialog}
-                    style={{ width: '450px', color: '#153AFF' }}
-                    header="Confirm"
-                    modal
-                    footer={deleteProductDialogFooter}
-                    onHide={hideDeleteProductDialog}
-                >
-                    <div>
-                        <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
-                        {product && (
-                            <span /*style="font-size:10px"*/>
-                                <b>
-                                    Are you sure you want to delete account have <i>ID: {account.ID}</i>{' '}
-                                </b>{' '}
-                                ?
-                            </span>
-                        )}
-                    </div>
-                </Dialog>
-
-                <Dialog
-                    visible={deleteProductsDialog}
-                    style={{ width: '450px' }}
-                    header="Confirm"
-                    modal
-                    footer={deleteProductsDialogFooter}
-                    onHide={hideDeleteProductsDialog}
-                >
-                    {/* <div className="confirmation-content">
-                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
-                    {product && <span>Are you sure you want to delete the selected products?</span>}
-                </div> */}
-                    <div>
-                        <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem', color: '#153AFF' }} />
-                        {product && (
-                            <span /*style="font-size:10px"*/>
-                                <b>Are you sure you want to delete the selected accounts</b> ?
-                            </span>
-                        )}
-                    </div>
-                </Dialog>
             </div>
         </div>
     );
