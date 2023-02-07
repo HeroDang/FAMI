@@ -6,7 +6,7 @@ import 'primeflex/primeflex.css';
 import ReactDOM from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames/bind'; //hung
-
+import { Calendar } from 'primereact/calendar';
 import { classNames as classNamesPrime } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -88,8 +88,17 @@ function ManagerDrugBook() {
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
         drugbookService.getDrugBookList().then((data)  => {
-            setDrugBooks(data);
-            console.log(data);
+            let newDrugBook = data.map((item) => {
+                let newItem = { ...item };
+                // newItem.formId = item.formId.toLocaleString();
+                // newItem.patientId = item.patientId.toLocaleString();
+                newItem.datevend = new Date(item.datevend).toLocaleDateString('us-US');
+               // newItem.datevend = new Date(item.datevend);
+                return newItem;
+            });
+            setDrugBooks(newDrugBook);
+            console.log(newDrugBook);
+            
         });
         drugbookService.getCounterDrugBook().then((data)=>{
             setcounterDrugBook(data.seq);
@@ -151,6 +160,13 @@ function ManagerDrugBook() {
            
         }
     };
+    const onDateChange = (e) => {
+        let _drugbook = {...drugbook}
+        _drugbook.datevend = e.value;
+        // setMeform(_meform);
+
+        setDrugBook(_drugbook);
+    }
 
     const onInputChange = (e, name) => {
         console.log(e.target.value);
@@ -710,7 +726,7 @@ function ManagerDrugBook() {
                         <label htmlFor="quantityvend"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Quantity</b></label>
                         <InputText
                             id="quantityvend"
-                            value={drugbook.quantity}
+                            value={drugbook.quantityvend}
                             onChange={(e) => onInputChange(e, 'quantityvend')}
                            // autoFocus
                             required
@@ -722,8 +738,9 @@ function ManagerDrugBook() {
                         {submitted && !drugbook.quantityvend && <small className="p-error">Quantity is required.</small>}
                     </div>
                     <div className="field col">
-                        <label htmlFor="datevend"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Date</b></label>
-                        <InputText
+                        <label htmlFor="datevend"><b>Date</b></label>
+                        <Calendar id="icon" value={drugbook.datevend} onChange={(e) => onDateChange(e)} showIcon />
+                        {/* <InputText
                                     id="datevend"
                                     value={drugbook.datevend}
                                     onChange={(e) => onInputChange(e, 'datevend')}
@@ -731,8 +748,8 @@ function ManagerDrugBook() {
                                     //autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
-                                />
-                        {submitted && !drugbook.datevend && <small className="p-error">Unit is required.</small>}
+                                /> */}
+                        {submitted && !drugbook.datevend && <small className="p-error">Date is required.</small>}
                     </div>
                     
                 

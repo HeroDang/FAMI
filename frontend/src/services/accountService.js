@@ -66,3 +66,49 @@ export const login= async (account) => {
         console.log(error);
     }
 };
+
+
+export const getcountMana= async () => {
+    try {
+        const res = await httpRequest.get('accounts/count/mana', {
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getcountGeneral= async () => {
+    try {
+        const res = await httpRequest.get('accounts/count/ger', {
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getcountSpecial= async () => {
+    try {
+        const res = await httpRequest.get('accounts/count/special', {
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+export const getcountStaff= async () => {
+    try {
+        const res = await httpRequest.get('accounts/count/sta', {
+        });
+        return res;
+    } catch (error) {
+        console.log(error);
+    }};
+    export const getcountPha= async () => {
+        try {
+            const res = await httpRequest.get('accounts/count/pha', {
+            });
+            return res;
+        } catch (error) {
+            console.log(error);
+        }
+};

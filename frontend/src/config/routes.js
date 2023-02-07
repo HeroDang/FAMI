@@ -10,6 +10,7 @@ const routes = {
     manageDrug: '/manageDrug',
     detailInformation: '/detailInformation/:specFormId',
     login: "/login",
+    report: "/report",
 };
 
 export default routes;

@@ -78,12 +78,12 @@ function Sidebar() {
                     icon={<DrugIcon />}
                     activeIcon={<DrugActiveIcon />}
                 />
-                {/* <MenuItem
-                    title="Manage Drug"
-                    to={config.routes.manageDrug}
+                <MenuItem
+                    title="Return-Report"
+                    to={config.routes.report}
                     icon={<LiveIcon />}
                     activeIcon={<LiveActiveIcon />}
-                /> */}
+                />
             </Menu>
             {/* <SuggestedAccounts label="Suggested accounts" data={SuggestedUsers} />
             <SuggestedAccounts label="Following accounts" /> */}
