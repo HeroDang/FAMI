@@ -32,7 +32,7 @@ export const updateSpecForm = async (specForm, _id) => {
 
 export const updateOverResult = async (overResult, _id) => {
     try {
-        const res = await httpRequest.patch(`specform/updateOverResult`, {overResult, _id});
+        const res = await httpRequest.patch(`specform/updateOverResult`, { overResult, _id });
         // console.log('res', res);
         return res;
     } catch (error) {
@@ -52,7 +52,7 @@ export const deleteSpecForm = async (_id) => {
 
 export const deleteSelectedSpecForm = async (idList = []) => {
     try {
-        const res = await httpRequest.post(`specform/delete/selected`,idList);
+        const res = await httpRequest.post(`specform/delete/selected`, idList);
         // console.log('res', res);
         return res;
     } catch (error) {
@@ -62,14 +62,13 @@ export const deleteSelectedSpecForm = async (idList = []) => {
 
 export const createManySpecForm = async (data) => {
     try {
-        const res = await httpRequest.post('specform/createmany', data);
+        const res = await httpRequest.post('specform/createMany', data);
         // console.log('res', res);
         return res;
     } catch (error) {
         console.log(error);
     }
 };
-
 
 ////////////
 
@@ -91,4 +90,3 @@ export const getRoomsToForm = async () => {
         console.log(error);
     }
 };
-
