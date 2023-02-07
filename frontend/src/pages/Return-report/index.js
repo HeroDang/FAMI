@@ -20,6 +20,8 @@ import { RadioButton } from 'primereact/radiobutton';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { Chart } from 'primereact/chart';
+
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { SearchIcon, TrashSmallIcon, PencilSmallIcon } from '@/components/Icons';
 import './index.css';
@@ -30,9 +32,8 @@ import { ProductService } from './ProductService';
 import * as accountService from '@/services/accountService'; //1
 import styles from './ManagerAccount.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import React, {Component} from 'react';
-// import React, { useState, useEffect } from 'react';
-// import { Chart } from 'primereact/chart';
+///chart
+
 const cx = classNames.bind(styles);
 
 function ManagerAccount() {
@@ -56,6 +57,10 @@ function ManagerAccount() {
         job: null,
         //inventoryStatus: 'INSTOCK',
     };
+    ///chart
+    const [chartData, setChartData] = useState({});
+    const [chartOptions, setChartOptions] = useState({});
+    ////chart
 
     const [products, setProducts] = useState(null);
 
@@ -65,6 +70,12 @@ function ManagerAccount() {
 
     const [changeData, setChangeData] = useState(false);
     const [counterAccount, setcounterAccount] = useState(0);
+
+    const [mana, countMana] = useState(0);
+    const [pha, countPha] = useState(0);
+    const [spe, countSpecial] = useState(0);
+    const [staff, countStaff] = useState(0);
+    const [genaral, countGeneral] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -81,10 +92,63 @@ function ManagerAccount() {
         productService.getProducts().then((data) => setProducts(data));
         accountService.getAccountList().then((data) => {
             setAccounts(data);
+            console.log(data);
         });
         accountService.getCounterAccount().then((data) => {
             setcounterAccount(data.seq);
         });
+        accountService.getcountPha().then((pha) => {
+            countPha(pha);
+            console.log(typeof pha);
+        });
+        accountService.getcountMana().then((mana) => {
+            countMana(mana);
+        });
+        accountService.getcountSpecial().then((spe) => {
+            countSpecial(spe);
+        });
+        accountService.getcountStaff().then((staff) => {
+            countStaff(staff);
+        });
+        accountService.getcountGeneral().then((genaral) => {
+            countGeneral(genaral);
+        });
+
+        const documentStyle = getComputedStyle(document.documentElement);
+        const data = {
+            labels: ['Pharmacist', 'Specilist doctor', 'General doctor', 'Staff', 'Manager'],
+            datasets: [
+                {
+                    data: [pha, spe, genaral, staff, mana],
+                    backgroundColor: [
+                        documentStyle.getPropertyValue('--blue-500'),
+                        documentStyle.getPropertyValue('--yellow-500'),
+                        documentStyle.getPropertyValue('--green-500'),
+                        documentStyle.getPropertyValue('--red-500'),
+                        documentStyle.getPropertyValue('--brown-500'),
+                    ],
+                    hoverBackgroundColor: [
+                        documentStyle.getPropertyValue('--blue-400'),
+                        documentStyle.getPropertyValue('--yellow-400'),
+                        documentStyle.getPropertyValue('--green-400'),
+                        documentStyle.getPropertyValue('--red-500'),
+                        documentStyle.getPropertyValue('--brown-500'),
+                    ],
+                },
+            ],
+        };
+        const options = {
+            plugins: {
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                    },
+                },
+            },
+        };
+
+        setChartData(data);
+        setChartOptions(options);
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const confirmDeleteSelected = () => {
@@ -102,11 +166,10 @@ function ManagerAccount() {
 
         let _accounts = [...accounts];
         let _account = { ...account };
-        _account.accountId = counterAccount + 1;
         if (account._id) {
             // const index = findIndexById(product.id);
-            _account.accountId = _account.ID;
             accountService.updateAccount(_account, _account._id).then((data) => {
+                console.log(data);
                 setProductDialog(false);
                 setAccount(emptyAccount);
                 setChangeData(!changeData);
@@ -121,6 +184,7 @@ function ManagerAccount() {
             // _products[index] = _product;
         } else {
             accountService.createAccount(_account).then((data) => {
+                console.log(data);
                 setProductDialog(false);
                 setAccount(emptyAccount);
                 setChangeData(!changeData);
@@ -137,6 +201,7 @@ function ManagerAccount() {
     };
 
     const onInputChange = (e, name) => {
+        console.log(e.target.value);
         const val = (e.target && e.target.value) || '';
         let _account = { ...account };
         _account[`${name}`] = val;
@@ -188,7 +253,7 @@ function ManagerAccount() {
         // let _products = products.filter((val) => val.id !== product.id);
         // setProducts(_products);
         let _account = { ...account };
-        accountService.deleteAccount(_account.ID).then((data) => {
+        accountService.deleteAccount(_account._id).then((data) => {
             setChangeData(!changeData);
             setDeleteProductDialog(false);
             // setProduct(emptyProduct);
@@ -210,9 +275,10 @@ function ManagerAccount() {
         let formIds = [];
         //console.log(selectedProducts);
         _selectedProducts.forEach((item) => {
-            formIds.push(item.ID);
+            formIds.push(item._id);
         });
         accountService.deleteSelectedAccount(formIds).then((data) => {
+            console.log(data);
             setChangeData(!changeData);
             setDeleteProductsDialog(false);
             setSelectedProducts(null);
@@ -451,134 +517,18 @@ function ManagerAccount() {
 
         return (
             <div className="">
-                <div className="card">
-                    <DataTable
-                        ref={dt}
-                        value={accounts}
-                        selection={selectedProducts}
-                        onSelectionChange={(e) => setSelectedProducts(e.value)}
-                        dataKey="_id"
-                        paginator
-                        rows={10}
-                        rowsPerPageOptions={[5, 10, 25]}
-                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                        globalFilter={globalFilter}
-                        //header={header}
-                        responsiveLayout="scroll"
-                    >
-                        <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            selectionMode="multiple"
-                            headerStyle={{ width: '3rem' }}
-                            exportable={false}
-                        ></Column>
-
-                        <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            field="ID"
-                            header="ID"
-                            sortable
-                            style={{ minWidth: '8rem' }}
-                        ></Column>
-                        <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            field="fullname"
-                            header="Fullname"
-                            sortable
-                            style={{ minWidth: '16rem' }}
-                        ></Column>
-                        {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
-                        {/* <Column
-                        field="price"
-                        header="Price"
-                        body={priceBodyTemplate}
-                        sortable
-                        style={{ minWidth: '8rem' }}
-                    ></Column> */}
-                        <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            field="username"
-                            header="Username"
-                            sortable
-                            style={{ minWidth: '16rem' }}
-                        ></Column>
-                        <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            field="job"
-                            header="Job"
-                            sortable
-                            style={{ minWidth: '12rem' }}
-                        ></Column>
-                        {/* <Column
-                        field="rating"
-                        header="Reviews"
-                        body={ratingBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column
-                        field="inventoryStatus"
-                        header="Status"
-                        body={statusBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column> */}
-                        <Column
-                            header="Action"
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            body={actionBodyTemplate}
-                            exportable={false}
-                            style={{ minWidth: '8rem' }}
-                        ></Column>
-                    </DataTable>
-                </div>
+                <div className="card"></div>
             </div>
         );
     };
     return (
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manager Account</h2>
+            <h2 className={cx('header-title')}>Return-Report</h2>
             <div className={cx('body')}>
                 <div className={cx('toolbar')}>
-                    <div className={cx('search')}>
-                        <span className={cx('search-icon')}>
-                            <SearchIcon />
-                        </span>
-                        <InputText
-                            className={cx('search-input')}
-                            type="search"
-                            onInput={(e) => setGlobalFilter(e.target.value)}
-                            placeholder="Search..."
-                        />
-                    </div>
-                    <div className={cx('btn-group')}>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<FontAwesomeIcon icon={faPlus} />}
-                            onClick={openNew}
-                        >
-                            New
-                        </MyBtn>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
-                            onClick={confirmDeleteSelected}
-                            disable={!selectedProducts || !selectedProducts.length}
-                        >
-                            Delete
-                        </MyBtn>
+                    <div className="card flex justify-content-center">
+                        <Chart type="pie" data={chartData} options={chartOptions} className="w-full md:w-30rem" />
                     </div>
                 </div>
 
@@ -588,192 +538,185 @@ function ManagerAccount() {
                     //header="Product Details"
                     header="Create account"
                     // style="color: blue;"
+                    headerClassName={cx('detail-dialog-header')}
                     modal
                     className="p-fluid"
                     footer={productDialogFooter}
                     onHide={hideDialog}
                 >
-                    <div className={cx('dialog')}>
-                        <head>
-                            <title>Page Title</title>
-                        </head>
-                        {/* {product.image && (
-                        <img
-                            src={`images/product/${product.image}`}
-                            onError={(e) =>
-                                (e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png')
-                            }
-                            alt={product.image}
-                            className="product-image block m-auto pb-3"
-                        />
-                    )} */}
-                        <div className="formgrid grid">
-                            <div className="field col">
-                                <label htmlFor="ID" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                    <b>Id</b>
-                                </label>
-                                <InputText
-                                    id="ID"
-                                    value={account.ID === 0 ? counterAccount + 1 : account.ID}
-                                    disabled
-                                    //onChange={(e) => onInputChange(e, 'ID')}
-                                    //autoFocus
-                                    required
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                    // mode="currency"
-                                    // currency="USD"
-                                    // locale="en-US"
-                                />
-                                {submitted && !account.ID && <small className="p-error">Name is required.</small>}
-                            </div>
-                            <div className="field col">
-                                <label htmlFor="fullname" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                    <b>Fullname</b>
-                                </label>
-                                <InputText
-                                    id="fullname"
-                                    value={account.fullname}
-                                    onChange={(e) => onInputChange(e, 'fullname')}
-                                    autoFocus
-                                    required
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                />
-                                {submitted && !account.fullname && (
-                                    <small className="p-error">Fullname is required.</small>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="formgrid grid">
-                            <div className="field col">
-                                <label htmlFor="username" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                    <b>Username</b>
-                                </label>
-                                <InputText
-                                    id="username"
-                                    value={account.username}
-                                    onChange={(e) => onInputChange(e, 'username')}
-                                    // autoFocus
-                                    required
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                    //mode="currency"
-                                    //currency="USD"
-                                    // locale="en-US"
-                                />
-                                {submitted && !account.username && (
-                                    <small className="p-error">Username is required.</small>
-                                )}
-                            </div>
-                        </div>
-                        {/* <div className="formgrid grid">
-                            <div className="field col">
-                                <label htmlFor="password" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                    <b>Password</b>
-                                </label>
-                                <InputText
-                                    id="password"
-                                    value={account.password}
-                                    onChange={(e) => onInputChange(e, 'password')}
-                                    required
-                                    //autoFocus
-                                    // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
-                                    className={cx({ 'p-invalid': submitted && !product.name })}
-                                />
-                                {submitted && !account.password && (
-                                    <small className="p-error">Password is required.</small>
-                                )}
-                            </div>
-                        </div> */}
-                        {/* <div className="field">
-                        <label htmlFor="name">Name</label>
-                        <InputText
-                            id="name"
-                            value={product.name}
-                            onChange={(e) => onInputChange(e, 'name')}
-                            required
-                            autoFocus
-                            className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
-                        />
-                        {submitted && !product.name && <small className="p-error">Name is required.</small>}
-                    </div> */}
-                        {/* <div className="field">
-                        <label htmlFor="description">Description</label>
-                        <InputTextarea
-                            id="description"
-                            value={product.description}
-                            onChange={(e) => onInputChange(e, 'description')}
-                            required
-                            rows={3}
-                            cols={20}
-                        />
-                    </div> */}
-                        <div className="field">
-                            <label className="mb-3" style={{ color: '#0D5BF1', fontSize: '13px' }}>
-                                <b>Role</b>
+                    <head>
+                        <title>Page Title</title>
+                    </head>
+                    {/* {product.image && (
+                    <img
+                        src={`images/product/${product.image}`}
+                        onError={(e) =>
+                            (e.target.src = 'https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png')
+                        }
+                        alt={product.image}
+                        className="product-image block m-auto pb-3"
+                    />
+                )} */}
+                    <div className="formgrid grid">
+                        <div className="field col">
+                            <label htmlFor="ID" style={{ color: '#0D5BF1', fontSize: '13px' }}>
+                                <b>Id</b>
                             </label>
-                            {/* classNăe="feild cold" */}
-                            <div className={cx('grid-container')}>
-                                <div class={cx('grid-item')}>
-                                    <RadioButton
-                                        inputId="category1"
-                                        name="job"
-                                        value="Manager"
-                                        onChange={onCategoryChange}
-                                        checked={account.job === 'Manager'}
-                                    />
-                                    <label htmlFor="Manager" style={{ color: '#0D5BF1' }}>
-                                        Manager
-                                    </label>
-                                </div>
-                                <div class={cx('grid-item')}>
-                                    <RadioButton
-                                        inputId="category2"
-                                        name="job"
-                                        value="Staff"
-                                        onChange={onCategoryChange}
-                                        checked={account.job === 'Staff'}
-                                    />
-                                    <label htmlFor="Staff" style={{ color: '#0D5BF1' }}>
-                                        Staff
-                                    </label>
-                                </div>
-                                <div class={cx('grid-item')}>
-                                    <RadioButton
-                                        inputId="category3"
-                                        name="job"
-                                        value="Specialist doctor"
-                                        onChange={onCategoryChange}
-                                        checked={account.job === 'Specialist doctor'}
-                                    />
-                                    <label htmlFor="Specialist doctor" style={{ color: '#0D5BF1' }}>
-                                        Specialist doctor
-                                    </label>
-                                </div>
-                                <div class={cx('grid-item')}>
-                                    <RadioButton
-                                        inputId="category4"
-                                        name="job"
-                                        value="General doctor"
-                                        onChange={onCategoryChange}
-                                        checked={account.job === 'General doctor'}
-                                    />
-                                    <label htmlFor="General doctor" style={{ color: '#0D5BF1' }}>
-                                        General doctor
-                                    </label>
-                                </div>
-                                {/* className="field-radiobutton col-6" */}
-                                <div class={cx('grid-item')}>
-                                    <RadioButton
-                                        inputId="category5"
-                                        name="job"
-                                        value="Pharmacist"
-                                        onChange={onCategoryChange}
-                                        checked={account.job === 'Pharmacist'}
-                                    />
-                                    <label htmlFor="Pharmacist" style={{ color: '#0D5BF1' }}>
-                                        Pharmacist
-                                    </label>
-                                </div>
+                            <InputText
+                                id="ID"
+                                value={account.ID === 0 ? counterAccount + 1 : account.ID}
+                                disabled
+                                //onChange={(e) => onInputChange(e, 'ID')}
+                                //autoFocus
+                                required
+                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                // mode="currency"
+                                // currency="USD"
+                                // locale="en-US"
+                            />
+                            {submitted && !account.ID && <small className="p-error">Name is required.</small>}
+                        </div>
+                        <div className="field col">
+                            <label htmlFor="fullname" style={{ color: '#0D5BF1', fontSize: '13px' }}>
+                                <b>Fullname</b>
+                            </label>
+                            <InputText
+                                id="fullname"
+                                value={account.fullname}
+                                onChange={(e) => onInputChange(e, 'fullname')}
+                                autoFocus
+                                required
+                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                            />
+                            {submitted && !account.fullname && <small className="p-error">Fullname is required.</small>}
+                        </div>
+                    </div>
+
+                    <div className="formgrid grid">
+                        <div className="field col">
+                            <label htmlFor="username" style={{ color: '#0D5BF1', fontSize: '13px' }}>
+                                <b>Username</b>
+                            </label>
+                            <InputText
+                                id="username"
+                                value={account.username}
+                                onChange={(e) => onInputChange(e, 'username')}
+                                // autoFocus
+                                required
+                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                                //mode="currency"
+                                //currency="USD"
+                                // locale="en-US"
+                            />
+                            {submitted && !account.username && <small className="p-error">Username is required.</small>}
+                        </div>
+                    </div>
+                    <div className="formgrid grid">
+                        <div className="field col">
+                            <label htmlFor="password" style={{ color: '#0D5BF1', fontSize: '13px' }}>
+                                <b>Password</b>
+                            </label>
+                            <InputText
+                                id="password"
+                                value={account.password}
+                                onChange={(e) => onInputChange(e, 'password')}
+                                required
+                                //autoFocus
+                                // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
+                                className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
+                            />
+                            {submitted && !account.password && <small className="p-error">Password is required.</small>}
+                        </div>
+                    </div>
+                    {/* <div className="field">
+                    <label htmlFor="name">Name</label>
+                    <InputText
+                        id="name"
+                        value={product.name}
+                        onChange={(e) => onInputChange(e, 'name')}
+                        required
+                        autoFocus
+                        className={classNamesPrime({ 'p-invalid': submitted && !product.name })}
+                    />
+                    {submitted && !product.name && <small className="p-error">Name is required.</small>}
+                </div> */}
+                    {/* <div className="field">
+                    <label htmlFor="description">Description</label>
+                    <InputTextarea
+                        id="description"
+                        value={product.description}
+                        onChange={(e) => onInputChange(e, 'description')}
+                        required
+                        rows={3}
+                        cols={20}
+                    />
+                </div> */}
+                    <div className="field">
+                        <label className="mb-3" style={{ color: '#0D5BF1', fontSize: '13px' }}>
+                            <b>Role</b>
+                        </label>
+                        {/* classNăe="feild cold" */}
+                        <div className={cx('grid-container')}>
+                            <div class={cx('grid-item')}>
+                                <RadioButton
+                                    inputId="category1"
+                                    name="job"
+                                    value="Manager"
+                                    onChange={onCategoryChange}
+                                    checked={account.job === 'Manager'}
+                                />
+                                <label htmlFor="Manager" style={{ color: '#0D5BF1' }}>
+                                    Manager
+                                </label>
+                            </div>
+                            <div class={cx('grid-item')}>
+                                <RadioButton
+                                    inputId="category2"
+                                    name="job"
+                                    value="Staff"
+                                    onChange={onCategoryChange}
+                                    checked={account.job === 'Staff'}
+                                />
+                                <label htmlFor="Staff" style={{ color: '#0D5BF1' }}>
+                                    Staff
+                                </label>
+                            </div>
+                            <div class={cx('grid-item')}>
+                                <RadioButton
+                                    inputId="category3"
+                                    name="job"
+                                    value="Specialist doctor"
+                                    onChange={onCategoryChange}
+                                    checked={account.job === 'Specialist doctor'}
+                                />
+                                <label htmlFor="Specialist doctor" style={{ color: '#0D5BF1' }}>
+                                    Specialist doctor
+                                </label>
+                            </div>
+                            <div class={cx('grid-item')}>
+                                <RadioButton
+                                    inputId="category4"
+                                    name="job"
+                                    value="General doctor"
+                                    onChange={onCategoryChange}
+                                    checked={account.job === 'General doctor'}
+                                />
+                                <label htmlFor="General doctor" style={{ color: '#0D5BF1' }}>
+                                    General doctor
+                                </label>
+                            </div>
+                            {/* className="field-radiobutton col-6" */}
+                            <div class={cx('grid-item')}>
+                                <RadioButton
+                                    inputId="category5"
+                                    name="job"
+                                    value="Pharmacist"
+                                    onChange={onCategoryChange}
+                                    checked={account.job === 'Pharmacist'}
+                                />
+                                <label htmlFor="Pharmacist" style={{ color: '#0D5BF1' }}>
+                                    Pharmacist
+                                </label>
                             </div>
                         </div>
                     </div>

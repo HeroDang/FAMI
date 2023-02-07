@@ -14,7 +14,7 @@ import ManageDrug from '@/pages/ManageDrug';
 import SpecialistChecklist from '@/pages/SpecialistChecklist';
 import DetailInformation from '@/pages/DetailInformation';
 import Login from '@/pages/Login';
-import ProfileAccount from '@/pages/ProfileAccount';
+import Report from '@/pages/Return-report';
 
 const publicRoutes = [
     {
@@ -64,10 +64,10 @@ const publicRoutes = [
         component: Login,
         layout: null,
     },
+
     {
-        path: config.routes.profileAccount,
-        component: ProfileAccount,
-        layout: HeaderOnly,
+        path: config.routes.report,
+        component: Report,
     },
 ];
 

@@ -33,7 +33,7 @@ function Sidebar({ currentAccount }) {
     const [specialistChecklist, setSpecialistChecklist] = useState(false);
     const [manageBill, setManageBill] = useState(false);
     const [manageDrugBook, setManageDrugBook] = useState(false);
-
+    const [report, setReport] = useState(false);
     useEffect(() => {
         if (currentAccount) {
             const job = currentAccount.job;
@@ -52,6 +52,7 @@ function Sidebar({ currentAccount }) {
                     break;
                 case 'Manager':
                     setManagerAccount(true);
+                    setReport(true);
                     break;
                 default:
                     break;
@@ -110,12 +111,15 @@ function Sidebar({ currentAccount }) {
                         activeIcon={<DrugActiveIcon />}
                     />
                 )}
-                {/* <MenuItem
-                    title="Manage Drug"
-                    to={config.routes.manageDrug}
-                    icon={<LiveIcon />}
-                    activeIcon={<LiveActiveIcon />}
-                /> */}
+
+                {report && (
+                    <MenuItem
+                        title="Return-Report"
+                        to={config.routes.report}
+                        icon={<LiveIcon />}
+                        activeIcon={<LiveActiveIcon />}
+                    />
+                )}
             </Menu>
             {/* <SuggestedAccounts label="Suggested accounts" data={SuggestedUsers} />
             <SuggestedAccounts label="Following accounts" /> */}

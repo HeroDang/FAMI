@@ -8,6 +8,7 @@ const billRoute = require("./bill");
 const drugRoute = require("./drug");
 const specForm = require("./specform");
 const examRoute = require('./exam');
+const drugbookRoute = require("./drugbook")
 const ultrasoundResultRoute = require('./ultrasoundResult')
 const prescriptionRoute = require('./prescription')
 
@@ -23,7 +24,9 @@ function route(app) {
     app.use("/room", roomRoute);
     app.use("/bills", billRoute);
     app.use("/drugs", drugRoute);
+    app.use("/drugbooks",drugbookRoute);
     app.use("/", siteController);
+
 }
 
 module.exports = route;

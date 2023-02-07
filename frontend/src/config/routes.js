@@ -11,6 +11,7 @@ const routes = {
     detailInformation: '/detailInformation/:specFormId',
     login: '/login',
     profileAccount: '/profileAccount',
+    report: '/report',
 };
 
 export default routes;

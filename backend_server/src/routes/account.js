@@ -27,5 +27,10 @@ router.post(
     DeletePersonsMiddleware,
     AccountController.deleteSelectedAccount,
 );
+router.get("/count/ger", AccountController.getGeneral);
+router.get("/count/mana", AccountController.getMana);
+router.get("/count/pha", AccountController.getPhar);
+router.get("/count/sta", AccountController.getStaff);
+router.get("/count/special", AccountController.getSpecial);
 
 module.exports = router;

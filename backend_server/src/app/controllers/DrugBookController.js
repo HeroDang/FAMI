@@ -1,7 +1,7 @@
 const DrugBook = require("../models/DrugBook");
 const { multipleMongooseToObject } = require("../../utils/mongoose");
 const Counter = require("../models/Counter");
-const DrugBook = require("../models/DrugBook");
+
 class DrugBookController {
     // [GET] /home
     getList(req, res, next) {
@@ -14,26 +14,28 @@ class DrugBookController {
 
     createDrugBook(req, res, next){
 
-        const {
+        // const {
 
-            drugname,
-            unit,
-            unitprice,
-            quantity,
-            amount,
-            status,
-            total,
+        //     drugname,
+        //     unit,
+        //     unitprice,
+        //     quantity,
+        //     producer,
+        //     type,
+        //     quantityvend,
+        //     datevend,
         
-        } = req.body;
+        // } = req.body;
 
         const drugbook = new DrugBook({
-            drugname:  drugname ,
-            unit: unit,
-            unitprice: unitprice,
-            quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+            drugname: "heart",
+            unit: "viên",
+            unitprice: "100d/1vien",
+            quantity: 30,
+            producer: "Huyen company",
+            type: "heart",
+            quantityvend: 10,
+            datevend: Date.now(),
         });
         drugbook
             .save()
@@ -47,18 +49,20 @@ class DrugBookController {
             unit,
             unitprice,
             quantity,
-            amount,
-            status,
-            total,
+            producer,
+            type,
+            quantityvend,
+            datevend,
         } = req.body;
         const drugbook = {
             drugname:  drugname ,
             unit: unit,
             unitprice: unitprice,
             quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+            type: type,
+            producer: producer,
+            quantityvend: quantityvend,
+            datevend: datevend,
         };
         DrugBook.updateOne({_id: req.params.id},drugbook)
             .then(() => {res.status(201).json(drugbook)})
