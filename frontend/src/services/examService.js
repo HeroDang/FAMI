@@ -9,6 +9,16 @@ export const getExamBySpecFormId = async (specFormId) => {
     }
 };
 
+export const createExam = async (exam) => {
+    try {
+        const res = await httpRequest.post(`exam/create`, exam);
+        // console.log('res', res);
+        return res;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const updateExam = async (exam, _id) => {
     try {
         const res = await httpRequest.put(`exam/update/${_id}`, exam);

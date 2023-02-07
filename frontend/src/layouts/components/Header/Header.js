@@ -20,7 +20,7 @@ import Menu from '@/components/Popper/Menu';
 import { MessagesIcon, PlusIcon, InboxIcon } from '@/components/Icons/Icons';
 import config from '@/config';
 import Image from '@/components/Image';
-import useToken from '@/hooks/useToken';
+// import useToken from '@/hooks/useToken';
 import styles from './Header.module.scss';
 import { useEffect, useLayoutEffect, useState } from 'react';
 // import Search from '../Search/Search';
@@ -58,16 +58,16 @@ const MENU_ITEMS = [
     },
 ];
 
-function Header() {
+function Header({ currentAccount }) {
     const currentUser = true;
     const [account, setAccount] = useState(null);
 
-    const {token} = useToken();
+    // const {token} = useToken();
 
-    useLayoutEffect(() => {
-        // setAccount(token.account._doc)
-        console.log(account);
-    },[])
+    // useLayoutEffect(() => {
+    //     setAccount(token.account._doc)
+    //     console.log(account);
+    // },[])
 
     //Handle logic
     const handleMenuChange = (menuItem) => {
@@ -78,19 +78,8 @@ function Header() {
         {
             icon: <FontAwesomeIcon icon={faUser} />,
             title: 'View Profile',
-            to: '/@khoii',
+            to: '/profileAccount',
         },
-        {
-            icon: <FontAwesomeIcon icon={faCoins} />,
-            title: 'Get coins',
-            to: '/coin',
-        },
-        {
-            icon: <FontAwesomeIcon icon={faGear} />,
-            title: 'Setting',
-            to: '/setting',
-        },
-        ...MENU_ITEMS,
         {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
@@ -137,7 +126,7 @@ function Header() {
                     <Menu items={currentUser ? userMenu : MENU_ITEMS} onChange={handleMenuChange}>
                         {currentUser ? (
                             <div className={cx('avatar-group')}>
-                                <p>{account ? account.fullname :''}</p>
+                                <p>{currentAccount ? currentAccount.fullname : ''}</p>
                                 <Image
                                     className={cx('user-avatar')}
                                     src="https://scontent.fsgn2-3.fna.fbcdn.net/v/t39.30808-6/323885182_533273118553389_7645687866019652672_n.jpg?stp=dst-jpg_p600x600&_nc_cat=110&ccb=1-7&_nc_sid=e3f864&_nc_ohc=1dOoUgF3v8wAX_gVZ23&_nc_ht=scontent.fsgn2-3.fna&oh=00_AfDeRMzvR9NxQjgeykgWUqe2-ZYgJ4D-DlmfteYkS3omfQ&oe=63C00610"

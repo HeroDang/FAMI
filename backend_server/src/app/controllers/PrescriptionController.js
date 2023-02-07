@@ -1,14 +1,12 @@
-const Room = require('../models/Room');
-const Prescription = require('../models/Prescription');
-const { multipleMongooseToObject } = require('../../utils/mongoose');
+const Room = require("../models/Room");
+const Prescription = require("../models/Prescription");
+const { multipleMongooseToObject } = require("../../utils/mongoose");
 
 class PrescriptionController {
-
     //[GET] /prescription/create
-    createPrescription(req,res,next){
-
+    createPrescription(req, res, next) {
         const prescription = new Prescription({
-            prescriptionId: 'PREOFGF3',
+            prescriptionId: "PREOFGF3",
             formId: 3,
             patientId: 3,
             total: 0,
@@ -22,17 +20,29 @@ class PrescriptionController {
             .catch(next);
     }
 
-    //[GET] /room/getlist
-    getList(req,res,next){
-        Room.find({})
-            .then((room) => {
-                let result = [];
-                room.forEach((item) => {
-                    let {_id,roomId,name} = item;
-                    result.push({_id,roomId,name})
-                })
-                
-                res.json(result)
+    //[GET] /prescription/getPrescription/:formId
+    getPrescription(req, res, next) {
+        Prescription.findOne({ formId: req.params.formId })
+            .then((prescription) => {
+                res.json(prescription);
+            })
+            .catch(next);
+    }
+
+    //[PUT] /prescription/update/:prescriptionId
+    updatePrescription(req, res, next) {
+        const { drugIds } = req.body;
+
+        const prescription = {
+            drugIds,
+        };
+
+        Prescription.updateOne(
+            { prescriptionId: req.params.prescriptionId },
+            prescription,
+        )
+            .then((data) => {
+                res.json(data);
             })
             .catch(next);
     }

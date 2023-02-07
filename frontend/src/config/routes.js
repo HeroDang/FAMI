@@ -9,8 +9,9 @@ const routes = {
     manageDrugBook: '/manageDrugBook',
     manageDrug: '/manageDrug',
     detailInformation: '/detailInformation/:specFormId',
-    login: "/login",
-    report: "/report",
+    login: '/login',
+    profileAccount: '/profileAccount',
+    report: '/report',
 };
 
 export default routes;

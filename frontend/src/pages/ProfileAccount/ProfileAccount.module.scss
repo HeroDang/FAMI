@@ -8,10 +8,29 @@
 }
 
 .body {
+    display: flex;
     background-color: white;
     padding: 20px;
     border-radius: 4px;
     box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+}
+
+.info {
+    display: flex;
+    padding: 0px 24px;
+    justify-content: space-between;
+    color: var(--title-color);
+    font-weight: 600;
+    .info-form {
+        p {
+            padding-bottom: 10px;
+        }
+    }
+}
+
+.header {
+    display: flex;
+    position: relative;
 }
 
 .toolbar {
@@ -81,22 +100,25 @@
     background-color: var(--background-color);
 }
 
-.btn-delete {
-    margin: 0px 6px;
-    padding: 8px;
-    border: 1px solid transparent;
-    background-color: white;
-    border-radius: 50%;
+.btn-back {
+    position: absolute;
+    left: -24px;
+    top: 0;
+    margin: 0px;
+    padding: 4px;
+    background-color: transparent;
+    transition: transform linear 0.2s;
 
     &:hover {
         cursor: pointer;
-        border: 1px solid var(--primary);
+        transform: scale(1.5);
     }
 
     .icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        // display: flex;
+        // align-items: center;
+        // justify-content: center;
+        // font-size: 2rem;
         color: var(--primary);
     }
 }
@@ -195,15 +217,50 @@ li {
     }
 }
 
-//clinic room
-.spec-form {
-    position: relative;
-    .box-request {
-        position: absolute;
-        max-width: 200px;
-        min-height: 100px;
-        right: 100px;
-        top: 105px;
-        background-color: red;
+//detailInformation
+.btn-group {
+    display: flex;
+    margin: 0px 20px;
+    justify-content: flex-end;
+}
+
+//profile info
+.body {
+    .avatar-account {
+        margin-right: 20px;
+        img {
+            box-shadow: rgb(0 0 0 / 12%) 0px 2px 12px;
+            height: 100%;
+            border-radius: 10%;
+            object-fit: cover;
+        }
+    }
+}
+
+.info-person {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    label {
+        color: var(--primary);
+        font-size: 1.6rem;
+        font-weight: 600;
+    }
+    input,
+    textarea,
+    span {
+        font-size: 1.6rem !important;
+        width: 100%;
+    }
+    .dialog-dropdown {
+        width: 100%;
+        margin-right: 20px;
+        justify-content: center;
+    }
+}
+
+.btn-group {
+    .btn-update {
+        margin-top: 20px;
     }
 }

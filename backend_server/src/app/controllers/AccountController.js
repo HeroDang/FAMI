@@ -11,77 +11,72 @@ class AccountController {
             .catch(next);
     }
 
-    createAccount(req, res, next){
-
-        const {
-
-         username ,
-         password,
-         fullname,
-         job,
-        
-        } = req.body;
+    createAccount(req, res, next) {
+        const { username, password, fullname, job } = req.body;
 
         const account = new Account({
-        username: username,
-        password: password,
-        fullname: fullname,
-        job: job,
+            username: username,
+            password: username,
+            fullname: fullname,
+            job: job,
         });
         account
             .save()
-            .then(() => {res.status(201).json(account)})
+            .then(() => {
+                res.status(201).json(account);
+            })
             .catch(next);
     }
 
-    updateAccount(req, res, next){
-        const {
-         username ,
-         password,
-         fullname,
-         job,
-        } = req.body;
+    updateAccount(req, res, next) {
+        const { username, password, fullname, job } = req.body;
         const account = {
-        username: username,
-        password: password,
-        fullname: fullname,
-        job: job,
+            username: username,
+            password: password,
+            fullname: fullname,
+            job: job,
         };
-        Account.updateOne({_id: req.params.id},account)
-            .then(() => {res.status(201).json(account)})
+        Account.updateOne({ _id: req.params.id }, account)
+            .then(() => {
+                res.status(201).json(account);
+            })
             .catch(next);
     }
-    deleteAccount(req, res, next){
-        Account.delete({_id: req.params.id})
-            .then(() => {res.status(201).json({message:"DELETE"})})
+    deleteAccount(req, res, next) {
+        Account.delete({ ID: req.params.id })
+            .then(() => {
+                res.status(201).json({ message: "DELETE" });
+            })
             .catch(next);
     }
 
     deleteSelectedAccount(req, res, next) {
-        Account.delete({ _id: { $in: req.body } })
+        Account.delete({ ID: { $in: req.body } })
             .then(() => res.status(201).json({ message: "DELETED" }))
             .catch(next);
     }
 
-    counterAccount(req,res,next){
+    counterAccount(req, res, next) {
         Counter.findOne({ id: "ID" })
-        .then((data) => res.json(data))
-        .catch(next);
+            .then((data) => res.json(data))
+            .catch(next);
     }
 
     //[POST] /accounts/login
-    login(req, res, next){
-        let {username, password} = req.body;
+    login(req, res, next) {
+        let { username, password } = req.body;
 
-        Account.findOne({username, password})
+        Account.findOne({ username, password })
             .then((account) => {
-                let {password, ...newAccount} = account;
+                let { password, ...newAccount } = account;
                 res.send({
-                    token: 'test',  
                     account: newAccount,
+                    // account: newAccount,
                 });
             })
-            .catch(() => {res.send({error: "ERROR"})})
+            .catch(() => {
+                res.send({ error: "ERROR" });
+            });
     }
     getSpecial(req, res, next){
        Account.countDocuments({ job: 'Specialist doctor' })

@@ -26,6 +26,7 @@ const publicRoutes = [
         component: Following,
     },
     {
+        // jobs: ['Manager'],
         path: config.routes.managerAccount,
         component: ManagerAccount,
     },
@@ -49,27 +50,24 @@ const publicRoutes = [
     {
         path: config.routes.manageBill,
         component: ManageBill,
-
     },
     {
         path: config.routes.manageDrugBook,
         component: ManageDrugBook,
-
     },
     {
         path: config.routes.manageDrug,
         component: ManageDrug,
-
     },
     {
         path: config.routes.login,
         component: Login,
         layout: null,
     },
+
     {
         path: config.routes.report,
         component: Report,
-
     },
 ];
 

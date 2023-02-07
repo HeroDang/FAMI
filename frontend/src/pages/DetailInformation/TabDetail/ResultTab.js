@@ -14,29 +14,26 @@ import styles from './TabDetail.module.scss';
 
 const cx = classNames.bind(styles);
 
-function ResultTab({overResult, _id, setOverResult}) {
+function ResultTab({ overResult, _id, setOverResult, setDataChange, dataChange }) {
     const toast = useRef(null);
-    
+
     const handleChange = (e) => {
         const val = (e.target && e.target.value) || '';
-        setOverResult(val)
-    }
+        setOverResult(val);
+    };
 
     const handlerComplete = () => {
-
         let _overResult = overResult;
-        specformService.updateOverResult(_overResult,_id)
-            .then((result) => {
-                console.log(result);
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Overview Result Updated',
-                    life: 3000,
-                });
-                
+        specformService.updateOverResult(_overResult, _id).then((result) => {
+            console.log(result);
+            toast.current.show({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Overview Result Updated',
+                life: 3000,
             });
-    }
+        });
+    };
 
     return (
         <div className={cx('grid', 'wide')}>
@@ -55,7 +52,9 @@ function ResultTab({overResult, _id, setOverResult}) {
             </div>
             <div className={cx('row')}>
                 <div className={cx('input-group')}>
-                    <label className={cx('title-input')} htmlFor="result">Result</label>
+                    <label className={cx('title-input')} htmlFor="result">
+                        Result
+                    </label>
                     <InputTextarea
                         className={cx('input-text-area')}
                         id="result"
@@ -71,8 +70,8 @@ function ResultTab({overResult, _id, setOverResult}) {
     );
 }
 
-ResultTab.prototype={
+ResultTab.prototype = {
     overResult: PropTypes.string,
-}
+};
 
 export default ResultTab;
