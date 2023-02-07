@@ -6,7 +6,7 @@ import 'primeflex/primeflex.css';
 import ReactDOM from 'react-dom';
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames/bind'; //hung
-
+import Tabs from '@/components/Tabs';
 import { classNames as classNamesPrime } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -30,11 +30,14 @@ import { ProductService } from './ProductService';
 import * as drugbookService from '@/services/drugbookService' //1
 import styles from './ManageDrugBook.module.scss'; //hung
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import VendDrug from './Tab/VendDrug';
+import GranaryDrug from './Tab/GranaryDrug';
+
 
 const cx = classNames.bind(styles);
 
 
-function ManagerBill() {
+function ManagerDrugBook() {
     let emptyProduct = {
         id: null,
         //name: '',
@@ -47,8 +50,8 @@ function ManagerBill() {
         rating: 0,
         //inventoryStatus: 'INSTOCK',
     };
-    let emptyBill = {
-        billID: 0,
+    let emptyDrugBook = {
+        drugbookID: 0,
         drugname: null,
         unit: null,
         unitprice: null,
@@ -61,12 +64,12 @@ function ManagerBill() {
 
     const [products, setProducts] = useState(null);
 
-    const [bills, setBills] = useState(null);
+    const [drugbooks, setDrugBooks] = useState(null);
 
-    const [bill, setBill] = useState(emptyBill);
+    const [drugbook, setDrugBook] = useState(emptyDrugBook);
 
     const [changeData,setChangeData] =  useState(false);
-    const [counterBill, setcounterBill] = useState(0);
+    const [counterDrugBook, setcounterDrugBook] = useState(0);
 
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
@@ -78,15 +81,29 @@ function ManagerBill() {
     const toast = useRef(null);
     const dt = useRef(null);
     const productService = new ProductService();
+    const dataTab = [
+        {
+            id: "tab1",
+            title: "Granary",
+            content: <GranaryDrug />,
+        },
+        {
+            id: "tab2",
+            title: "Vended",
+            content: <VendDrug  />,
+        },
+       
+    ]
 
+    
     useEffect(() => {
         productService.getProducts().then((data) => setProducts(data));
-        drugbookService.getBillList().then((data)  => {
-            setBills(data);
+        drugbookService.getDrugBookList().then((data)  => {
+            setDrugBooks(data);
             console.log(data);
         });
-        drugbookService.getCounterBill().then((data)=>{
-            setcounterBill(data.seq);
+        drugbookService.getCounterDrugBook().then((data)=>{
+            setcounterDrugBook(data.seq);
         })
     }, [changeData]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -96,22 +113,22 @@ function ManagerBill() {
 
     const openNew = () => {
         setProduct(emptyProduct);
-        setBill(emptyBill);
+        setDrugBook(emptyDrugBook);
         setSubmitted(false);
         setProductDialog(true);
     };
-    const saveBill = () => {
+    const saveDrugBook = () => {
         setSubmitted(true);
         
 
-            let _bills = [...bills];
-            let _bill = { ...bill };
-            if (bill._id) {
+            let _drugbooks = [...drugbooks];
+            let _drugbook = { ...drugbook };
+            if (drugbook._id) {
                 // const index = findIndexById(product.id);
-                drugbookService.updateBill(_bill,_bill._id).then((data)=>{
+                drugbookService.updateDrugBook(_drugbook,_drugbook._id).then((data)=>{
                     console.log(data)
                     setProductDialog(false);
-                    setBill(emptyBill);
+                    setDrugBook(emptyDrugBook);
                     setChangeData(!changeData);
                     toast.current.show({
                         severity: 'success',
@@ -125,11 +142,11 @@ function ManagerBill() {
                 // _products[index] = _product;
                
             } else {
-                drugbookService.createBill(_bill).then((data)=> {
+                drugbookService.createDrugBook(_drugbook).then((data)=> {
                 
                 console.log(data)
                 setProductDialog(false);
-                setBill(emptyBill);
+                setDrugBook(emptyDrugBook);
                 setChangeData(!changeData);
                 toast.current.show({
                     severity: 'success',
@@ -149,10 +166,10 @@ function ManagerBill() {
     const onInputChange = (e, name) => {
         console.log(e.target.value);
         const val = (e.target && e.target.value) || '';
-        let _bill = { ...bill };
-        _bill[`${name}`] = val;
+        let _drugbook = { ...drugbook };
+        _drugbook[`${name}`] = val;
 
-        setBill(_bill);
+        setDrugBook(_drugbook);
         
     };
 
@@ -160,9 +177,9 @@ function ManagerBill() {
         // let _product = { ...product };
         // _product['category'] = e.value;
         // setProduct(_product);
-        let _bill= {...bill};
-        _bill['job'] = e.value;
-        setBill(_bill);
+        let _drugbook= {...drugbook};
+        _drugbook['job'] = e.value;
+        setDrugBook(_drugbook);
     };
 
     const hideDialog = () => {
@@ -179,13 +196,13 @@ function ManagerBill() {
              onClick={hideDialog} />
             <Button className={cx('btn-yes')} label="Save" icon="pi pi-check" 
             style={{color:'#ffffff',background: '#153AFF'}}
-            onClick={saveBill} />
+            onClick={saveDrugBook} />
         </React.Fragment>
     );
 
-    const confirmDeleteProduct = (e,bill) => {
+    const confirmDeleteProduct = (e,drugbook) => {
         // setProduct(product);
-        setBill(bill);
+        setDrugBook(drugbook);
          setDeleteProductDialog(true);
         e.stopPropagation();
      };
@@ -193,12 +210,12 @@ function ManagerBill() {
     const deleteProduct = () => {
         // let _products = products.filter((val) => val.id !== product.id);
         // setProducts(_products);
-        let _bill={...bill}
-        drugbookService.deleteBill(_bill._id).then((data)=>{
+        let _drugbook={...drugbook}
+        drugbookService.deleteDrugBook(_drugbook._id).then((data)=>{
             setChangeData(!changeData);
             setDeleteProductDialog(false);
            // setProduct(emptyProduct);
-           setBill(emptyBill);
+           setDrugBook(emptyDrugBook);
             toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
             
         });
@@ -221,7 +238,7 @@ function ManagerBill() {
         _selectedProducts.forEach((item) => {
             formIds.push(item._id);
         })
-        drugbookService.deleteSelectedBill(formIds)
+        drugbookService.deleteSelectedDrugBook(formIds)
         .then((data) => {
             console.log(data);
             setChangeData(!changeData);
@@ -267,10 +284,8 @@ function ManagerBill() {
    
 
     
-   
-    
-    const editProduct = (bill) => {
-        setBill({ ...bill });
+    const editProduct = (drugbook) => {
+        setDrugBook({ ...drugbook });
         setProductDialog(true);
     };
 
@@ -470,98 +485,9 @@ function ManagerBill() {
 
     return (
         <div className="">
-            <div className="card">
-                <DataTable
-                    ref={dt}
-                    value={bills}
-                    selection={selectedProducts}
-                    onSelectionChange={(e) => setSelectedProducts(e.value)}
-                    dataKey="_id"
-                    paginator
-                    rows={10}
-                    rowsPerPageOptions={[5, 10, 25]}
-                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products"
-                    globalFilter={globalFilter}
-                    //header={header}
-                    responsiveLayout="scroll"
-                >
-                   <Column
-                            headerClassName={cx('column-thead')}
-                            bodyClassName={cx('column')}
-                            selectionMode="multiple"
-                            headerStyle={{ width: '3rem' }}
-                            exportable={false}
-                        ></Column>
-
-                    <Column 
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="billID" 
-                    header="ID" 
-                    sortable style={{ minWidth: '8rem' }}>
-                    </Column>
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="drugname"
-                    header="Drug's name"
-                    sortable
-                    style={{ minWidth: '16rem' }}
-                    ></Column>
-                    {/* <Column field="image" header="Image" body={imageBodyTemplate}></Column> */}
-                    {/* <Column
-                        field="price"
-                        header="Price"
-                        body={priceBodyTemplate}
-                        sortable
-                        style={{ minWidth: '8rem' }}
-                    ></Column> */}
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="unit"
-                    header="Unit/Price"
-                    sortable
-                    style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column
-                    headerClassName={cx('column-thead')}
-                    bodyClassName={cx('column')}
-                    field="quantity"
-                    header="Quantity"
-                    sortable
-                    style={{ minWidth: '12rem' }}
-                    ></Column>
-                    <Column
-                        field="amount"
-                        header="Amount"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                       // body={ratingBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column>
-                    {/* <Column
-                        field="status"
-                        header="Status"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                        //body={statusBodyTemplate}
-                        sortable
-                        style={{ minWidth: '12rem' }}
-                    ></Column> */}
-                    <Column
-                        header="Action"
-                        headerClassName={cx('column-thead')}
-                        bodyClassName={cx('column')}
-                        body={actionBodyTemplate}
-                        exportable={false}
-                        style={{ minWidth: '10rem' }}
-                    ></Column>
-                </DataTable>
-            </div>
-
+            <div>
+                    <Tabs dataTab={dataTab}></Tabs>
+                </div>
             
         </div>
         
@@ -570,48 +496,15 @@ function ManagerBill() {
     return (
         <div className={cx('wrapper')}>
             <Toast ref={toast} />
-            <h2 className={cx('header-title')}>Manager Bill</h2>
+            <h2 className={cx('header-title')}>Manage Drug</h2>
         <div className={cx('body')}>
-                <div className={cx('toolbar')}>
-                    <div className={cx('search')}>
-                        <span className={cx('search-icon')}>
-                            <SearchIcon />
-                        </span>
-                        <InputText
-                            className={cx('search-input')}
-                            type="search"
-                            onInput={(e) => setGlobalFilter(e.target.value)}
-                            placeholder="Search..."
-                        />
-                    </div>
-                    <div className={cx('btn-group')}>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<FontAwesomeIcon icon={faPlus} />}
-                            onClick={openNew}
-                        >
-                            New
-                        </MyBtn>
-                        <MyBtn
-                            className={cx('btn-add')}
-                            primary
-                            large
-                            leftIcon={<TrashSmallIcon width="1.6rem" height="1.6rem" />}
-                            onClick={confirmDeleteSelected}
-                            disable={!selectedProducts || !selectedProducts.length}
-                        >
-                            Delete
-                        </MyBtn>
-                    </div>
-                </div>
+
                 
                 <DataTableCrudDemo />
                 <Dialog 
                 visible={productDialog}
                 //header="Product Details"
-               header="Create bill"
+               header="Create drug"
              // style="color: blue;"
                 modal
                 className="p-fluid"
@@ -633,10 +526,10 @@ function ManagerBill() {
                 )} */}
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="billID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
+                        <label htmlFor="drugbookID"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Id</b></label>
                         <InputText
-                           id="billID"
-                            value={bill.billID === 0? (counterBill+1) : bill.billID}
+                           id="drugbookID"
+                            value={drugbook.drugbookID === 0? (counterDrugBook+1) : drugbook.drugbookID}
                             disabled
                             //onChange={(e) => onInputChange(e, 'ID')}
                             //autoFocus
@@ -646,28 +539,28 @@ function ManagerBill() {
                             // currency="USD"
                             // locale="en-US"
                         />
-                        {submitted && !bill.billID && <small className="p-error">Name is required.</small>}
+                        {submitted && !drugbook.drugbookID && <small className="p-error">Name is required.</small>}
                     </div>
                     <div className="field col">
                         <label htmlFor="drugname"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Drug's name</b></label>
                         <InputText
                             id="drugname"
-                            value={bill.drugname}
+                            value={drugbook.drugname}
                             onChange={(e) => onInputChange(e, 'drugname')}
                             autoFocus
                             required
                             className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                         />
-                        {submitted && !bill.drugname && <small className="p-error">Drug's name is required.</small>}
+                        {submitted && !drugbook.drugname && <small className="p-error">Drug's name is required.</small>}
                     </div>
                 </div >
                 
                 <div className="formgrid grid">
                     <div className="field col">
-                        <label htmlFor="unit"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit</b></label>
+                        <label htmlFor="unit"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Type</b></label>
                         <InputText
                             id="unit"
-                            value={bill.unit}
+                            value={drugbook.unit}
                             onChange={(e) => onInputChange(e, 'unit')}
                           //  autoFocus
                             required
@@ -676,20 +569,20 @@ function ManagerBill() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !bill.unit && <small className="p-error">Unit is required.</small>}
+                        {submitted && !drugbook.unit && <small className="p-error">Unit is required.</small>}
                     </div>
                     <div className="field col">
                         <label htmlFor="unitprice"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Unit/Price</b></label>
                         <InputText
                                     id="unitprice"
-                                    value={bill.password}
+                                    value={drugbook.password}
                                     onChange={(e) => onInputChange(e, 'unitprice')}
                                     required
                                    // autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !bill.unitprice && <small className="p-error">Quantity is required.</small>}
+                        {submitted && !drugbook.unitprice && <small className="p-error">Quantity is required.</small>}
                     </div>
                 </div>
             <div className="formgrid grid">
@@ -697,7 +590,7 @@ function ManagerBill() {
                         <label htmlFor="quantity"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Quantity</b></label>
                         <InputText
                             id="quantity"
-                            value={bill.unit}
+                            value={drugbook.unit}
                             onChange={(e) => onInputChange(e, 'quantity')}
                            // autoFocus
                             required
@@ -706,20 +599,20 @@ function ManagerBill() {
                             //currency="USD"
                            // locale="en-US"
                         />
-                        {submitted && !bill.quantity && <small className="p-error">Name is required.</small>}
+                        {submitted && !drugbook.quantity && <small className="p-error">Name is required.</small>}
                     </div>
                     <div className="field col">
                         <label htmlFor="amount"style={{color:'#0D5BF1', fontSize: "13px"}}><b>Amount</b></label>
                         <InputText
                                     id="amount"
-                                    value={bill.password}
+                                    value={drugbook.password}
                                     onChange={(e) => onInputChange(e, 'amount')}
                                     required
                                     //autoFocus
                                     // className={primeClassnames({ 'p-invalid': submitted && !product.name })}
                                     className={cx({ 'p-invalid': submitted && !product.name }, 'hung')}
                                 />
-                        {submitted && !bill.amount && <small className="p-error">Amount is required.</small>}
+                        {submitted && !drugbook.amount && <small className="p-error">Amount is required.</small>}
                     </div>
                 
             </div>
@@ -820,4 +713,4 @@ function ManagerBill() {
     );
 }
 
-export default ManagerBill;
+export default ManagerDrugBook;

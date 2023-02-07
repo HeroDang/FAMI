@@ -13,26 +13,20 @@ class DrugController {
 
     createDrug(req, res, next){
 
-        const {
+        // const {
 
-            drugname,
-            unit,
-            unitprice,
-            quantity,
-            amount,
-            status,
-            total,
+        //     drugname,
+        //     unit,
+        //     quantity,
+        //     producer,
         
-        } = req.body;
+        // } = req.body;
 
-        const Drug = new Drug({
-            drugname:  drugname ,
-            unit: unit,
-            unitprice: unitprice,
-            quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+        const drug = new Drug({
+            drugname: "Throat",
+            unit: "Viên",
+            quantity: "200",
+            producer: "Bách Thắng company"
         });
         drug
             .save()
@@ -44,20 +38,15 @@ class DrugController {
         const {
             drugname,
             unit,
-            unitprice,
             quantity,
-            amount,
-            status,
-            total,
+            producer,
+
         } = req.body;
-        const Drug = {
+        const drug = {
             drugname:  drugname ,
             unit: unit,
-            unitprice: unitprice,
             quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+            producer: producer,
         };
         Drug.updateOne({_id: req.params.id},drug)
             .then(() => {res.status(201).json(drug)})

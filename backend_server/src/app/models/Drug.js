@@ -8,11 +8,9 @@ const Drug = new Schema(
     {
         drugname: { type: String, maxLength: 255  },
         unit: { type: String, maxLength: 255 },
-        unitprice: { type: String, maxLength: 255 },
-        quantity: { type: Number },
+        producer: { type: String, maxLength: 255 },
         amount: { type: Number},
        // status: { type: String, maxLength: 255 },
-        total: { type: Number},
 
     },
     {

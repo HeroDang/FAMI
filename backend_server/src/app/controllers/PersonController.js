@@ -5,20 +5,18 @@ const {
 } = require("../../utils/mongoose");
 
 class PersonController {
-
     //[GET] /persons/api/create
-    createPerson(req,res,next){
-
+    createPerson(req, res, next) {
         const person = new Person({
-            id: 2,
-            accountId: 2,
-            name: "Nguyễn Minh",
-            address: "An Phú district, Nghệ An province",
-            dayOfBirth: new Date(1990, 4, 5),
-            avatar: '',
-            gender: "Male",
-            job: "General doctor",
-            phone: "0111222321",
+            id: 4,
+            accountId: 4,
+            name: "Nguyễn Thị Mai",
+            address: "Thanh Ba district, Phú Thọ province",
+            dayOfBirth: new Date(1980, 7, 25),
+            avatar: "",
+            gender: "Female",
+            job: "Specialist doctor",
+            phone: "0900111321",
         });
         person
             .save()
@@ -29,21 +27,34 @@ class PersonController {
     }
 
     //[GET] persons/getlisttoform
-    getListToForm(req,res,next){
-        Person.find()
-            .then((patient) => {     
-                
+    getListToForm(req, res, next) {
+        Person.find({ job: "General doctor" })
+            .then((patient) => {
                 let result = [];
                 patient.forEach((item) => {
-                    let {_id,personId,name} = item;
-                    result.push({_id,personId,name})
-                })
-                
-                res.json(result)
+                    let { _id, personId, name } = item;
+                    result.push({ _id, personId, name });
+                });
+
+                res.json(result);
             })
             .catch(next);
     }
 
+    //[GET] persons/getlisttospecform
+    getListToSpecForm(req, res, next) {
+        Person.find({ job: "Specialist doctor" })
+            .then((patient) => {
+                let result = [];
+                patient.forEach((item) => {
+                    let { _id, personId, name } = item;
+                    result.push({ _id, personId, name });
+                });
+
+                res.json(result);
+            })
+            .catch(next);
+    }
 
     //[GET] persons/:phone
     show(req, res, next) {
@@ -161,6 +172,34 @@ class PersonController {
             default:
                 res.json({ message: "Action is invalid" });
         }
+    }
+
+    //[GET] persons/getCurrentPerson/:accountId
+    getCurrentPerson(req, res, next) {
+        Person.findOne({ accountId: req.params.accountId })
+            .then((person) => {
+                res.json(person);
+            })
+            .catch(next);
+    }
+
+    //[PUT] persons/updatePerson/:id
+    updatePerson(req, res, next) {
+        const { name, address, gender, phone, dayOfBirth } = req.body;
+
+        const person = {
+            name,
+            address,
+            gender,
+            phone,
+            dayOfBirth: new Date(dayOfBirth),
+        };
+
+        Person.updateOne({ _id: req.params.id }, person)
+            .then((person) => {
+                res.json(person);
+            })
+            .catch(next);
     }
 }
 

@@ -1,71 +1,79 @@
 const DrugBook = require("../models/DrugBook");
 const { multipleMongooseToObject } = require("../../utils/mongoose");
 const Counter = require("../models/Counter");
-class BillController {
+
+class DrugBookController {
     // [GET] /home
     getList(req, res, next) {
-        Bill.find({})
-            .then((bills) => {
-                res.json(bills);
+        DrugBook.find({})
+            .then((drugbooks) => {
+                res.json(drugbooks);
             })
             .catch(next);
     }
 
-    createDrugBook(req, res, next){
-
+    createDrugBook(req, res, next) {
         const {
-
             drugname,
             unit,
             unitprice,
             quantity,
-            amount,
-            status,
-            total,
-        
+            producer,
+            type,
+            quantityvend,
+            datevend,
         } = req.body;
 
-        const DrugBook = new Bill({
-            drugname:  drugname ,
+        const drugbook = new DrugBook({
+            drugname: drugname,
             unit: unit,
             unitprice: unitprice,
-            quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+            quantity: parseInt(quantity),
+            producer: producer,
+            type: type,
+            quantityvend: quantityvend,
+            datevend: new Date(datevend),
         });
-        bill
+        drugbook
             .save()
-            .then(() => {res.status(201).json(bill)})
+            .then(() => {
+                res.status(201).json(drugbook);
+            })
             .catch(next);
     }
 
-    updateDrugBook(req, res, next){
+    updateDrugBook(req, res, next) {
         const {
             drugname,
             unit,
             unitprice,
             quantity,
-            amount,
-            status,
-            total,
+            producer,
+            type,
+            quantityvend,
+            datevend,
         } = req.body;
-        const DrugBook = {
-            drugname:  drugname ,
+        const drugbook = {
+            drugname: drugname,
             unit: unit,
             unitprice: unitprice,
-            quantity: quantity,
-            amount: amount,
-            status: status,
-            total: total,
+            quantity: parseInt(quantity),
+            type: type,
+            producer: producer,
+            quantityvend: quantityvend,
+            datevend: datevend,
         };
-        DrugBook.updateOne({_id: req.params.id},bill)
-            .then(() => {res.status(201).json(bill)})
+        DrugBook.updateOne({ _id: req.params.id }, drugbook)
+            .then(() => {
+                res.status(201).json(drugbook);
+            })
             .catch(next);
     }
-    deleteDrugBook(req, res, next){
-        DrugBook.delete({_id: req.params.id})
-            .then(() => {res.status(201).json({message:"DELETE"})})
+    deleteDrugBook(req, res, next) {
+        DrugBook.delete({ _id: req.params.id })
+            .then(() => {
+                res.status(201).json({ message: "DELETE" });
+            })
             .catch(next);
     }
 
@@ -75,10 +83,10 @@ class BillController {
             .catch(next);
     }
 
-    counterDrugBook(req,res,next){
-        Counter.findOne({ id: "billID" })
-        .then((data) => res.json(data))
-        .catch(next);
+    counterDrugBook(req, res, next) {
+        Counter.findOne({ id: "drugbookID" })
+            .then((data) => res.json(data))
+            .catch(next);
     }
 }
 module.exports = new DrugBookController();

@@ -1,7 +1,7 @@
 //Config
 import config from '@/config';
 //Layout
-// import { HeaderOnly } from '@/layouts';
+import { HeaderOnly } from '@/layouts';
 //Pages
 import Home from '@/pages/Home';
 import Following from '@/pages/Following';
@@ -11,6 +11,11 @@ import MedicalChecklist from '@/pages/MedicalChecklist';
 import ManageBill from '@/pages/ManageBill';
 import ManageDrugBook from '@/pages/ManageDrugBook';
 import ManageDrug from '@/pages/ManageDrug';
+import SpecialistChecklist from '@/pages/SpecialistChecklist';
+import DetailInformation from '@/pages/DetailInformation';
+import Login from '@/pages/Login';
+import Report from '@/pages/Return-report';
+import ProfileAccount from '@/pages/ProfileAccount';
 
 const publicRoutes = [
     {
@@ -22,6 +27,7 @@ const publicRoutes = [
         component: Following,
     },
     {
+        // jobs: ['Manager'],
         path: config.routes.managerAccount,
         component: ManagerAccount,
     },
@@ -34,19 +40,40 @@ const publicRoutes = [
         component: MedicalChecklist,
     },
     {
+        path: config.routes.specialistChecklist,
+        component: SpecialistChecklist,
+    },
+    {
+        path: config.routes.detailInformation,
+        component: DetailInformation,
+        layout: HeaderOnly,
+    },
+    {
         path: config.routes.manageBill,
         component: ManageBill,
-
     },
     {
         path: config.routes.manageDrugBook,
         component: ManageDrugBook,
-
     },
     {
         path: config.routes.manageDrug,
         component: ManageDrug,
+    },
+    {
+        path: config.routes.login,
+        component: Login,
+        layout: null,
+    },
 
+    {
+        path: config.routes.report,
+        component: Report,
+    },
+    {
+        path: config.routes.profileAccount,
+        component: ProfileAccount,
+        layout: HeaderOnly,
     },
 ];
 
